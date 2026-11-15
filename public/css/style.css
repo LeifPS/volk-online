@@ -196,3 +196,6 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .hand { flex: 1; flex-wrap: wrap; overflow-x: hidden; overflow-y: auto; align-content: flex-start; align-items: flex-start; gap: 8px; padding: 14px 10px 10px; --hw: 98px; min-height: 0; }
   .hand .kk { margin-left: 0; } .hand .kk:first-child { margin-left: 0; } .hand .kk.spielbar { transform: none; }
 }
+
+/* Im Hub-Rahmen schwebt oben links das LGH-Symbol: dort nichts anzeigen */
+body.eingebettet .kopf { padding-left: 56px; }

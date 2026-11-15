@@ -1,3 +1,4 @@
+if (window.parent !== window) document.body.classList.add('eingebettet');   // im Hub: oben links schwebt das LGH-Symbol
 // Start, Menü, Spieleinstellungen, lokaler Spielverlauf gegen den Computer.
 import * as E from './engine.js';
 import * as KI from './ki.js';
@@ -29,10 +30,12 @@ function menue() {
       <button id="b-ki">${ic('x:roboter', 2)}Gegen den Computer</button>
       <button id="b-on">${ic('x:erde', 2)}Online spielen</button>
       <button id="b-regeln" class="sek">${ic('ui:lexikon', 2)}Regeln & Karten</button>
+      ${window.LGH ? `<button id="b-einst" class="sek">${ic('ui:menue', 2)}Einstellungen</button>` : ''}
     </div>
     <div class="fuss">Grundspiel · Erweiterung 1: Volkskarten · Erweiterung 2: Götter & Glaube</div></div>`;
   document.getElementById('b-ki').onclick = setup;
   document.getElementById('b-regeln').onclick = () => regelnSeite(app, D, menue);
+  if (window.LGH) document.getElementById('b-einst').onclick = () => window.LGH.oeffnen();
   document.getElementById('b-on').onclick = () => import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline));
   if (weiter) document.getElementById('b-weiter').onclick = () => starteLokal(save.cfg, save.s);
 }
