@@ -12,7 +12,8 @@ const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<':
 export function kk(c, o = {}) {
   const name = o.rueck || bildName(c);
   const data = Object.entries(o.data || {}).map(([k, v]) => ` data-${k}="${esc(v)}"`).join('');
-  return `<div class="kk ${o.gedreht ? 'gedreht' : ''} ${o.cls || ''}" ${o.a ? `data-a="${o.a}" data-v="${esc(o.v ?? c.i)}"` : ''}${data}><img src="${bildUrl(name)}" alt="${esc(o.titel || c.id || '')}" draggable="false" ${o.eager ? '' : 'loading="lazy"'} decoding="async">${o.badge ? `<span class="badge">${o.badge}</span>` : ''}${o.unten ? `<span class="unten">${o.unten}</span>` : ''}</div>`;
+  const ci = c.i != null && c.i !== 0 ? ` data-ci="${c.i}"` : '';
+  return `<div class="kk ${o.gedreht ? 'gedreht' : ''} ${o.cls || ''}" ${o.a ? `data-a="${o.a}" data-v="${esc(o.v ?? c.i)}"` : ''}${data}${ci}><img src="${bildUrl(name)}" alt="${esc(o.titel || c.id || '')}" draggable="false" ${o.eager ? '' : 'loading="lazy"'} decoding="async">${o.badge ? `<span class="badge">${o.badge}</span>` : ''}${o.unten ? `<span class="unten">${o.unten}</span>` : ''}</div>`;
 }
 // Stapel aus Rückseiten (Anzahl als Zähler)
 export function stapelBild(rueck, n, o = {}) {

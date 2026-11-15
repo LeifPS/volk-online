@@ -6,6 +6,9 @@ import { ladeSprites, spr, ic } from './sprites.js';
 import { ladeKartenIndex, kk } from './karten.js';
 import { Spieltisch } from './ui.js';
 import { regelnSeite } from './regeln.js';
+import { zaIcon } from './epochen.js';
+import { wende, setzeOpt, optionenInhalt, tempoFaktor, ton } from './fx.js';
+wende();
 const app = document.getElementById('app'), overlay = document.getElementById('overlay');
 let D = null, tisch = null, ctrl = null;
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -24,20 +27,32 @@ function menue() {
   const buehne = [1, 2, 3].map(k => kk({ id: '?' }, { rueck: 'rueck_' + k, eager: true })).join('');
   const helden = D.voelker.map(v => spr('stadt:stadtstaat', v.farbe, 1)).join('');
   app.innerHTML = `<div class="menue"><h1>VOLK</h1><div class="unter">Das Kartenspiel · baue dein Volk und steige durch die Zeitalter auf</div>
-    <div class="buehnenbild">${buehne}</div><div class="hero">${helden}</div>
+    <div class="zeitreihe">${[0, 1, 2, 3, 4, 5, 6].map(i => `<span style="--d:${i}">${zaIcon(i, 30)}</span>`).join('')}</div><div class="buehnenbild">${buehne}</div><div class="hero">${helden}</div>
     <div class="btns">
       ${weiter ? `<button class="gruen" id="b-weiter">${ic('x:los', 2)}Weiterspielen <small>(Runde ${save.s.runde})</small></button>` : ''}
       <button id="b-ki">${ic('x:roboter', 2)}Gegen den Computer</button>
       <button id="b-on">${ic('x:erde', 2)}Online spielen</button>
       <button id="b-regeln" class="sek">${ic('ui:lexikon', 2)}Regeln & Karten</button>
+      <button id="b-opt" class="sek">${ic('ui:einstellungen', 2)}Optionen</button>
       ${window.LGH ? `<button id="b-einst" class="sek">${ic('ui:menue', 2)}Einstellungen</button>` : ''}
     </div>
     <div class="fuss">Grundspiel · Erweiterung 1: Volkskarten · Erweiterung 2: Götter & Glaube</div></div>`;
   document.getElementById('b-ki').onclick = setup;
   document.getElementById('b-regeln').onclick = () => regelnSeite(app, D, menue);
+  document.getElementById('b-opt').onclick = optionenFenster;
   if (window.LGH) document.getElementById('b-einst').onclick = () => window.LGH.oeffnen();
   document.getElementById('b-on').onclick = () => import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline));
   if (weiter) document.getElementById('b-weiter').onclick = () => starteLokal(save.cfg, save.s);
+}
+
+function optionenFenster() {
+  const zeige = (still) => { overlay.classList.add('an'); overlay.innerHTML = `<div class="sheet ${still ? 'still' : ''}"><div class="fk"><h3>${ic('ui:einstellungen')} Optionen</h3><button class="knopf" data-a="zu" aria-label="Schließen" style="min-height:32px;padding:3px 8px">${ic('ui:kreuz')}</button></div><div class="fi">${optionenInhalt()}</div></div>`; };
+  overlay.onclick = (e) => {
+    const t = e.target.closest('[data-a]');
+    if (e.target === overlay || (t && t.dataset.a === 'zu')) { overlay.classList.remove('an'); overlay.innerHTML = ''; ton('klick'); return; }
+    if (t && t.dataset.a === 'opt') { setzeOpt(t.dataset.k, t.dataset.v); zeige(true); }
+  };
+  zeige(false);
 }
 
 // ---------------------------------------------------------------- Einstellungen
@@ -87,7 +102,7 @@ class LokalCtrl {
   async send(a) {
     const r = E.aktion(this.s, this.me, a); if (r.ok) { this.speichern(); this.view.render(); this.weiter(); } return r;
   }
-  weiter(ms = 420) { clearTimeout(this.t); this.t = setTimeout(() => this.tick(), ms); }
+  weiter(ms = 420) { clearTimeout(this.t); this.t = setTimeout(() => this.tick(), Math.round(ms * tempoFaktor())); }
   tick() {
     const s = this.s; if (this.gestoppt || s.sieger !== null) { if (s.sieger !== null) { this.speichern(); this.view.render(); } return; }
     const actor = s.phase === 'block' ? s.kampf.ziel : s.am; if (actor === this.me) return;

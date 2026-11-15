@@ -5,13 +5,15 @@ import { spr, ic } from './sprites.js';
 import { kk, stapelBild } from './karten.js';
 import { kartenArt, braucht, benoetigt, ZA, SCHL_TXT, ROH } from './text.js';
 import { zaIcon, zaName } from './epochen.js';
+import { opt, ton, vibriere, schwebe, banner, konfetti, setzeOpt, optionenInhalt } from './fx.js';
 const { def } = E;
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const st = (ico, txt) => `<span>${ic(ico)}${txt}</span>`;
 
 export class Spieltisch {
   constructor(root, overlay, ctrl) {
-    this.root = root; this.ov = overlay; this.c = ctrl; this.tab = 'ich'; this.sel = new Set(); this.modalFn = null; this.blk = {}; this.ereigGesehen = 0; this.siegZu = false;
+    this.root = root; this.ov = overlay; this.c = ctrl; this.tab = 'ich'; this.sel = new Set(); this.modalFn = null; this.blk = {}; this.ereigGesehen = 0; this.siegZu = false; this.vor = null; this.letzterAm = null; this.endeWarn = false;
+    document.onkeydown = (e) => this.taste(e);
     root.onclick = (e) => this.klick(e); overlay.onclick = (e) => { if (e.target === overlay && !this.erzwungen()) { this.modalFn = null; this.render(); } else this.klick(e); };
   }
   get s() { return this.c.s; } get me() { return this.c.me; }
@@ -20,14 +22,21 @@ export class Spieltisch {
   erzwungen() { const s = this.s; return s.sieger !== null && !this.siegZu || (s.phase === 'block' && s.kampf.ziel === this.me) || this.ereignisOffen(); }
   ereignisOffen() { const s = this.s; return !!(s.letztes && s.letztes.n > this.ereigGesehen && s.sieger === null); }
   blockiert() { return this.erzwungen() || !!this.modalFn; }
-  toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.getElementById('toasts').appendChild(d); setTimeout(() => d.remove(), 2600); }
-  async senden(a) { const r = await this.c.send(a); if (!r.ok) this.toast(r.fehler || 'Das geht nicht.'); return r; }
+  toast(t) {
+    const box = document.getElementById('toasts'); while (box.children.length >= 3) box.firstChild.remove();
+    const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; box.appendChild(d);
+    setTimeout(() => { d.classList.add('geht'); setTimeout(() => d.remove(), 220); }, 2600);
+  }
+  async senden(a) { const r = await this.c.send(a); if (!r.ok) { ton('fehler'); this.toast(r.fehler || 'Das geht nicht.'); } return r; }
 
   // ---------------------------------------------------------------- Rendering
   render() {
     if (!this.s) return;
     const s = this.s, me = this.p(this.me), D = E.daten();
     if (this.tab !== 'ich' && this.tab !== 'tisch' && this.tab !== 'log' && !(this.tab >= 0 && this.s.sp[this.tab])) this.tab = 'ich';
+    if (this.letzterAm !== null && this.letzterAm !== s.am && s.am === this.me && s.sieger === null && this.tab !== 'ich') this.tab = 'ich';
+    if (s.am !== this.me || s.phase !== 'aktion') this.endeWarn = false;
+    this.letzterAm = s.am;
     const aktiv = s.sp[s.phase === 'block' ? s.kampf.ziel : s.am];
     const ticker = s.ev.slice(-3).map(e => esc(e.t)).join('  ›  ');
     const chips = s.sp.map((p, i) => {
@@ -44,14 +53,14 @@ export class Spieltisch {
     const av = D.voelker.find(x => x.id === aktiv.volk);
     this.root.innerHTML = `<div class="spiel">
       <div class="kopf"><div class="titel"><span class="punkt" style="background:${av.farbe}"></span>RUNDE ${s.runde} · ${esc(aktiv.name)}${s.am === this.me && s.phase !== 'block' ? ' (DU)' : ''}</div>
-        <button data-a="regeln" aria-label="Regeln">${ic('ui:hilfe')}</button><button data-a="menue" aria-label="Menü">${ic('ui:menue')}</button></div>
+        <button data-a="optionen" aria-label="Optionen">${ic(opt.ton ? 'ui:ton_an' : 'ui:ton_aus')}</button><button data-a="regeln" aria-label="Regeln">${ic('ui:hilfe')}</button><button data-a="menue" aria-label="Menü">${ic('ui:menue')}</button></div>
       <div class="ticker">${ticker || '&nbsp;'}</div>
       <div class="leiste">${chips}</div>
       <div class="tabs">${tabs}</div>
       <div class="buehne">${inhalt}</div>
       <div class="dock">${this.aktionsHtml()}<div class="hand ${me.hand.length ? '' : 'leer'}">${this.handHtml()}</div></div></div>`;
     this.buehne = this.root.querySelector('.buehne'); this.buehne.scrollTop = stp; this.handEl = this.root.querySelector('.hand'); this.handEl.scrollLeft = hs;
-    this.renderModal();
+    this.renderModal(); this.fxAnwenden();
   }
   renderModal() {
     const s = this.s; let html = null;
@@ -88,25 +97,27 @@ export class Spieltisch {
     const s = this.s, p = this.p(this.me);
     if (s.sieger !== null) return `<div class="aktionen"><div class="info">Das Spiel ist vorbei.</div><button data-a="siegzeigen">Ergebnis</button></div>`;
     if (s.phase === 'block') return `<div class="aktionen"><div class="info">${s.kampf.ziel === this.me ? 'Du wirst angegriffen!' : esc(this.p(s.kampf.ziel).name) + ' verteidigt sich …'}</div></div>`;
-    if (s.am !== this.me) return `<div class="aktionen"><div class="info">${esc(this.p(s.am).name)} ist am Zug · <span>${ic('ui:gold')}<b>${p.gold}</b></span></div></div>`;
+    if (s.am !== this.me) return `<div class="aktionen"><div class="info">${esc(this.p(s.am).name)} ist am Zug · <span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span></div></div>`;
     if (s.phase === 'ziehen') {
       const piles = [1, 2, 3].filter(k => k <= E.maxStapel(p)).map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: 'ziehe', v: k, cls: 'zieh', unten: 'STAPEL ' + ZA[k - 1] })).join('');
       const rel = p.religion && p.relStapel.length && !p.relBenutzt ? stapelBild('rueck_r_' + p.religion, p.relStapel.length, { a: 'ziehe', v: 'rel', cls: 'zieh', unten: 'GLAUBE' }) : '';
-      return `<div class="aktionen"><div class="info">Ziehe noch <b>${s.zieh}</b> Karte(n). Tippe auf einen Stapel. <span>${ic('ui:gold')}<b>${p.gold}</b></span></div><div class="zieher">${piles}${rel}</div></div>`;
+      return `<div class="aktionen"><div class="info">Ziehe noch <b>${s.zieh}</b> Karte(n). Tippe auf einen Stapel. <span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span></div><div class="zieher">${piles}${rel}</div></div>`;
     }
     const ak = E.aufstiegKosten(p);
     const auswahl = [...this.sel].map(i => E.einheiten(p).find(u => u.i === i)).filter(Boolean);
     let b = '';
     if (auswahl.length) {
-      b += E.gegner(s, p).map(o => `<button class="rot" data-a="angriff" data-v="${s.sp.indexOf(o)}" ${E.schutzAktiv(s) ? 'disabled' : ''}>${ic('ui:staerke')}Angriff: ${esc(o.name)}</button>`).join('');
+      const schutz = E.schutzAktiv(s) ? `Neulingsschutz: Bis zum Ereignis ${E.REGELN().schutz_runden} darf niemand angreifen (bisher ${s.ereigZ}).` : '';
+      b += E.gegner(s, p).map(o => `<button class="rot ${schutz ? 'aus' : ''}" data-a="angriff" data-v="${s.sp.indexOf(o)}" ${schutz ? `data-grund="${esc(schutz)}"` : ''}>${ic('ui:staerke')}Angriff: ${esc(o.name)}</button>`).join('');
       if (auswahl.some(E.kannSchiessen)) b += `<button class="rot" data-a="schiessen">${ic('ui:fernkampf')}Schießen</button>`;
       b += `<button class="sek" data-a="selclear">Abwählen</button>`;
     } else {
-      if (ak !== null) b += `<button data-a="aufstieg" ${p.gold < ak || p.aufN ? 'disabled' : ''}>${zaIcon(p.alter + 1, 22)}${zaName(p.alter + 1)} <small>(${ak} ${ic('ui:gold')})</small></button>`;
+      const aufGrund = ak === null ? '' : p.aufN ? 'Du bist in dieser Runde schon aufgestiegen.' : p.gold < ak ? `Zu wenig Gold: ${ak} nötig, du hast ${p.gold}.` : '';
+      if (ak !== null) b += `<button class="${aufGrund ? 'aus' : ''}" data-a="aufstieg" ${aufGrund ? `data-grund="${esc(aufGrund)}"` : ''}>${zaIcon(p.alter + 1, 22)}${zaName(p.alter + 1)} <small>(${ak} ${ic('ui:gold')})</small></button>`;
       if (s.opt.rel && !p.religion && p.alter >= 1) b += `<button class="sek" data-a="gruenden">${ic('rel:glaube')}Religion gründen <small>(5 ${ic('ui:gold')})</small></button>`;
-      b += `<button class="gruen" data-a="ende">Zug beenden${ic('ui:pfeil_rechts')}</button>`;
+      b += `<button class="${this.endeWarn ? 'gold' : 'gruen'}" data-a="ende">${this.endeWarn ? 'Trotzdem beenden' : 'Zug beenden'}${ic('ui:pfeil_rechts')}</button>`;
     }
-    const info = auswahl.length ? `${auswahl.length} Einheit(en) gewählt${E.schutzAktiv(s) ? ' · Neulingsschutz: noch kein Angriff' : ''}` : `<span>${ic('ui:gold')}<b>${p.gold}</b></span><span>Einkommen +${E.einkommen(s, p)}</span><span>Land ${p.landG}/${E.landErlaubt(p)}</span>`;
+    const info = auswahl.length ? `${auswahl.length} Einheit(en) gewählt${E.schutzAktiv(s) ? ' · Neulingsschutz: noch kein Angriff' : ''}` : `<span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span><span>Einkommen +${E.einkommen(s, p)}</span><span>Land ${p.landG}/${E.landErlaubt(p)}</span>`;
     return `<div class="aktionen"><div class="info">${info}</div>${b}</div>`;
   }
 
@@ -250,17 +261,84 @@ export class Spieltisch {
   siegHtml() {
     const s = this.s, w = s.sp[s.sieger], gewonnen = s.sieger === this.me;
     const rang = s.sp.map((p, i) => ({ p, i })).sort((x, y) => (y.i === s.sieger) - (x.i === s.sieger) || E.kultur(y.p) - E.kultur(x.p));
-    return this.fenster('Spielende', `<div class="sieg"><div style="transform:scale(2);margin:10px 0 18px">${ic('ui:krone')}</div><h2>${gewonnen ? 'Du hast gewonnen!' : esc(w.name) + ' gewinnt'}</h2><p>Sieg durch <b>${esc(s.grund)}</b> in Runde ${s.runde}.</p>
+    return this.fenster('Spielende', `<div class="sieg"><div class="krone"><div style="transform:scale(2)">${ic('ui:krone')}</div></div><h2>${gewonnen ? 'Du hast gewonnen!' : esc(w.name) + ' gewinnt'}</h2><p>Sieg durch <b>${esc(s.grund)}</b> in Runde ${s.runde}.</p>
       <div class="rang">${rang.map(({ p }) => `<div class="stat">${p === w ? ic('ui:krone') : ''}<b>${esc(p.name)}</b><small>${esc(E.daten().voelker.find(v => v.id === p.volk).name)}</small><span style="margin-left:auto">${ic('ui:hp')}${Math.max(0, p.hp)} ${ic('ui:kultur')}${E.kultur(p)}${s.opt.rel ? ' ' + ic('rel:glaube') + E.glaube(s, p) : ''}</span></div>`).join('')}</div>
       <div class="btns" style="justify-content:center"><button class="gruen" data-a="neu">Neues Spiel</button><button class="sek" data-a="siegzu">Tisch ansehen</button><button class="sek" data-a="menue">Menü</button></div></div>`, false);
   }
+  // ---------------------------------------------------------------- Effekte (Vergleich mit dem Stand vor dem letzten Render)
+  angezeigt() { return this.tab === 'ich' ? this.me : this.tab === 'tisch' || this.tab === 'log' ? -1 : +this.tab; }
+  snap() {
+    const s = this.s;
+    return { sig: s.sp.map(p => p.volk).join(), runde: s.runde, am: s.am, sieger: s.sieger, evn: s.ev.length, ereig: s.letztes ? s.letztes.n : 0,
+      p: s.sp.map((p, i) => ({ hp: p.hp, k: E.kultur(p), gold: p.gold, alter: p.alter, hand: i === this.me ? p.hand.map(c => c.i) : [], tisch: [...p.geb, ...p.wunder, ...p.staaten, ...p.land, ...p.front, ...p.kaserne].map(c => c.i) })) };
+  }
+  fxAnwenden() {
+    const s = this.s, jetzt = this.snap(), vor = this.vor; this.vor = jetzt;
+    document.title = this.meinZug() ? '● Dein Zug · Volk' : 'Volk – Das Kartenspiel';
+    if (!vor || vor.sig !== jetzt.sig || jetzt.runde < vor.runde || jetzt.evn < vor.evn) return;   // erster Aufbau oder neues Spiel: nichts animieren
+    const root = this.root, chipVon = (i) => root.querySelector(`.leiste .chip[data-v="${i === this.me ? 'ich' : i}"]`), sicht = this.angezeigt();
+    if (jetzt.evn > vor.evn) root.querySelector('.ticker')?.classList.add('neu');
+    s.sp.forEach((p, i) => {
+      const a = vor.p[i], b = jetzt.p[i]; if (!a) return; const chip = chipVon(i), ich = i === this.me;
+      if (b.hp < a.hp) {
+        schwebe(chip, `-${a.hp - b.hp}${ic('ui:hp')}`, 'rot'); chip?.classList.add('schlag'); if (sicht === i) root.querySelector('.tableau')?.classList.add('schlag');
+        ton('schaden'); if (ich) vibriere(90);
+      } else if (b.hp > a.hp) { schwebe(chip, `+${b.hp - a.hp}${ic('ui:hp')}`, 'gruen'); if (ich) ton('heilung'); }
+      if (b.k > a.k) { schwebe(chip, `+${b.k - a.k}${ic('ui:kultur')}`, 'lila'); if (ich) ton('kultur'); }
+      if (ich && b.gold !== a.gold) { schwebe(root.querySelector('[data-fx="gold"]'), `${b.gold > a.gold ? '+' : ''}${b.gold - a.gold}${ic('ui:gold')}`, b.gold > a.gold ? 'gold' : 'grau'); if (b.gold > a.gold) ton('gold'); }
+      if (b.alter > a.alter) {
+        if (sicht === i) root.querySelector('.zz.jetzt')?.classList.add('pop');
+        banner(`${zaIcon(b.alter, 36)}<span><small>${esc(p.name)} erreicht</small><b>${esc(zaName(b.alter))}</b></span>`, 'zeit'); ton('aufstieg');
+      }
+      const neuT = b.tisch.filter(x => !a.tisch.includes(x));
+      if (neuT.length) {
+        if (sicht === i) neuT.forEach(id => root.querySelector(`.buehne [data-ci="${id}"]`)?.classList.add('landet'));
+        if (ich) ton('karte'); else if (sicht !== i) chip?.classList.add('ping');
+      }
+    });
+    const hn = jetzt.p[this.me].hand.filter(x => !vor.p[this.me].hand.includes(x));
+    if (hn.length) {
+      let letzte = null; hn.forEach(id => { const el = root.querySelector(`.hand [data-ci="${id}"]`); if (el) { el.classList.add('kommt'); letzte = el; } });
+      letzte?.scrollIntoView({ inline: 'center', block: 'nearest' }); ton('karte');
+    }
+    if (jetzt.ereig > vor.ereig) ton('ereignis');
+    if (jetzt.am === this.me && vor.am !== this.me && jetzt.sieger === null) { banner('DEIN ZUG', 'zug'); ton('zug'); vibriere(60); }
+    if (vor.sieger === null && jetzt.sieger !== null) { if (jetzt.sieger === this.me) { konfetti(); ton('sieg'); vibriere([80, 60, 80]); } else ton('niederlage'); }
+  }
+
+  // ---------------------------------------------------------------- Tastatur (PC)
+  taste(e) {
+    if (!this.root.isConnected || !this.root.querySelector('.spiel') || !this.s || e.ctrlKey || e.metaKey || e.altKey) return;
+    const tag = (e.target.tagName || '').toLowerCase(); if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+    const k = e.key, s = this.s, ovAn = this.ov.classList.contains('an');
+    if (k === 'Escape') { if (ovAn && !this.erzwungen()) { this.modalFn = null; this.render(); e.preventDefault(); } return; }
+    if (k === 'm' || k === 'M') { setzeOpt('ton'); this.toast(opt.ton ? 'Ton an' : 'Ton aus'); this.render(); return; }
+    if (k === 'Enter' || k === ' ') {
+      if (tag === 'button' || s.phase === 'block') return;
+      const b = ovAn ? this.ov.querySelector('.sheet .btns .gruen:not(:disabled)') : null;
+      if (b) { b.click(); e.preventDefault(); } else if (!ovAn && this.meinZug() && s.phase === 'aktion') { this.root.querySelector('[data-a="ende"]')?.click(); e.preventDefault(); }
+      return;
+    }
+    if (ovAn) return;
+    if (this.meinZug() && s.phase === 'ziehen' && '123'.includes(k) && k) { this.root.querySelector(`.aktionen [data-a="ziehe"][data-v="${k}"]`)?.click(); return; }
+    if (k === 'a' || k === 'A') { this.root.querySelector('.aktionen [data-a="aufstieg"]')?.click(); return; }
+    if (k === 'ArrowRight' || k === 'ArrowLeft') {
+      const tabs = [...this.root.querySelectorAll('.tabs button')], i = tabs.findIndex(b => b.classList.contains('an')); const n = tabs[(i + (k === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n?.click(); e.preventDefault();
+    }
+  }
+
   // ---------------------------------------------------------------- Klicks
   async klick(e) {
     const t = e.target.closest('[data-a]'); if (!t || !t.dataset.a) return; const a = t.dataset.a, v = t.dataset.v, s = this.s, p = this.p(this.me);
+    if (t.classList.contains('aus') && t.dataset.grund) { ton('fehler'); this.toast(t.dataset.grund); return; }
+    if (a !== 'ende') this.endeWarn = false;
+    if (['tab', 'zu', 'selclear', 'grel', 'gopfer', 'abw', 'blk', 'einheit', 'optionen', 'regeln'].includes(a)) ton('klick');
     const sheet = (fn) => { this.modalFn = fn; this.render(); };
     switch (a) {
       case 'tab': this.tab = v === 'ich' || v === 'tisch' || v === 'log' ? v : +v; this.render(); break;
       case 'zu': this.modalFn = null; this.render(); break;
+      case 'optionen': sheet(() => this.fenster(`${ic('ui:einstellungen')} Optionen`, optionenInhalt())); break;
+      case 'opt': setzeOpt(t.dataset.k, t.dataset.v); this.render(); break;
       case 'menue': this.c.menue(); break;
       case 'regeln': this.c.regeln(); break;
       case 'neu': this.c.neu(); break;
@@ -282,7 +360,10 @@ export class Spieltisch {
       case 'grel': this.gr.rel = v; this.render(); break;
       case 'gopfer': this.gr.c = +v; this.render(); break;
       case 'gruendengo': { const r = await this.senden({ t: 'gruenden', rel: this.gr.rel, c: this.gr.c }); if (r.ok) { this.modalFn = null; this.render(); } break; }
-      case 'ende': { if (E.handZaehlt(p).length > E.handlimit(p)) { sheet(this.abwerfenSheet()); break; } await this.senden({ t: 'ende' }); this.sel.clear(); break; }
+      case 'ende': {
+        if (!this.endeWarn && p.hand.some(c => def(c).typ === 'land') && p.landG < E.landErlaubt(p)) { this.endeWarn = true; ton('fehler'); this.toast('Du hast noch eine Land-Karte. Land legen ist gratis! Tippe nochmal, um trotzdem zu beenden.'); this.render(); break; }
+        this.endeWarn = false;
+        if (E.handZaehlt(p).length > E.handlimit(p)) { sheet(this.abwerfenSheet()); break; } await this.senden({ t: 'ende' }); this.sel.clear(); break; }
       case 'abw': { const i = +v; this.ab.has(i) ? this.ab.delete(i) : this.ab.add(i); this.render(); break; }
       case 'abwgo': { const r = await this.senden({ t: 'ende', abwerfen: [...this.ab] }); if (r.ok) { this.modalFn = null; this.sel.clear(); this.render(); } break; }
       case 'einheit': {
