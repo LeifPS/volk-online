@@ -61,7 +61,7 @@ function kandidaten(s, pi) {
   const gesehen = new Set();
   for (const c of p.hand) { const d = def(c); if ((d.typ === 'einheit' || d.typ === 'gebaeude') && d.klasse !== 'missionar' && !gesehen.has(c.id) && E.sperrGrund(s, p, c) === null) { gesehen.add(c.id); out.push({ t: 'spiele', c: c.i }); } }
   for (const w of s.wunderOffen) if (E.sperrGrund(s, p, w) === null) out.push({ t: 'wunder', c: w.i });
-  const ak = E.aufstiegKosten(p); if (ak !== null && p.gold >= ak) out.push({ t: 'aufstieg' });
+  const ak = E.aufstiegKosten(p); if (ak !== null && E.aufstiegErlaubt(p) && p.gold >= ak) out.push({ t: 'aufstieg' });
   if (p.staaten.length < 2) for (const t of s.auslage) if (p.gold >= def(t).kosten) out.push({ t: 'tribut', c: t.i });
   if (p.ablN < R.ablegen_max) { const ids = new Set(); for (const c of p.hand) if (!c.vk && !ids.has(c.id)) { ids.add(c.id); out.push({ t: 'ablegen', c: c.i }); } }
   if (s.opt.rel) {

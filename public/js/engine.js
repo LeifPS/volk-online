@@ -119,6 +119,7 @@ export function kosten(p, c) {
   } else if (d.typ === 'gebaeude') k = Math.max(1, k - effekte(p).G);
   return k;
 }
+export const aufstiegErlaubt = (p) => p.alter < 6 && !p.aufN;   // pro Runde nur ein Aufstieg
 export function aufstiegKosten(p) {
   if (p.alter >= 6) return null;
   return Math.max(1, R.aufstieg[p.alter] - effekte(p).W - (p.volk === 'sternendeuter' ? 1 : 0));
@@ -153,7 +154,7 @@ function zugStart(s) {
   p.hp = Math.min(R.stadt_hp, p.hp + heilung(p));
   const g = einkommen(s, p); p.gold += g;
   log(s, 'zug', p.name + ' ist am Zug (+' + g + ' Gold).', s.am, { gold: g });
-  p.landG = 0; p.ablN = 0; p.relBenutzt = false;
+  p.landG = 0; p.ablN = 0; p.relBenutzt = false; p.aufN = 0;
   s.zieh = R.ziehen + effekte(p).Z + (p.religion === 'mondgilde' ? 1 : 0);
   ziehCheck(s);
 }
@@ -227,8 +228,8 @@ export function aktion(s, pi, a) {
       log(s, 'wunder', p.name + ' baut das Wunder ' + def(w).name + '!', pi, { c: w.id }); pruefeSieg(s); return { ok: true };
     }
     case 'aufstieg': {
-      const kst = aufstiegKosten(p); if (kst === null) return f('Du bist schon im letzten Zeitalter.'); if (p.gold < kst) return f('Zu wenig Gold.');
-      p.gold -= kst; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + (p.alter + 1) + ' auf.', pi, { alter: p.alter }); return { ok: true };
+      const kst = aufstiegKosten(p); if (kst === null) return f('Du bist schon im letzten Zeitalter.'); if (p.aufN) return f('Du bist in dieser Runde schon aufgestiegen.'); if (p.gold < kst) return f('Zu wenig Gold.');
+      p.gold -= kst; p.aufN = 1; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + (p.alter + 1) + ' auf.', pi, { alter: p.alter }); return { ok: true };
     }
     case 'tribut': {
       const t = s.auslage.find(x => x.i === a.c); if (!t) return f('Stadtstaat nicht verfügbar.');

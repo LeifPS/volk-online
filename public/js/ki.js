@@ -116,7 +116,7 @@ function waehleMittel(s, pi, stufe = 'mittel') {
   const gk = p.hand.filter(c => def(c).typ === 'gebaeude' && spielbar(s, p, c) && gebWert(s, p, c) >= 0.45);
   if (gk.length) return { t: 'spiele', c: gk.reduce((m, x) => gebWert(s, p, x) > gebWert(s, p, m) ? x : m).i };
   // 6. Aufstieg
-  const ak = E.aufstiegKosten(p); if (ak !== null && p.gold >= ak) return { t: 'aufstieg' };
+  const ak = E.aufstiegKosten(p); if (ak !== null && E.aufstiegErlaubt(p) && p.gold >= ak) return { t: 'aufstieg' };
   // 7. Tribut
   for (const a of s.auslage) if (p.gold >= def(a).kosten && p.staaten.length < 2 && staatWert(a) >= 1) return { t: 'tribut', c: a.i };
   // 8. weitere Einheiten

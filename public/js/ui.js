@@ -7,7 +7,6 @@ import { kartenArt, braucht, benoetigt, ZA, SCHL_TXT, ROH } from './text.js';
 const { def } = E;
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const st = (ico, txt) => `<span>${ic(ico)}${txt}</span>`;
-const TAFEL = { w: 297, h: 210 };   // Volkstafel-Bild in mm
 
 export class Spieltisch {
   constructor(root, overlay, ctrl) {
@@ -102,7 +101,7 @@ export class Spieltisch {
       if (auswahl.some(E.kannSchiessen)) b += `<button class="rot" data-a="schiessen">${ic('ui:fernkampf')}Schießen</button>`;
       b += `<button class="sek" data-a="selclear">Abwählen</button>`;
     } else {
-      if (ak !== null) b += `<button data-a="aufstieg" ${p.gold < ak ? 'disabled' : ''}>${ic('ui:befoerderung')}Zeitalter ${ZA[p.alter + 1]} <small>(${ak} ${ic('ui:gold')})</small></button>`;
+      if (ak !== null) b += `<button data-a="aufstieg" ${p.gold < ak || p.aufN ? 'disabled' : ''}>${ic('ui:befoerderung')}Zeitalter ${ZA[p.alter + 1]} <small>(${ak} ${ic('ui:gold')})</small></button>`;
       if (s.opt.rel && !p.religion && p.alter >= 1) b += `<button class="sek" data-a="gruenden">${ic('rel:glaube')}Religion gründen <small>(5 ${ic('ui:gold')})</small></button>`;
       b += `<button class="gruen" data-a="ende">Zug beenden${ic('ui:pfeil_rechts')}</button>`;
     }
@@ -111,24 +110,20 @@ export class Spieltisch {
   }
 
   // ---------------------------------------------------------------- Reich (Volkstafel + Karten auf dem Tisch)
-  tafelHtml(p) {
-    const R = E.REGELN(), mk = (x, y, ico, kl) => `<div class="marker ${kl || ''}" style="left:${(x / TAFEL.w * 100).toFixed(2)}%;top:${(y / TAFEL.h * 100).toFixed(2)}%">${spr(ico, '#fff', 1)}</div>`;
-    const hp = Math.max(0, Math.min(25, p.hp)), k = Math.min(R.kultur_sieg, E.kultur(p));
-    let m = '';
-    if (hp > 0) m += mk(13 + (hp - 1) * 10.3 + 4.75, 210 - 99, 'ui:hp');
-    m += mk(13 + k * 15.4 + 7.25, 210 - 72.25, 'ui:kultur');
-    m += mk(12 + p.alter * 38.6 + 31.2, 210 - 16.5, 'ui:zeitalter', 'klein');
-    return `<div class="tafel" data-a="tafelzoom" data-v="${p.volk}"><img src="karten/tafel_${p.volk}.webp" alt="Volkstafel" draggable="false">${m}</div>`;
-  }
-  statsHtml(p, isMe) {
-    const s = this.s, R = E.REGELN();
-    return `<div class="statzeile">
-      <div class="stat gold">${ic('ui:gold')}<b>${p.gold}</b> <small>+${E.einkommen(s, p)}/Runde</small></div>
-      <div class="stat">${ic('ui:kultur')}<b>${E.kultur(p)}</b><small>/${R.kultur_sieg}</small></div>
-      ${s.opt.rel && p.religion ? `<div class="stat">${ic('rel:glaube')}<b>${E.glaube(s, p)}</b><small>/${s.glaubeZiel}</small></div>` : ''}
-      <div class="stat">${ic('ui:hp')}<b>${Math.max(0, p.hp)}</b><small>/${R.stadt_hp}</small></div>
-      <div class="stat">${ic('ui:schild')}<b>${E.schutz(p)}</b><small>Schutz</small></div>
-      <div class="stat">${ic('x:karten')}<b>${p.hand.length}</b><small>${isMe ? '/' + E.handlimit(p) : ''}</small></div></div>`;
+  tafelHtml(p, isMe) {
+    const s = this.s, R = E.REGELN(), D = E.daten(), v = D.voelker.find(x => x.id === p.volk), rel = p.religion ? D.religionen.find(r => r.id === p.religion) : null;
+    const hp = Math.max(0, Math.min(R.stadt_hp, p.hp)), k = Math.min(R.kultur_sieg, E.kultur(p)), ak = E.aufstiegKosten(p);
+    const zellen = (n, voll, kl) => Array.from({ length: n }, (_, i) => `<i class="${kl} ${i < voll ? 'an' : ''}"></i>`).join('');
+    const zeit = ZA.map((r, i) => `<div class="zz ${i < p.alter ? 'vorbei' : ''} ${i === p.alter ? 'jetzt' : ''}"><b>${r}</b>${i === p.alter + 1 && ak !== null ? `<small>${ak}${ic('ui:gold')}</small>` : ''}</div>`).join('');
+    const kz = Array.from({ length: R.kultur_sieg }, (_, i) => `<i class="kz ${i < k ? 'an' : ''} ${i === R.kultur_sieg - 1 ? 'sieg' : ''}">${i === R.kultur_sieg - 1 ? ic('ui:krone') : ''}</i>`).join('');
+    const chip = (ico, w, kl, sub) => `<div class="tchip ${kl || ''}">${ic(ico)}<b>${w}</b>${sub ? `<small>${sub}</small>` : ''}</div>`;
+    return `<div class="tableau" style="--vf:${v.farbe}">
+      <div class="tk"><div class="tstadt">${spr('stadt:stadtstaat', p.volkF, 2)}</div><div class="tname"><div class="vn">${esc(p.name)}</div><div class="mini">${esc(v.name)} · ${esc(v.herrscher)}</div></div>${isMe ? '' : `<div class="mini" style="margin-left:auto">${ic('x:karten')} ${p.hand.length}</div>`}</div>
+      <div class="tfa"><b>Volksfähigkeit</b> ${v.text.map(esc).join(' ')}${rel ? `<br><b>${esc(rel.name)}:</b> ${esc(rel.text)}` : ''}</div>
+      <div class="tzeile"><div class="tl">${ic('ui:hp')} Lebenspunkte <b>${hp}/${R.stadt_hp}</b></div><div class="leiste hp">${zellen(R.stadt_hp, hp, 'hz')}</div></div>
+      <div class="tzeile"><div class="tl">${ic('ui:kultur')} Kultur <b>${E.kultur(p)}/${R.kultur_sieg}</b> <small>(${R.kultur_sieg} = Sieg)</small></div><div class="leiste kultur">${kz}</div></div>
+      <div class="tzeile"><div class="tl">${ic('ui:zeitalter')} Zeitalter <b>${ZA[p.alter]}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="leiste zeit">${zeit}</div></div>
+      <div class="tchips">${chip('ui:gold', p.gold, 'gold', '+' + E.einkommen(s, p) + '/Runde')}${chip('ui:schild', E.schutz(p), '', 'Schutz')}${chip('x:karten', p.hand.length, '', isMe ? '/' + E.handlimit(p) : '')}${s.opt.rel && p.religion ? chip('rel:glaube', E.glaube(s, p), '', '/' + s.glaubeZiel) : ''}${chip('ui:gruenden', p.land.length, '', 'Land')}</div></div>`;
   }
   reichHtml(pi) {
     const s = this.s, p = this.p(pi), D = E.daten(), isMe = pi === this.me;
@@ -144,8 +139,7 @@ export class Spieltisch {
     const misHtml = (list, wohin) => list.map(m => { const o = s.sp[wohin ? m.host : m.owner], r = D.religionen.find(x => x.id === s.sp[m.owner].religion); return `<span class="mis">${spr(`rel:${r.id}:missionar`, r.farbe, 1)}${wohin ? 'zu ' : 'von '}${esc(o.name)}${!wohin && isMe && aktion ? `<button data-a="ausweisen" data-v="${m.c.i}">Ausweisen (${p.religion === 'flammenorden' ? 1 : 2} ${ic('ui:gold')})</button>` : ''}</span>`; }).join('');
     const hand = !isMe && p.hand.length ? `<div class="abschnitt"><h4>${ic('x:karten')} Handkarten <span class="mini">(${p.hand.length})</span></h4><div class="reihe dicht">${p.hand.map(() => kk({ id: '?' }, { rueck: 'rueck_1' })).join('')}</div></div>` : '';
     return `<div>
-      <div class="band" style="--vf:${v.farbe}">${spr('stadt:stadtstaat', p.volkF, 1)}<div><div class="vn">${esc(p.name)} – ${esc(v.name)}</div><div class="mini">${esc(v.herrscher)}</div></div><div class="fa">${v.text.map(esc).join(' ')}${rel ? `<br><b>${esc(rel.name)}:</b> ${esc(rel.text)}` : ''}</div></div>
-      ${this.tafelHtml(p)}${this.statsHtml(p, isMe)}
+      ${this.tafelHtml(p, isMe)}
       <div class="abschnitt"><h4>${ic('ui:bau')} Gebäude, Wunder & Verbündete</h4>${reihe([...p.geb, ...p.wunder, ...p.staaten], 'Noch nichts gebaut. Spiele Karten aus deiner Hand.')}</div>
       <div class="abschnitt"><h4>${ic('ui:gruenden')} Land <span class="mini">(${p.land.length})</span></h4>${reihe(p.land, 'Noch kein Land.')}</div>
       <div class="abschnitt"><h4>${ic('ui:staerke')} Heer an der Front</h4><div class="reihe">${p.front.length ? einh(p.front) : '<span class="leer">Keine Einheiten an der Front.</span>'}</div></div>
@@ -259,10 +253,6 @@ export class Spieltisch {
       <div class="rang">${rang.map(({ p }) => `<div class="stat">${p === w ? ic('ui:krone') : ''}<b>${esc(p.name)}</b><small>${esc(E.daten().voelker.find(v => v.id === p.volk).name)}</small><span style="margin-left:auto">${ic('ui:hp')}${Math.max(0, p.hp)} ${ic('ui:kultur')}${E.kultur(p)}${s.opt.rel ? ' ' + ic('rel:glaube') + E.glaube(s, p) : ''}</span></div>`).join('')}</div>
       <div class="btns" style="justify-content:center"><button class="gruen" data-a="neu">Neues Spiel</button><button class="sek" data-a="siegzu">Tisch ansehen</button><button class="sek" data-a="menue">Menü</button></div></div>`, false);
   }
-  tafelZoom(volk) {
-    return () => this.fenster('Volkstafel', `<div style="overflow:auto;margin:-4px"><img src="karten/tafel_${volk}.webp" alt="" style="width:900px;max-width:none;display:block"></div><p class="mini">Wische zum Verschieben. Herz = Lebenspunkte, Gesicht = Kultur, Säule = Zeitalter.</p>`);
-  }
-
   // ---------------------------------------------------------------- Klicks
   async klick(e) {
     const t = e.target.closest('[data-a]'); if (!t || !t.dataset.a) return; const a = t.dataset.a, v = t.dataset.v, s = this.s, p = this.p(this.me);
@@ -273,7 +263,6 @@ export class Spieltisch {
       case 'menue': this.c.menue(); break;
       case 'regeln': this.c.regeln(); break;
       case 'neu': this.c.neu(); break;
-      case 'tafelzoom': sheet(this.tafelZoom(v)); break;
       case 'siegzeigen': this.siegZu = false; this.render(); break;
       case 'siegzu': this.siegZu = true; this.modalFn = null; this.render(); break;
       case 'ereigok': this.ereigGesehen = s.letztes.n; this.render(); this.c.weiter?.(); break;
