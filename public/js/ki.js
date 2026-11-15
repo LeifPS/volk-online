@@ -3,7 +3,8 @@ import * as E from './engine.js';
 const { def } = E;
 const R = () => E.REGELN();
 const rnd = Math.random;
-const memo = { key: '', n: 0, kampf: false };
+const MEMOS = new WeakMap();
+const holeMemo = (s) => { let m = MEMOS.get(s); if (!m) { m = { key: '', n: 0, kampf: false }; MEMOS.set(s, m); } return m; };
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 
 export const STUFEN = { leicht: { name: 'Leicht', fehler: 0.28, kampfAb: 6, wunderRes: 3 }, mittel: { name: 'Mittel', fehler: 0.0, kampfAb: 0, wunderRes: 2 }, stark: { name: 'Stark', fehler: 0.0, kampfAb: 0, wunderRes: 2 } };
@@ -64,7 +65,7 @@ export function waehle(s, pi, stufe = 'mittel') {
   const p = s.sp[pi], cfg = STUFEN[stufe] || STUFEN.mittel;
   if (s.phase === 'block' && s.kampf.ziel === pi) return blockWahl(s, pi, stufe);
   if (s.phase === 'ziehen') return ziehWahl(s, pi);
-  const key = s.runde + ':' + s.am; if (memo.key !== key) { memo.key = key; memo.n = 0; memo.kampf = false; } memo.n++;
+  const memo = holeMemo(s); const key = s.runde + ':' + s.am; if (memo.key !== key) { memo.key = key; memo.n = 0; memo.kampf = false; } memo.n++;
   if (memo.n > 70) return ende(s, p);
   // Missionare ausweisen
   const bei = E.missionenBei(s, p);

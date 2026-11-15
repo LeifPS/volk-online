@@ -417,3 +417,13 @@ function ereignis(s) {
   }
   pruefeSieg(s);
 }
+
+// ---------- Sicht eines Spielers (für Online: verborgene Infos entfernen) ----------
+export function sicht(s, me) {
+  const c = JSON.parse(JSON.stringify(s)); c.rng = 0;
+  for (const k of [1, 2, 3]) { c.stapel[k] = new Array(c.stapel[k].length).fill(0); c.ablage[k] = new Array(c.ablage[k].length).fill(0); }
+  c.wunderStapel = new Array(c.wunderStapel.length).fill(0); c.staatStapel = new Array(c.staatStapel.length).fill(0);
+  c.ereig = new Array(c.ereig.length).fill(0); c.ereigAblage = c.ereigAblage.map(x => x);
+  c.sp.forEach((p, i) => { if (i !== me) { p.hand = p.hand.map(() => ({ i: 0, id: '?' })); p.relStapel = new Array(p.relStapel.length).fill(0); } });
+  return c;
+}

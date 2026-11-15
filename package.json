@@ -8,5 +8,7 @@
     "deploy": "wrangler deploy",
     "test": "node tests/selfplay.mjs 40"
   },
-  "devDependencies": { "wrangler": "^4" }
+  "devDependencies": {
+    "wrangler": "^4.162.0"
+  }
 }

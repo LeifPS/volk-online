@@ -2,17 +2,42 @@
 
 Browser-Version des Karten- und Brettspiels **Volk** – Grundspiel plus die Erweiterungen *Volkskarten* und *Götter & Glaube*.
 
-- Gegen den Computer spielen (Leicht / Mittel / Stark)
-- Module frei kombinierbar
-- Pixel-Optik mit Stadtplan, Gebäuden und Heer
+- 🤖 Gegen den Computer (Leicht / Mittel / Stark), Module frei kombinierbar
+- 🌐 Online gegen Menschen: **Raum-Code / Einladungslink** oder **Schnellsuche**, Computer füllt freie Plätze auf, Wiederverbinden nach Reload/Verbindungsabbruch
+- 📜 Regeln, Bedienungshilfe und Karten-Lexikon im Spiel
+- Pixel-Optik mit Stadtplan, Gebäuden, Land und Heer
+
+## Aufbau
+
+| Pfad | Inhalt |
+|---|---|
+| `public/` | die Website (statische Dateien) |
+| `public/js/engine.js` | **Regel-Engine** – reine Logik, läuft im Browser *und* im Worker |
+| `public/js/ki.js` | Computer-Gegner |
+| `public/js/ui.js` | Spieltisch (Stadtplan, Hand, Kampf-/Blockfenster) |
+| `public/js/online.js` | Lobby, Raum-Code, Schnellsuche, Wiederverbinden |
+| `public/data/` | Kartensatz (`satz.json`) und Pixel-Sprites (`sprites.json`) |
+| `src/worker.js` | Cloudflare Worker: leitet WebSockets in Räume, Schnellsuche |
+| `src/raum.js` | Durable Object „Raum“: Lobby, maßgeblicher Spielzustand, Computer-Spieler, Vertretung bei Abwesenheit |
+| `src/lobby.js` | Durable Object „Lobby“: offene Schnellsuche-Räume |
+| `tests/` | `selfplay.mjs` (Computer gegen Computer, alle Modul-Kombis), `online.test.mjs` (ganze Online-Partie gegen den lokalen Worker) |
+
+Der Server ist maßgeblich: Jeder Zug wird dort mit derselben Engine geprüft. Spieler sehen nur ihre eigenen Handkarten (Gegner-Hände und Stapel werden vor dem Senden entfernt). Ist ein Mensch länger als 40 s getrennt, spielt der Computer seinen Zug; wer als Verteidiger 90 s nicht blockt, wird automatisch verteidigt.
 
 ## Entwickeln
 
 ```bash
 npm install
-npm run dev      # lokal unter http://localhost:8787
-npm run deploy   # Cloudflare Workers
+npm run dev          # http://localhost:8787 (Website + Online-Räume lokal)
+npm test             # Selbsttest Computer gegen Computer
+node tests/online.test.mjs localhost:8787   # Online-Partie gegen den laufenden Dev-Server
 ```
 
-Regel-Engine: `public/js/engine.js` (reine Logik, läuft im Browser und später auf dem Server).
-Computer-Gegner: `public/js/ki.js`. Selbsttest: `npm test` (Computer gegen Computer, alle Modul-Kombinationen).
+## Veröffentlichen (Cloudflare Workers)
+
+```bash
+npx wrangler login
+npm run deploy
+```
+
+Oder im Cloudflare-Dashboard: *Workers & Pages → Create → Import a repository* → `volk-online` auswählen; Build-Befehl leer, Deploy-Befehl `npx wrangler deploy`. Die Durable Objects (`Raum`, `Lobby`) legt die Migration in `wrangler.jsonc` beim ersten Deploy an (SQLite-Variante, läuft auch im Free-Tarif).

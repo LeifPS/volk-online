@@ -12,6 +12,7 @@ const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSO
 async function start() {
   const [satz] = await Promise.all([fetch('data/satz.json').then(r => r.json()), ladeSprites()]);
   D = satz; E.setzeDaten(D); menue();
+  const raum = new URLSearchParams(location.search).get('raum'); if (raum) { history.replaceState(null, '', location.pathname); import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline, raum.toUpperCase())); }
 }
 
 // ---------------------------------------------------------------- Menü
@@ -30,7 +31,7 @@ function menue() {
     <div class="fuss">Grundspiel · Erweiterung 1: Volkskarten · Erweiterung 2: Götter & Glaube</div></div>`;
   document.getElementById('b-ki').onclick = setup;
   document.getElementById('b-regeln').onclick = () => regelnSeite(app, D, menue);
-  document.getElementById('b-on').onclick = () => import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline)).catch(e => { alert('Online-Modus ist noch nicht verfügbar.'); console.error(e); });
+  document.getElementById('b-on').onclick = () => import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline));
   if (weiter) document.getElementById('b-weiter').onclick = () => starteLokal(save.cfg, save.s);
 }
 
