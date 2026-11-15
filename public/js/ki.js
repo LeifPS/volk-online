@@ -1,5 +1,6 @@
 // Computer-Gegner. Entscheidet immer nur mit Informationen, die der Spieler auch hat (eigene Hand, offene Auslage).
 import * as E from './engine.js';
+import { waehleStark, setzeBlockHeuristik } from './ki_stark.js';
 const { def } = E;
 const R = () => E.REGELN();
 const rnd = Math.random;
@@ -62,6 +63,18 @@ export function blockWahl(s, pi, stufe = 'mittel') {
 }
 
 export function waehle(s, pi, stufe = 'mittel') {
+  if (stufe === 'stark') return waehleStarkWrap(s, pi);
+  return waehleMittel(s, pi, stufe);
+}
+function waehleStarkWrap(s, pi) {
+  if (s.phase === 'ziehen') return ziehWahl(s, pi);
+  const memo = holeMemo(s); const key = s.runde + ':' + s.am + ':' + s.phase; if (s.phase === 'block') return waehleStark(s, pi);
+  const k2 = s.runde + ':' + s.am; if (memo.key !== k2) { memo.key = k2; memo.n = 0; } memo.n++;
+  const p = s.sp[pi]; if (memo.n > 45) return ende(s, p);
+  const a = waehleStark(s, pi); return a || ende(s, p);
+}
+setzeBlockHeuristik((s, pi) => blockWahl(s, pi, 'mittel'));
+function waehleMittel(s, pi, stufe = 'mittel') {
   const p = s.sp[pi], cfg = STUFEN[stufe] || STUFEN.mittel;
   if (s.phase === 'block' && s.kampf.ziel === pi) return blockWahl(s, pi, stufe);
   if (s.phase === 'ziehen') return ziehWahl(s, pi);

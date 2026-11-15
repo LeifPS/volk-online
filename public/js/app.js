@@ -45,7 +45,8 @@ function setup() {
       <div class="karte-panel"><div class="zeile"><label>Dein Name</label><input type="text" id="s-name" maxlength="16" value="${esc(c.name)}"></div>
         <div class="zeile"><label>Dein Volk</label><select data-k="volk" data-i="0">${vopt(c.volk[0])}</select></div>
         <div class="zeile"><label>Gegner</label><div class="chips">${[1, 2, 3].map(n => `<span class="chipb ${c.gegner === n ? 'an' : ''}" data-g="${n}">${n}</span>`).join('')}</div></div>
-        ${sitze}</div>
+        ${sitze}
+        <div class="hinweis">Leicht: macht Fehler · Mittel: solides Spiel · Stark: rechnet jeden Zug im Voraus durch und verteidigt klug.</div></div>
       <div class="karte-panel"><h3>Spielmodule</h3>
         <div class="modul fest an"><span class="haken">✓</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (16).</small></div></div>
         <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? '✓' : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
