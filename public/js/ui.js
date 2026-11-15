@@ -120,9 +120,9 @@ export class Spieltisch {
     return `<div class="tableau" style="--vf:${v.farbe}">
       <div class="tk"><div class="tstadt">${spr('stadt:stadtstaat', p.volkF, 2)}</div><div class="tname"><div class="vn">${esc(p.name)}</div><div class="mini">${esc(v.name)} · ${esc(v.herrscher)}</div></div>${isMe ? '' : `<div class="mini" style="margin-left:auto">${ic('x:karten')} ${p.hand.length}</div>`}</div>
       <div class="tfa"><b>Volksfähigkeit</b> ${v.text.map(esc).join(' ')}${rel ? `<br><b>${esc(rel.name)}:</b> ${esc(rel.text)}` : ''}</div>
-      <div class="tzeile"><div class="tl">${ic('ui:hp')} Lebenspunkte <b>${hp}/${R.stadt_hp}</b></div><div class="leiste hp">${zellen(R.stadt_hp, hp, 'hz')}</div></div>
-      <div class="tzeile"><div class="tl">${ic('ui:kultur')} Kultur <b>${E.kultur(p)}/${R.kultur_sieg}</b> <small>(${R.kultur_sieg} = Sieg)</small></div><div class="leiste kultur">${kz}</div></div>
-      <div class="tzeile"><div class="tl">${ic('ui:zeitalter')} Zeitalter <b>${ZA[p.alter]}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="leiste zeit">${zeit}</div></div>
+      <div class="tzeile"><div class="tl">${ic('ui:hp')} Lebenspunkte <b>${hp}/${R.stadt_hp}</b></div><div class="tleiste hp">${zellen(R.stadt_hp, hp, 'hz')}</div></div>
+      <div class="tzeile"><div class="tl">${ic('ui:kultur')} Kultur <b>${E.kultur(p)}/${R.kultur_sieg}</b> <small>(${R.kultur_sieg} = Sieg)</small></div><div class="tleiste kultur">${kz}</div></div>
+      <div class="tzeile"><div class="tl">${ic('ui:zeitalter')} Zeitalter <b>${ZA[p.alter]}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="tleiste zeit">${zeit}</div></div>
       <div class="tchips">${chip('ui:gold', p.gold, 'gold', '+' + E.einkommen(s, p) + '/Runde')}${chip('ui:schild', E.schutz(p), '', 'Schutz')}${chip('x:karten', p.hand.length, '', isMe ? '/' + E.handlimit(p) : '')}${s.opt.rel && p.religion ? chip('rel:glaube', E.glaube(s, p), '', '/' + s.glaubeZiel) : ''}${chip('ui:gruenden', p.land.length, '', 'Land')}</div></div>`;
   }
   reichHtml(pi) {

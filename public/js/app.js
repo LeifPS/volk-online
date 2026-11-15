@@ -50,7 +50,7 @@ function setup() {
         ${sitze}
         <div class="hinweis">Leicht: macht Fehler · Mittel: solides Spiel · Stark: rechnet jeden Zug im Voraus durch und verteidigt klug.</div></div>
       <div class="karte-panel"><h3>Spielmodule</h3>
-        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (16).</small></div></div>
+        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (12).</small></div></div>
         <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
         <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div></div>
       <div class="btns"><button class="gruen" id="s-los">${ic('x:los')}Spiel starten</button><button class="sek" id="s-zu">Zurück</button></div></div>`;

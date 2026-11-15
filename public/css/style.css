@@ -100,10 +100,10 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .tableau .tstadt { background: rgba(0,0,0,.25); border: 2px solid var(--rand); padding: 2px; display: flex; }
 .tfa { background: rgba(0,0,0,.25); border: 2px solid rgba(0,0,0,.4); padding: 5px 8px; font-size: 13px; color: var(--text2); margin-bottom: 8px; } .tfa b { color: var(--akzent); }
 .tzeile { margin: 0 0 8px; } .tl { font-size: 13px; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; } .tl small { color: var(--text2); } .tl b { color: var(--gold); }
-.leiste { display: flex; gap: 2px; background: rgba(0,0,0,.35); border: 2px solid var(--rand); padding: 3px; }
+.tleiste { display: flex; gap: 2px; background: rgba(0,0,0,.35); border: 2px solid var(--rand); padding: 3px; }
 .hz { flex: 1 1 0; height: 14px; background: #3a1f24; box-shadow: inset 0 -3px 0 rgba(0,0,0,.35); } .hz.an { background: var(--rot); box-shadow: inset 0 3px 0 #f0826f, inset 0 -3px 0 #a2321f; }
 .kz { flex: 1 1 0; height: 20px; background: #2a2340; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 -3px 0 rgba(0,0,0,.35); } .kz.an { background: var(--lila); box-shadow: inset 0 3px 0 #c7a8f0, inset 0 -3px 0 #6c46b0; } .kz.sieg:not(.an) { background: #4a3a12; outline: 2px solid var(--gold); outline-offset: -2px; } .kz.sieg { outline: 2px solid var(--gold); outline-offset: -2px; } .kz img { width: 14px; height: 14px; }
-.leiste.zeit { gap: 3px; } .zz { flex: 1 1 0; min-height: 34px; background: #20263a; border: 2px solid #11141f; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text2); font-family: var(--kopf); font-size: 12px; } .zz small { font-family: var(--schrift); font-size: 11px; color: var(--gold); display: flex; align-items: center; }
+.tleiste.zeit { gap: 3px; } .zz { flex: 1 1 0; min-height: 34px; background: #20263a; border: 2px solid #11141f; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text2); font-family: var(--kopf); font-size: 12px; } .zz small { font-family: var(--schrift); font-size: 11px; color: var(--gold); display: flex; align-items: center; }
 .zz.vorbei { background: #3a4a30; color: #cfe8b8; } .zz.jetzt { background: var(--akzent); color: #1a1408; border-color: #fff3c0; box-shadow: 0 0 0 2px var(--rand); }
 .tchips { display: flex; flex-wrap: wrap; gap: 6px; } .tchip { background: var(--panel2); border: 2px solid var(--rand); box-shadow: inset 2px 2px 0 var(--hell); padding: 3px 9px; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; } .tchip small { color: var(--text2); } .tchip.gold { background: #4a3a12; box-shadow: inset 2px 2px 0 #8a6a22; }
 .stat { background: var(--panel); border: 2px solid var(--rand); box-shadow: inset 2px 2px 0 var(--hell), 2px 2px 0 rgba(0,0,0,.4); padding: 4px 9px; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; } .stat small { color: var(--text2); }
@@ -178,3 +178,21 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .zieher .kk .unten { font-size: 9px; padding: 1px; letter-spacing: 0; white-space: nowrap; }
 
 .reihe:has(> .leer:only-child) { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
+
+/* ---------- Querformat mit wenig Höhe (Tablet/Handy quer): mehr Platz für die Bühne ---------- */
+@media (min-width: 700px) and (max-height: 760px) {
+  :root { --hw: 70px; --kw: 92px; }
+  .ticker { display: none; }
+  .spiel .kopf { padding-top: 3px; padding-bottom: 3px; }
+  .leiste { padding-top: 2px; padding-bottom: 2px; } .tabs { padding-top: 2px; padding-bottom: 2px; }
+  .dock .aktionen { padding-top: 3px; padding-bottom: 3px; }
+}
+
+/* ---------- Breiter Bildschirm (PC/Tablet quer): Bühne links, Hand und Aktionen rechts ---------- */
+@media (min-width: 1000px) and (min-aspect-ratio: 4/3) {
+  .spiel { display: grid; grid-template-columns: minmax(0, 1fr) 456px; grid-template-rows: auto auto auto auto minmax(0, 1fr); column-gap: 8px; max-width: 1640px; padding-bottom: 6px; }
+  .kopf, .ticker, .spiel > .leiste { grid-column: 1 / -1; } .tabs { grid-column: 1; } .buehne { grid-column: 1; grid-row: 5; }
+  .dock { grid-column: 2; grid-row: 4 / 6; margin: 0; border-bottom: 3px solid var(--rand); display: flex; flex-direction: column; min-height: 0; padding-bottom: 6px; }
+  .hand { flex: 1; flex-wrap: wrap; overflow-x: hidden; overflow-y: auto; align-content: flex-start; align-items: flex-start; gap: 8px; padding: 14px 10px 10px; --hw: 98px; min-height: 0; }
+  .hand .kk { margin-left: 0; } .hand .kk:first-child { margin-left: 0; } .hand .kk.spielbar { transform: none; }
+}
