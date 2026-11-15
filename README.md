@@ -41,3 +41,7 @@ npm run deploy
 ```
 
 Oder im Cloudflare-Dashboard: *Workers & Pages → Create → Import a repository* → `volk-online` auswählen; Build-Befehl leer, Deploy-Befehl `npx wrangler deploy`. Die Durable Objects (`Raum`, `Lobby`) legt die Migration in `wrangler.jsonc` beim ersten Deploy an (SQLite-Variante, läuft auch im Free-Tarif).
+
+## Karten & Oberfläche
+
+Die Karten auf dem Tisch sind **1:1 die gedruckten Karten** des Kartenspiels: `public/karten/<id>.webp` (Vorderseiten, Rückseiten `rueck_*`, Volkstafeln `tafel_<volk>`, Religionstafeln `reltafel_<id>`). Erschöpfte Einheiten liegen gedreht wie auf dem Tisch; auf der Volkstafel sitzen Herz-, Kultur- und Zeitalter-Marker an den echten Positionen. Symbole sind selbst gepixelt (`public/js/sprites.js`), Schrift: Pixelify Sans und Silkscreen (OFL).

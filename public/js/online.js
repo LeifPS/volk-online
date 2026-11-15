@@ -1,7 +1,8 @@
 // Online-Modus: Raum-Code, Schnellsuche, Lobby, Wiederverbinden.
 import * as E from './engine.js';
 import { Spieltisch } from './ui.js';
-import { spr } from './sprites.js';
+import { spr, ic } from './sprites.js';
+import { kk } from './karten.js';
 import { regelnSeite } from './regeln.js';
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } }, del(k) { try { localStorage.removeItem(k); } catch { } } };
@@ -16,17 +17,17 @@ export function onlineMenue(app, D, zurueck, _start, vorCode) {
   const c = Object.assign({ name: ls.get('volk.setup', {}).name || 'Spieler', max: 2, vk: false, rel: false }, ls.get('volk.onsetup', {}));
   const alt = offeneSitzung();
   const zeichne = (fehler = '') => {
-    app.innerHTML = `<div class="menue"><h2 style="color:#fff">🌐 Online spielen</h2>
+    app.innerHTML = `<div class="menue"><h2>${ic('x:erde')} Online spielen</h2>
       <div class="karte-panel"><div class="zeile"><label>Dein Name</label><input type="text" id="o-name" maxlength="16" value="${esc(c.name)}"></div>
         ${fehler ? `<div class="grund" style="background:#ffe3df;border:2px solid #c44536;border-radius:8px;padding:6px 9px">${esc(fehler)}</div>` : ''}</div>
-      ${alt ? `<div class="btns"><button class="gruen" id="o-zurueck">↩ Zurück in Raum ${esc(alt.code)}</button></div>` : ''}
-      <div class="karte-panel"><h3>Freunde einladen</h3><div class="btns" style="grid-template-columns:1fr"><button id="o-neu">Neuen Raum erstellen</button></div>
+      ${alt ? `<div class="btns"><button class="gruen" id="o-zurueck">${ic('ui:pfeil_links')}Zurück in Raum ${esc(alt.code)}</button></div>` : ''}
+      <div class="karte-panel"><h3>Freunde einladen</h3><div class="btns" style="grid-template-columns:1fr"><button id="o-neu" class="gruen">${ic('ui:plus')}Neuen Raum erstellen</button></div>
         <div class="zeile" style="margin-top:10px"><label>Raum-Code</label><input type="text" id="o-code" maxlength="6" placeholder="z. B. K7QM2" value="${esc(vorCode || '')}" style="text-transform:uppercase;flex:1"><button id="o-bei">Beitreten</button></div></div>
       <div class="karte-panel"><h3>Schnellsuche</h3><div class="hinweis" style="margin-bottom:6px">Du kommst in einen offenen Raum mit passenden Einstellungen. Freie Plätze füllt der Computer auf, wenn nach 20 Sekunden niemand kommt.</div>
         <div class="zeile"><label>Spieler</label><div class="chips">${[2, 3, 4].map(n => `<span class="chipb ${c.max === n ? 'an' : ''}" data-max="${n}">${n}</span>`).join('')}</div></div>
-        <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? '✓' : ''}</span><div><b>Volkskarten</b><small>Erweiterung 1</small></div></div>
-        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? '✓' : ''}</span><div><b>Götter & Glaube</b><small>Erweiterung 2</small></div></div>
-        <div class="btns" style="grid-template-columns:1fr"><button id="o-schnell">⚡ Schnellsuche starten</button></div></div>
+        <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Volkskarten</b><small>Erweiterung 1</small></div></div>
+        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Götter & Glaube</b><small>Erweiterung 2</small></div></div>
+        <div class="btns" style="grid-template-columns:1fr"><button id="o-schnell">${ic('x:blitz')}Schnellsuche starten</button></div></div>
       <div class="btns"><button class="sek" id="o-zu">Zurück</button></div></div>`;
     document.getElementById('o-zu').onclick = zurueck;
     const name = () => { c.name = (document.getElementById('o-name').value || 'Spieler').trim() || 'Spieler'; ls.set('volk.onsetup', c); const s = ls.get('volk.setup', {}); s.name = c.name; ls.set('volk.setup', s); return c.name; };
@@ -65,12 +66,12 @@ class Sitzung {
     this.banner('Verbindung verloren – verbinde neu … (' + this.versuch + ')'); setTimeout(() => { if (!this.zu) { this.cfg.erstelle = false; this.oeffnen(); } }, Math.min(5000, 800 * this.versuch));
   }
   banner(t) { const el = document.getElementById('toasts'); const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; el.appendChild(d); setTimeout(() => d.remove(), 2500); }
-  zeigeStatus(t, knopf) { if (this.s) return; this.app.innerHTML = `<div class="menue"><h2 style="color:#fff">🌐 Online</h2><div class="karte-panel"><p>${esc(t)}</p></div>${knopf ? '<div class="btns"><button id="x-zu">Zurück</button></div>' : ''}</div>`; if (knopf) document.getElementById('x-zu').onclick = () => { this.schliessen(); this.zurueck(); }; }
+  zeigeStatus(t, knopf) { if (this.s) return; this.app.innerHTML = `<div class="menue"><h2>${ic('x:erde')} Online</h2><div class="karte-panel"><p>${esc(t)}</p></div>${knopf ? '<div class="btns"><button id="x-zu">Zurück</button></div>' : ''}</div>`; if (knopf) document.getElementById('x-zu').onclick = () => { this.schliessen(); this.zurueck(); }; }
   senden(o) { try { this.ws.send(JSON.stringify(o)); } catch { } }
   nachricht(m) {
     if (m.t === 'fehler') {
       if (m.belegt && this.cfg.versuche > 1) { this.cfg.versuche--; this.cfg.code = neuerCode(); this.zu = true; try { this.ws.close(); } catch { } this.zu = false; return this.oeffnen(); }
-      if (m.weg || m.raus) { ls.del('volk.on'); this.schliessen(); this.app.innerHTML = `<div class="menue"><h2 style="color:#fff">🌐 Online</h2><div class="karte-panel"><p>${esc(m.text)}</p></div><div class="btns"><button id="x-zu">Zurück</button></div></div>`; document.getElementById('x-zu').onclick = this.zurueck; return; }
+      if (m.weg || m.raus) { ls.del('volk.on'); this.schliessen(); this.app.innerHTML = `<div class="menue"><h2>${ic('x:erde')} Online</h2><div class="karte-panel"><p>${esc(m.text)}</p></div><div class="btns"><button id="x-zu">Zurück</button></div></div>`; document.getElementById('x-zu').onclick = this.zurueck; return; }
       if (this.tisch) this.tisch.toast(m.text); else this.banner(m.text); return;
     }
     if (m.t === 'lobby') { ls.set('volk.on', { code: this.cfg.code }); this.cfg.code = m.code || this.cfg.code; this.lobby = m; this.s = null; this.tisch = null; this.lobbyZeigen(); }
@@ -93,19 +94,19 @@ class Sitzung {
     const mein = L.sitze[L.ich] || {};
     const vopt = (sel) => `<option value="">Zufällig</option>${D.voelker.map(v => `<option value="${v.id}" ${sel === v.id ? 'selected' : ''} ${L.sitze.some((x, i) => i !== L.ich && x.volk === v.id) ? 'disabled' : ''}>${esc(v.name)}</option>`).join('')}`;
     const sitze = Array.from({ length: L.max }, (_, i) => { const x = L.sitze[i]; if (!x) return `<div class="sitz" style="opacity:.5"><b>Platz ${i + 1}</b><span>frei</span><span></span></div>`; const v = D.voelker.find(q => q.id === x.volk);
-      return `<div class="sitz"><b>${x.ki ? '🤖' : (x.verbunden ? '🟢' : '⚪')} ${esc(x.name)}${i === 0 ? ' 👑' : ''}${i === L.ich ? ' (du)' : ''}</b><span>${i === L.ich ? `<select id="l-volk">${vopt(x.volk)}</select>` : esc(v ? v.name : 'Volk: zufällig') + (x.ki ? ' · ' + esc(x.ki) : '')}</span><span>${L.host && i > 0 ? `<button class="sek" data-raus="${i}" data-ki="${x.ki ? 1 : 0}" style="padding:.2em .6em">${x.ki ? 'Entfernen' : 'Rauswerfen'}</button>` : ''}</span></div>`; }).join('');
-    this.app.innerHTML = `<div class="menue"><h2 style="color:#fff">🌐 Raum</h2>
-      <div class="karte-panel" style="text-align:center"><div class="mini">Raum-Code</div><div style="font-size:2.6em;font-weight:900;letter-spacing:.15em;font-family:Georgia">${esc(L.code)}</div>
-        <div class="btns" style="grid-template-columns:1fr 1fr;margin-top:6px"><button id="l-copy" class="sek">🔗 Link kopieren</button><button id="l-share" class="sek">📤 Teilen</button></div></div>
+      return `<div class="sitz"><b>${x.ki ? ic('x:roboter') : ic(x.verbunden ? 'x:punkt' : 'x:getrennt')} ${esc(x.name)}${i === 0 ? ic('ui:krone') : ''}${i === L.ich ? ' (du)' : ''}</b><span>${i === L.ich ? `<select id="l-volk">${vopt(x.volk)}</select>` : esc(v ? v.name : 'Volk: zufällig') + (x.ki ? ' · ' + esc(x.ki) : '')}</span><span>${L.host && i > 0 ? `<button class="sek" data-raus="${i}" data-ki="${x.ki ? 1 : 0}" style="padding:.2em .6em">${x.ki ? 'Entfernen' : 'Rauswerfen'}</button>` : ''}</span></div>`; }).join('');
+    this.app.innerHTML = `<div class="menue"><h2>${ic('x:erde')} Raum</h2>
+      <div class="karte-panel" style="text-align:center"><div class="mini">Raum-Code</div><div class="codebox">${esc(L.code)}</div>
+        <div class="btns" style="grid-template-columns:1fr 1fr;margin-top:6px"><button id="l-copy" class="sek">${ic('x:kopie')}Link kopieren</button><button id="l-share" class="sek">${ic('x:teilen')}Teilen</button></div></div>
       <div class="karte-panel"><h3>Spieler (${L.sitze.length}/${L.max})</h3>${sitze}
         ${L.host && !L.schnell && L.sitze.length < L.max ? `<div class="zeile"><label>Computer</label><div class="chips">${['leicht', 'mittel', 'stark'].map(s => `<span class="chipb" data-addki="${s}">+ ${s}</span>`).join('')}</div></div>` : ''}
         ${L.host && !L.schnell ? `<div class="zeile"><label>Plätze</label><div class="chips">${[2, 3, 4].map(n => `<span class="chipb ${L.max === n ? 'an' : ''} ${n < L.sitze.length ? 'aus' : ''}" data-max="${n}">${n}</span>`).join('')}</div></div>` : ''}
         ${L.schnell && L.startIn !== null ? `<p class="hinweis">Das Spiel startet in <b>${L.startIn}</b> s – freie Plätze füllt der Computer.</p>` : L.schnell ? '<p class="hinweis">Warte auf Mitspieler …</p>' : ''}</div>
       <div class="karte-panel"><h3>Module</h3>
-        <div class="modul fest an"><span class="haken">✓</span><div><b>Grundspiel</b></div></div>
-        <div class="modul ${L.opt.vk ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="vk"><span class="haken">${L.opt.vk ? '✓' : ''}</span><div><b>Erweiterung 1: Volkskarten</b></div></div>
-        <div class="modul ${L.opt.rel ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="rel"><span class="haken">${L.opt.rel ? '✓' : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Glaubenssieg bei ${L.glaubeZiel}</small></div></div></div>
-      <div class="btns">${L.host ? `<button class="gruen" id="l-start" ${L.sitze.length < 2 ? 'disabled' : ''}>▶ Spiel starten</button>` : '<div class="hinweis" style="color:#fff">Der Gastgeber startet das Spiel.</div>'}<button class="sek" id="l-weg">Raum verlassen</button></div></div>`;
+        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b></div></div>
+        <div class="modul ${L.opt.vk ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="vk"><span class="haken">${L.opt.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b></div></div>
+        <div class="modul ${L.opt.rel ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="rel"><span class="haken">${L.opt.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Glaubenssieg bei ${L.glaubeZiel}</small></div></div></div>
+      <div class="btns">${L.host ? `<button class="gruen" id="l-start" ${L.sitze.length < 2 ? 'disabled' : ''}>${ic('x:los')}Spiel starten</button>` : '<div class="hinweis" style="color:#fff">Der Gastgeber startet das Spiel.</div>'}<button class="sek" id="l-weg">Raum verlassen</button></div></div>`;
     document.getElementById('l-copy').onclick = async () => { try { await navigator.clipboard.writeText(link); this.banner('Link kopiert'); } catch { prompt('Link:', link); } };
     document.getElementById('l-share').onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Volk – Das Kartenspiel', text: 'Spiel mit mir Volk! Raum-Code: ' + L.code, url: link }); } catch { } } else document.getElementById('l-copy').click(); };
     document.getElementById('l-weg').onclick = () => { ls.del('volk.on'); this.schliessen(); this.zurueck(); };

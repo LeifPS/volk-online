@@ -27,7 +27,7 @@ export function neuesSpiel(spieler, opt = {}) {
   s.sp = spieler.map((p, i) => ({ name: p.name, ki: p.ki || null, volk: p.volk || frei.pop(), volkF: '', hand: [], land: [], geb: [], wunder: [], staaten: [], front: [], kaserne: [], gold: R.start_gold, hp: R.stadt_hp, alter: 0, landG: 0, ablN: 0, tot: false, religion: null, relStapel: [], relBenutzt: false }));
   for (const p of s.sp) p.volkF = D.voelker.find(v => v.id === p.volk).farbe;
   s.stapel = { 1: [], 2: [], 3: [] }; s.ablage = { 1: [], 2: [], 3: [] };
-  for (const k of D.karten) for (let n = 0; n < k.kopien; n++) s.stapel[k.stapel].push(neu(s, k.id));
+  for (const k of D.karten) for (let n = 0; n < k.kopien; n++) s.stapel[k.stapel].push(neu(s, k.id, k.typ === 'land' ? { st: k.stapel } : null));
   for (const st of [1, 2, 3]) mische(s, s.stapel[st]);
   s.wunderStapel = D.wunder.map(w => neu(s, w.id)); s.wunderOffen = [];
   s.staatStapel = mische(s, D.staaten.map(x => neu(s, x.id))); s.auslage = [];

@@ -1,6 +1,5 @@
 // Anzeige-Texte: Karten, Effekte, Namen
 import { def, daten } from './engine.js';
-export const EFF = { E: ['Einkommen', '💰'], K: ['Kultur', '🎭'], W: ['Wissen', '📖'], S: ['Schutz', '🛡️'], H: ['Heilung', '❤️'], A: ['Ausbildung', '⚔️'], HL: ['Handlimit', '✋'], G: ['Baukunst', '🔨'], L: ['Land', '🌾'], Z: ['Ziehen', '🃏'], F: ['Glaube', '🔥'], ABLEGEN: ['Ablegen', '♻️'], SCHIFF: ['Schiffsstärke', '⚓'] };
 export const EFF_LANG = {
   E: n => `+${n} Einkommen`, K: n => `+${n} Kultur`, W: n => `Aufstieg −${n} Gold`, S: n => `+${n} Schutz (Stadtschaden −${n})`,
   H: n => `Stadt heilt ${n} je Runde`, A: n => `Einheiten −${n} Gold (max. 3)`, HL: n => `Handlimit +${n}`, G: n => `Gebäude −${n} Gold`,
@@ -31,7 +30,7 @@ export function kartenArt(d) {
 export function kartenZeilen(d) {
   const z = [];
   if (d.typ === 'einheit') {
-    if (d.staerke || d.fern) z.push(`⚔ ${d.staerke}` + (d.fern ? ` · 🏹 ${d.fern}` : ''));
+    if (d.staerke || d.fern) z.push(`Stärke ${d.staerke}` + (d.fern ? ` · Fern ${d.fern}` : ''));
     if (d.einkommen) z.push(`+${d.einkommen} Einkommen`); if (d.ziehen) z.push(`Ziehe +${d.ziehen} Karte`); if (d.glaube) z.push(`+${d.glaube} Glaube`);
     for (const s of d.schluessel) if (SCHL[s] && s !== 'fern') z.push(SCHL[s]);
     for (const [t, n] of Object.entries(d.boni || {})) if (n) z.push(`+${n} gegen ${TAG[t] || t}`);

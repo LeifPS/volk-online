@@ -1,7 +1,8 @@
 // Start, Menü, Spieleinstellungen, lokaler Spielverlauf gegen den Computer.
 import * as E from './engine.js';
 import * as KI from './ki.js';
-import { ladeSprites, spr } from './sprites.js';
+import { ladeSprites, spr, ic } from './sprites.js';
+import { ladeKartenIndex, kk } from './karten.js';
 import { Spieltisch } from './ui.js';
 import { regelnSeite } from './regeln.js';
 const app = document.getElementById('app'), overlay = document.getElementById('overlay');
@@ -10,7 +11,7 @@ const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<':
 const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } }, del(k) { try { localStorage.removeItem(k); } catch { } } };
 
 async function start() {
-  const [satz] = await Promise.all([fetch('data/satz.json').then(r => r.json()), ladeSprites()]);
+  const [satz] = await Promise.all([fetch('data/satz.json').then(r => r.json()), ladeSprites(), ladeKartenIndex()]);
   D = satz; E.setzeDaten(D); menue();
   const raum = new URLSearchParams(location.search).get('raum'); if (raum) { history.replaceState(null, '', location.pathname); import('./online.js').then(m => m.onlineMenue(app, D, menue, starteOnline, raum.toUpperCase())); }
 }
@@ -19,14 +20,15 @@ async function start() {
 function menue() {
   overlay.classList.remove('an'); overlay.innerHTML = ''; ctrl?.stop(); ctrl = null; tisch = null;
   const save = ls.get('volk.save', null), weiter = save && save.s && save.s.sieger === null;
+  const buehne = [1, 2, 3].map(k => kk({ id: '?' }, { rueck: 'rueck_' + k, eager: true })).join('');
   const helden = D.voelker.map(v => spr('stadt:stadtstaat', v.farbe, 1)).join('');
-  app.innerHTML = `<div class="menue"><h1>VOLK</h1><div class="unter">Das Kartenspiel – baue dein Volk, steige durch die Zeitalter auf</div>
-    <div class="hero">${helden}</div>
+  app.innerHTML = `<div class="menue"><h1>VOLK</h1><div class="unter">Das Kartenspiel · baue dein Volk und steige durch die Zeitalter auf</div>
+    <div class="buehnenbild">${buehne}</div><div class="hero">${helden}</div>
     <div class="btns">
-      ${weiter ? `<button class="gruen" id="b-weiter">▶ Weiterspielen <small>(Runde ${save.s.runde})</small></button>` : ''}
-      <button id="b-ki">🤖 Gegen den Computer</button>
-      <button id="b-on" class="sek">🌐 Online spielen</button>
-      <button id="b-regeln" class="sek">📜 Regeln & Karten</button>
+      ${weiter ? `<button class="gruen" id="b-weiter">${ic('x:los', 2)}Weiterspielen <small>(Runde ${save.s.runde})</small></button>` : ''}
+      <button id="b-ki">${ic('x:roboter', 2)}Gegen den Computer</button>
+      <button id="b-on">${ic('x:erde', 2)}Online spielen</button>
+      <button id="b-regeln" class="sek">${ic('ui:lexikon', 2)}Regeln & Karten</button>
     </div>
     <div class="fuss">Grundspiel · Erweiterung 1: Volkskarten · Erweiterung 2: Götter & Glaube</div></div>`;
   document.getElementById('b-ki').onclick = setup;
@@ -48,10 +50,10 @@ function setup() {
         ${sitze}
         <div class="hinweis">Leicht: macht Fehler · Mittel: solides Spiel · Stark: rechnet jeden Zug im Voraus durch und verteidigt klug.</div></div>
       <div class="karte-panel"><h3>Spielmodule</h3>
-        <div class="modul fest an"><span class="haken">✓</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (16).</small></div></div>
-        <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? '✓' : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
-        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? '✓' : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div></div>
-      <div class="btns"><button id="s-los">Spiel starten</button><button class="sek" id="s-zu">Zurück</button></div></div>`;
+        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (16).</small></div></div>
+        <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
+        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div></div>
+      <div class="btns"><button class="gruen" id="s-los">${ic('x:los')}Spiel starten</button><button class="sek" id="s-zu">Zurück</button></div></div>`;
     app.querySelectorAll('[data-g]').forEach(e => e.onclick = () => { c.gegner = +e.dataset.g; zeichne(); });
     app.querySelectorAll('[data-m]').forEach(e => e.onclick = () => { c[e.dataset.m] = !c[e.dataset.m]; zeichne(); });
     app.querySelectorAll('select').forEach(e => e.onchange = () => { const i = +e.dataset.i; if (e.dataset.k === 'volk') c.volk[i] = e.value; else c.stufe[i] = e.value; });
@@ -69,7 +71,7 @@ function starteLokal(cfg, gespeichert) {
     const sp = [{ name: cfg.name, volk: cfg.volk[0] || undefined }];
     for (let i = 0; i < cfg.gegner; i++) sp.push({ name: 'Computer ' + (i + 1), volk: cfg.volk[i + 1] || undefined, ki: cfg.stufe[i] });
     s = E.neuesSpiel(sp, { vk: cfg.vk, rel: cfg.rel });
-    s.sp.forEach((p, i) => { if (i > 0) { const v = D.voelker.find(x => x.id === p.volk); p.name = v.herrscher.split(' ').slice(0, 2).join(' ') + ' 🤖'; p.name = p.name.replace(' 🤖', ''); } });
+    s.sp.forEach((p, i) => { if (i > 0) { const v = D.voelker.find(x => x.id === p.volk); p.name = v.herrscher.split(' ').slice(0, 2).join(' '); } });
   }
   ctrl = new LokalCtrl(s, cfg); tisch = new Spieltisch(app, overlay, ctrl); ctrl.view = tisch;
   tisch.ereigGesehen = s.letztes ? s.letztes.n : 0;
