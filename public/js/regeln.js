@@ -3,17 +3,19 @@ import * as E from './engine.js';
 import { spr, ic } from './sprites.js';
 import { lexikonKarte } from './ui.js';
 import { SCHL, SCHL_TXT, ZA, kartenArt, braucht, benoetigt } from './text.js';
+import { zaIcon, zaName } from './epochen.js';
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const li = (...a) => `<ul>${a.map(x => `<li>${x}</li>`).join('')}</ul>`;
 
 function grundspiel(D) {
   const R = D.regeln;
   return `<h2>Worum geht es?</h2><p>Du führst ein Volk durch <b>sieben Zeitalter</b> – von der Antike bis zur Atomzeit. Du legst Land, baust Gebäude, bildest Einheiten aus, kaufst Weltwunder und gewinnst Stadtstaaten als Verbündete. Wer als Erste/r <b>${R.kultur_sieg} Kultur</b> erreicht, gewinnt – oder wer als Letzte/r übrig bleibt.</p>
+  <h2>Die sieben Zeitalter</h2><table class="ztab"><tr><th>Symbol</th><th>Zeitalter</th><th>Aufstieg kostet</th><th>Grundeinkommen</th><th>Zieht von</th></tr>${ZA.map((r, i) => `<tr><td>${zaIcon(i, 32)}</td><td><b>${zaName(i)}</b></td><td>${i < 6 ? R.aufstieg[i] + ' Gold' : 'höchste Stufe'}</td><td>${R.basis_einkommen + i}</td><td>Stapel ${ZA[R.stapel_von_zeitalter[i] - 1]}</td></tr>`).join('')}</table>
   <h2>Start</h2>${li(`Du hast <b>${R.start_gold} Gold</b>, <b>${R.stadt_hp} Lebenspunkte</b> (${ic('ui:hp')}) und ${R.start_hand} Handkarten vom Stapel I.`, 'Es gibt <b>3 Kartenstapel</b> (I, II, III), 8 Weltwunder (3 liegen offen) und 12 Stadtstaaten (3 liegen offen).', 'Jedes Volk hat eine eigene Fähigkeit (Reiter „Völker“).')}
   <h2>Dein Zug</h2>
   <h3>1 · Aufwecken</h3><p>Alle erschöpften Einheiten stehen wieder auf. Einheiten aus der <b>Kaserne</b> rücken an die <b>Front</b>. Deine Stadt heilt Lebenspunkte (Gebäude und Sanitäter).</p>
-  <h3>2 · Einkommen</h3><p>Du bekommst automatisch <b>${R.basis_einkommen} + Zeitalter-Nummer</b> (I = 0 … VII = 6) <b>+ Ertrag aller Länder + Einkommen</b> von Gebäuden, Wundern, Verbündeten und Händlern. Gold hat keine Obergrenze.</p>
-  <h3>3 · Ziehen</h3><p>Ziehe <b>${R.ziehen} Karten</b>. Du darfst vom Stapel deines Zeitalters oder von einem niedrigeren ziehen: Zeitalter I–II → Stapel I, III–IV → Stapel II, V–VII → Stapel III. Du kannst die Karten auf mehrere Stapel verteilen.</p>
+  <h3>2 · Einkommen</h3><p>Du bekommst automatisch <b>${R.basis_einkommen} + Zeitalter-Nummer</b> (Antike = 0 … Atomzeit = 6) <b>+ Ertrag aller Länder + Einkommen</b> von Gebäuden, Wundern, Verbündeten und Händlern. Gold hat keine Obergrenze.</p>
+  <h3>3 · Ziehen</h3><p>Ziehe <b>${R.ziehen} Karten</b>. Du darfst vom Stapel deines Zeitalters oder von einem niedrigeren ziehen: ${zaIcon(0, 18)}${zaIcon(1, 18)} → Stapel I, ${zaIcon(2, 18)}${zaIcon(3, 18)} → Stapel II, ${zaIcon(4, 18)}${zaIcon(5, 18)}${zaIcon(6, 18)} → Stapel III. Du kannst die Karten auf mehrere Stapel verteilen.</p>
   <h3>4 · Aktionen</h3><p>In beliebiger Reihenfolge und so oft du magst:</p>
   ${li('<b>Land</b> legen – eine Karte pro Zug, gratis. Land bringt dauerhaft Gold und Rohstoff-Symbole.', '<b>Karte spielen</b> (Tippen auf die Handkarte): Goldkosten zahlen. Das Zeitalter der Karte darf nicht höher sein als deins. Einheiten kommen in die Kaserne, Gebäude in dein Reich (jedes Gebäude nur einmal).', `<b>Wunder bauen</b> (Reiter „Tisch“): Gold zahlen, Rohstoff und Zeitalter müssen passen.`, `<b>Aufstieg</b> ins nächste Zeitalter: ${R.aufstieg.join(' / ')} Gold (Kosten für I→II, II→III …). Pro Runde darfst du nur <b>einmal</b> aufsteigen.`, `<b>Tribut</b>: ${R.tribut_kosten} Gold an einen offenen Stadtstaat – er wird dein Verbündeter (höchstens 2).`, `<b>Ablegen für Gold</b>: bis zu ${R.ablegen_max} Handkarten, je ${R.ablegen_gold} Gold.`, '<b>Angreifen oder schießen</b> (siehe Kampf).')}
   <h3>5 · Zugende</h3><p>Du darfst höchstens <b>${R.handlimit} Handkarten</b> behalten – den Rest legst du ab. Wenn alle gespielt haben, wird <b>ein Ereignis</b> aufgedeckt.</p>

@@ -229,7 +229,7 @@ export function aktion(s, pi, a) {
     }
     case 'aufstieg': {
       const kst = aufstiegKosten(p); if (kst === null) return f('Du bist schon im letzten Zeitalter.'); if (p.aufN) return f('Du bist in dieser Runde schon aufgestiegen.'); if (p.gold < kst) return f('Zu wenig Gold.');
-      p.gold -= kst; p.aufN = 1; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + (p.alter + 1) + ' auf.', pi, { alter: p.alter }); return { ok: true };
+      p.gold -= kst; p.aufN = 1; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + D.zeitalter[p.alter].name + ' auf.', pi, { alter: p.alter }); return { ok: true };
     }
     case 'tribut': {
       const t = s.auslage.find(x => x.i === a.c); if (!t) return f('Stadtstaat nicht verfügbar.');

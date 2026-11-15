@@ -1,12 +1,13 @@
 /* Volk – Das Kartenspiel: Pixel-Oberfläche (Stil wie das Echtzeit-Spiel Volk) */
 @font-face { font-family: 'Silkscreen'; src: url('../fonts/silkscreen-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Silkscreen'; src: url('../fonts/silkscreen-700.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Zahl'; src: url('../fonts/silkscreen-400.woff2') format('woff2'); font-weight: 400 700; unicode-range: U+0030-0039; font-display: swap; }
 @font-face { font-family: 'Pixelify'; src: url('../fonts/pixelify.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
 
 :root {
   --bg: #12151f; --panel: #252b3b; --panel2: #1c2130; --rand: #0b0d14; --hell: #3f4862; --text: #f0ead6; --text2: #b8b2a0;
   --gold: #f1c40f; --gruen: #5fbf4a; --rot: #e0533d; --blau: #5aa0e6; --lila: #a77de0; --akzent: #d9a441;
-  --schrift: 'Pixelify', 'Silkscreen', monospace; --kopf: 'Silkscreen', 'Pixelify', monospace;
+  --schrift: 'Zahl', 'Pixelify', 'Silkscreen', monospace; --kopf: 'Silkscreen', 'Pixelify', monospace;
   --kw: 86px; --hw: 74px;
   --so: env(safe-area-inset-top, 0px); --su: env(safe-area-inset-bottom, 0px);
 }
@@ -199,3 +200,14 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Im Hub-Rahmen schwebt oben links das LGH-Symbol: dort nichts anzeigen */
 body.eingebettet .kopf { padding-left: 56px; }
+
+/* Zeitalter-Symbole (16x16 Pixelart) */
+img.za { image-rendering: pixelated; image-rendering: crisp-edges; vertical-align: middle; display: inline-block; flex: none; }
+.zz .zn { display: none; font-size: 11px; color: inherit; }
+@media (min-width: 560px) { .zz .zn { display: block; } }
+.zz { gap: 1px; padding: 3px 2px; } .zz.vorbei { background: #263226; } .zz.vorbei img.za { opacity: .75; } .zz.jetzt { background: #4a3a12; color: #fff3d0; border-color: var(--gold); } .zz:not(.vorbei):not(.jetzt) img.za { filter: saturate(.55) brightness(.8); }
+.aktionen button img.za { margin-right: 2px; }
+.ztab { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 14px; } .ztab th, .ztab td { border: 2px solid var(--rand); padding: 4px 8px; text-align: left; vertical-align: middle; } .ztab th { background: var(--panel2); color: var(--akzent); font-family: var(--kopf); font-size: 11px; } .ztab td { background: rgba(0,0,0,.18); }
+
+.zz img.za { width: min(40px, 100%); height: auto; aspect-ratio: 1; }
+.tchip { font-variant-numeric: tabular-nums; }

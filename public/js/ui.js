@@ -4,6 +4,7 @@ import * as KI from './ki.js';
 import { spr, ic } from './sprites.js';
 import { kk, stapelBild } from './karten.js';
 import { kartenArt, braucht, benoetigt, ZA, SCHL_TXT, ROH } from './text.js';
+import { zaIcon, zaName } from './epochen.js';
 const { def } = E;
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const st = (ico, txt) => `<span>${ic(ico)}${txt}</span>`;
@@ -101,7 +102,7 @@ export class Spieltisch {
       if (auswahl.some(E.kannSchiessen)) b += `<button class="rot" data-a="schiessen">${ic('ui:fernkampf')}Schießen</button>`;
       b += `<button class="sek" data-a="selclear">Abwählen</button>`;
     } else {
-      if (ak !== null) b += `<button data-a="aufstieg" ${p.gold < ak || p.aufN ? 'disabled' : ''}>${ic('ui:befoerderung')}Zeitalter ${ZA[p.alter + 1]} <small>(${ak} ${ic('ui:gold')})</small></button>`;
+      if (ak !== null) b += `<button data-a="aufstieg" ${p.gold < ak || p.aufN ? 'disabled' : ''}>${zaIcon(p.alter + 1, 22)}${zaName(p.alter + 1)} <small>(${ak} ${ic('ui:gold')})</small></button>`;
       if (s.opt.rel && !p.religion && p.alter >= 1) b += `<button class="sek" data-a="gruenden">${ic('rel:glaube')}Religion gründen <small>(5 ${ic('ui:gold')})</small></button>`;
       b += `<button class="gruen" data-a="ende">Zug beenden${ic('ui:pfeil_rechts')}</button>`;
     }
@@ -114,7 +115,7 @@ export class Spieltisch {
     const s = this.s, R = E.REGELN(), D = E.daten(), v = D.voelker.find(x => x.id === p.volk), rel = p.religion ? D.religionen.find(r => r.id === p.religion) : null;
     const hp = Math.max(0, Math.min(R.stadt_hp, p.hp)), k = Math.min(R.kultur_sieg, E.kultur(p)), ak = E.aufstiegKosten(p);
     const zellen = (n, voll, kl) => Array.from({ length: n }, (_, i) => `<i class="${kl} ${i < voll ? 'an' : ''}"></i>`).join('');
-    const zeit = ZA.map((r, i) => `<div class="zz ${i < p.alter ? 'vorbei' : ''} ${i === p.alter ? 'jetzt' : ''}"><b>${r}</b>${i === p.alter + 1 && ak !== null ? `<small>${ak}${ic('ui:gold')}</small>` : ''}</div>`).join('');
+    const zeit = ZA.map((r, i) => `<div class="zz ${i < p.alter ? 'vorbei' : ''} ${i === p.alter ? 'jetzt' : ''}">${zaIcon(i, 40)}<span class="zn">${zaName(i)}</span>${i === p.alter + 1 && ak !== null ? `<small>${ak}${ic('ui:gold')}</small>` : ''}</div>`).join('');
     const kz = Array.from({ length: R.kultur_sieg }, (_, i) => `<i class="kz ${i < k ? 'an' : ''} ${i === R.kultur_sieg - 1 ? 'sieg' : ''}">${i === R.kultur_sieg - 1 ? ic('ui:krone') : ''}</i>`).join('');
     const chip = (ico, w, kl, sub) => `<div class="tchip ${kl || ''}">${ic(ico)}<b>${w}</b>${sub ? `<small>${sub}</small>` : ''}</div>`;
     return `<div class="tableau" style="--vf:${v.farbe}">
@@ -122,7 +123,7 @@ export class Spieltisch {
       <div class="tfa"><b>Volksfähigkeit</b> ${v.text.map(esc).join(' ')}${rel ? `<br><b>${esc(rel.name)}:</b> ${esc(rel.text)}` : ''}</div>
       <div class="tzeile"><div class="tl">${ic('ui:hp')} Lebenspunkte <b>${hp}/${R.stadt_hp}</b></div><div class="tleiste hp">${zellen(R.stadt_hp, hp, 'hz')}</div></div>
       <div class="tzeile"><div class="tl">${ic('ui:kultur')} Kultur <b>${E.kultur(p)}/${R.kultur_sieg}</b> <small>(${R.kultur_sieg} = Sieg)</small></div><div class="tleiste kultur">${kz}</div></div>
-      <div class="tzeile"><div class="tl">${ic('ui:zeitalter')} Zeitalter <b>${ZA[p.alter]}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="tleiste zeit">${zeit}</div></div>
+      <div class="tzeile"><div class="tl">${zaIcon(p.alter, 22)} Zeitalter <b>${ZA[p.alter]} · ${zaName(p.alter)}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="tleiste zeit">${zeit}</div></div>
       <div class="tchips">${chip('ui:gold', p.gold, 'gold', '+' + E.einkommen(s, p) + '/Runde')}${chip('ui:schild', E.schutz(p), '', 'Schutz')}${chip('x:karten', p.hand.length, '', isMe ? '/' + E.handlimit(p) : '')}${s.opt.rel && p.religion ? chip('rel:glaube', E.glaube(s, p), '', '/' + s.glaubeZiel) : ''}${chip('ui:gruenden', p.land.length, '', 'Land')}</div></div>`;
   }
   reichHtml(pi) {
