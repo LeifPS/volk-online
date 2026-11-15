@@ -57,9 +57,9 @@ select,input[type=text]{font:inherit;padding:.45em .6em;border-radius:8px;border
 /* ---------- Karten ---------- */
 .karte{--f:#999;flex:none;width:84px;background:var(--papier);border:3px solid var(--f);border-radius:9px;padding:3px;position:relative;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 2px 0 #0005;user-select:none;color:var(--tinte)}
 .karte.gross{width:210px;cursor:default;padding:6px;border-width:5px;border-radius:14px}
-.k-kopf{display:flex;justify-content:space-between;align-items:center;gap:2px;background:var(--f);color:#fff;border-radius:5px;padding:1px 4px;font-size:.66em;font-weight:800;text-shadow:0 1px 0 #0006}
+.k-kopf{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:2px;background:var(--f);color:#fff;border-radius:5px;padding:1px 4px;font-size:.66em;font-weight:800;text-shadow:0 1px 0 #0006}
 .karte.gross .k-kopf{font-size:.95em;padding:3px 7px}
-.k-name{line-height:1.05;word-break:break-word}
+.k-name{line-height:1.05;flex:1 1 45%;min-width:0;overflow-wrap:break-word;hyphens:auto}
 .k-kosten{flex:none;background:#0004;border-radius:8px;padding:0 5px;display:flex;align-items:center;gap:2px}
 .k-bild{height:44px;margin:3px 0;border-radius:5px;display:grid;place-items:center;background:linear-gradient(#e9e0c6,#d5c9a6);overflow:hidden;position:relative}
 .karte.gross .k-bild{height:110px}
@@ -164,3 +164,12 @@ select,input[type=text]{font:inherit;padding:.45em .6em;border-radius:8px;border
 .hinweis{font-size:.8em;opacity:.8}
 
 .sheet.still{animation:none}
+/* ---------- Regeln ---------- */
+.reg{line-height:1.45;font-size:.95em}
+.reg h2{font-size:1.25em;margin:.9em 0 .3em;color:#b5483b}.reg h2:first-child{margin-top:.1em}
+.reg h3{font-size:1.02em;margin:.8em 0 .2em}
+.reg ul{padding-left:1.2em;margin:.3em 0}.reg li{margin:.25em 0}
+.reg-tab{display:grid;grid-template-columns:minmax(90px,max-content) 1fr;gap:4px 12px;font-size:.92em;border-top:1px solid #c9bd9c;padding-top:6px}
+.reg-tab>div{padding:2px 0;border-bottom:1px dashed #d9d1bf;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.lex-gitter{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.regeln .tabs button{font-size:.85em}

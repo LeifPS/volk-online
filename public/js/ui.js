@@ -68,7 +68,7 @@ export class Spieltisch {
     const farbe = p ? p.volkF : '#2f6fd0'; const f = farbeKarte(d);
     const rf = d.relkarte ? d.farbe_rel : farbe;
     let kosten = '';
-    if (d.typ === 'land') kosten = ''; else if (d.typ === 'wunder') kosten = `${d.kosten}`; else if (p && (d.typ === 'einheit' || d.typ === 'gebaeude')) { const k = E.kostenGesamt(p, c); kosten = `${k === null ? '✖' : k}`; } else if (d.kosten) kosten = d.kosten;
+    if (d.typ === 'land') kosten = ''; else if (d.typ === 'wunder') kosten = `${d.kosten}`; else if (p && p.hand && (d.typ === 'einheit' || d.typ === 'gebaeude')) { const k = E.kostenGesamt(p, c); kosten = `${k === null ? '✖' : k}`; } else if (d.kosten) kosten = d.kosten;
     const bild = d.sprite && hatSprite(d.sprite) ? spr(d.sprite, rf, o.gross ? 3 : (d.typ === 'wunder' ? 1 : 1.5)) : '';
     const deko = d.typ === 'land' && d.deko && hatSprite(d.deko) ? `<div style="position:absolute;inset:0">${spr(d.deko, farbe, 1, 'x')}</div>` : '';
     return `<div class="karte ${o.gross ? 'gross' : ''} ${o.klein ? 'klein' : ''} ${o.cls || ''}" style="--f:${f}" ${o.a ? `data-a="${o.a}" data-v="${o.v ?? c.i}"` : ''}>
@@ -333,5 +333,6 @@ export class Spieltisch {
     }
   }
 }
+export const lexikonKarte = (id, o = {}) => Spieltisch.prototype.karteHtml.call({}, { id, i: 0 }, { volkF: o.farbe || '#2f6fd0' }, o);
 const EFF_SHORT = { E: '💰', K: '🎭', W: '📖', S: '🛡', H: '❤', A: '⚔−', HL: '✋', G: '🔨−', L: '🌾', Z: '🃏', F: '🔥', ABLEGEN: '♻', SCHIFF: '⚓' };
 const s2 = (x) => x;
