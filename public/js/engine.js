@@ -69,11 +69,10 @@ function volkskarte(s, p) {
 export function legeAb(s, p, c) {
   const d = def(c); c.t = 0;
   if (d.relkarte) { p.relStapel.unshift(c); return; }
-  if (c.vk) { p.hand.push(c); return; }
+  if (c.vk) return; // Volkskarten verlassen das Spiel (abgelegt oder zerstört)
   if (d.stapel) s.ablage[d.stapel].push(c);
 }
-// Abgelegte Volkskarten verlassen das Spiel (zerstörte Einheiten dagegen kehren auf die Hand zurück, siehe legeAb).
-export function wirfAb(s, p, c) { if (c.vk) { c.t = 0; return; } legeAb(s, p, c); }
+export const wirfAb = legeAb; // Volkskarten verlassen dabei das Spiel
 export const lebende = (s) => s.sp.filter(p => !p.tot);
 export const gegner = (s, p) => s.sp.filter(o => o !== p && !o.tot);
 export const einheiten = (p) => p.front.concat(p.kaserne);

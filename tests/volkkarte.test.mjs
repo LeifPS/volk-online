@@ -21,4 +21,8 @@ while (pp.hand.length < E.handlimit(pp) + 1) pp.hand.push({ ...pp.hand.find(c =>
 const v = pp.hand.find(c => c.vk);
 ok(!E.aktion(vk2, q, { t: 'ende', abwerfen: [] }).ok, 'zu viele Karten: Ende ohne Abwerfen verboten');
 ok(E.aktion(vk2, q, { t: 'ende', abwerfen: [v.i] }).ok, 'Volkskarte darf beim Zugende abgeworfen werden');
+// Zerstörte Volkskarte kehrt nicht zurück
+{ const t = E.neuesSpiel(['A', 'B'], { vk: true }); const o = t.sp[0]; const k = o.hand.find(c => c.vk); o.hand.splice(o.hand.indexOf(k), 1);
+  const n = o.hand.length; E.legeAb(t, o, k);
+  ok(o.hand.length === n && !Object.values(t.ablage).some(a => a.some(c => c.i === k.i)), 'zerstörte Volkskarte ist aus dem Spiel'); }
 if (fehler) process.exit(1); console.log('Volkskarten-Tests bestanden');
