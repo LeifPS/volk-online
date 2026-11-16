@@ -50,7 +50,7 @@ export class Raum extends DurableObject {
       case 'start': { if (!host || d.phase !== 'lobby') return; if (d.sitze.length < 2) return this.senden(ws, { t: 'fehler', text: 'Mindestens 2 Spieler nötig (Computer zählen mit).' }); this.starten(); break; }
       case 'revanche': { if (!host || d.phase !== 'ende') return; d.phase = 'lobby'; d.s = null; d.sitze = d.sitze.filter(x => !x.ki || true); break; }
       case 'a': {
-        if (d.phase !== 'spiel' || idx < 0) return; const s = d.s; const actor = s.phase === 'block' ? s.kampf.ziel : s.am;
+        if (d.phase !== 'spiel' || idx < 0) return; const s = d.s; const actor = E.akteur(s);
         const r = E.aktion(s, idx, m.a || {}); this.senden(ws, { t: 'ergebnis', id: m.id, ok: r.ok, fehler: r.fehler, loese: r.loese });
         if (!r.ok) return; this.nachAktion(); return;
       }
@@ -100,15 +100,15 @@ export class Raum extends DurableObject {
       if (d.schnell && d.sitze.length >= 2) { this.alleSenden(); this.takt(); } return;
     }
     if (d.phase !== 'spiel') return; const s = d.s; if (s.sieger !== null) { d.phase = 'ende'; await this.speichern(); this.alleSenden(); return; }
-    const actor = s.phase === 'block' ? s.kampf.ziel : s.am, st = d.sitze[actor];
+    const actor = E.akteur(s), st = d.sitze[actor];
     const mensch = !st.ki; const abwesend = mensch && (!this.verbunden(st.token) && jetzt - (st.weg || jetzt) > ABWESEND_MS);
     const key = actor + ':' + s.seq; if (!this.warteSeit || this.warteSeit.key !== key) this.warteSeit = { key, t: jetzt };
-    const blockZeit = mensch && s.phase === 'block' && jetzt - this.warteSeit.t > BLOCK_MS;
+    const blockZeit = mensch && (s.phase === 'block' || s.phase === 'wahl') && jetzt - this.warteSeit.t > BLOCK_MS;
     if (st.ki || abwesend || blockZeit) {
       const stufe = st.ki || 'mittel'; const a = KI.waehle(s, actor, stufe); let r = E.aktion(s, actor, a);
-      if (!r.ok) { console.warn('KI-Fehler', JSON.stringify(a), r.fehler); r = E.aktion(s, actor, s.phase === 'block' ? { t: 'blocke', z: {} } : s.phase === 'ziehen' ? { t: 'ziehe', stapel: 1 } : { t: 'ende', abwerfen: E.handZaehlt(s.sp[actor]).slice(0, Math.max(0, E.handZaehlt(s.sp[actor]).length - E.handlimit(s.sp[actor]))).map(c => c.i) }); if (!r.ok) E.aktion(s, actor, { t: 'ende' }); }
+      if (!r.ok) { console.warn('KI-Fehler', JSON.stringify(a), r.fehler); r = E.aktion(s, actor, s.phase === 'block' ? { t: 'blocke', z: {} } : s.phase === 'wahl' ? E.wahlStandard(s, actor) : s.phase === 'ziehen' ? { t: 'ziehe', stapel: 1 } : { t: 'ende', abwerfen: E.handZaehlt(s.sp[actor]).slice(0, Math.max(0, E.handZaehlt(s.sp[actor]).length - E.handlimit(s.sp[actor]))).map(c => c.i) }); if (!r.ok) E.aktion(s, actor, { t: 'ende' }); }
       await this.speichern(); this.alleSenden();
-      this.timer = setTimeout(() => { this.timer = null; this.tick().catch(e => console.error(e)); }, a.t === 'ziehe' ? 350 : a.t === 'angriff' || a.t === 'schuss' || a.t === 'blocke' ? 1300 : a.t === 'ende' ? 900 : 650);
+      this.timer = setTimeout(() => { this.timer = null; this.tick().catch(e => console.error(e)); }, a.t === 'ziehe' ? 350 : a.t === 'angriff' || a.t === 'schuss' || a.t === 'blocke' || a.t === 'abwehr' ? 1300 : a.t === 'ende' ? 900 : 650);
     } else this.timer = setTimeout(() => { this.timer = null; this.tick().catch(e => console.error(e)); }, 2000);
   }
 

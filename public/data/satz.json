@@ -4007,7 +4007,7 @@
    "name": "Strenger Winter",
    "icon": "ui:schnee",
    "text": [
-    "Jeder Spieler legt 1 Handkarte ab (falls er eine hat)."
+    "Jeder Spieler legt 1 Handkarte seiner Wahl ab (falls er eine hat)."
    ],
    "zeitalter": 0,
    "kosten": 0,

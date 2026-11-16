@@ -63,6 +63,7 @@ export function blockWahl(s, pi, stufe = 'mittel') {
 }
 
 export function waehle(s, pi, stufe = 'mittel') {
+  if (s.phase === 'wahl') return E.wahlStandard(s, pi);   // Barbaren abwehren / Winter ablegen
   if (stufe === 'stark') return waehleStarkWrap(s, pi);
   return waehleMittel(s, pi, stufe);
 }

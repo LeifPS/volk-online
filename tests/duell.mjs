@@ -6,7 +6,7 @@ import * as S from '../public/js/ki_stark.js';
 E.setzeDaten(JSON.parse(fs.readFileSync(new URL('../public/data/satz.json', import.meta.url))));
 export function partie(stufen, seed, opt) {
   const s = E.neuesSpiel(stufen.map((_, i) => ({ name: 'S' + i })), { seed, ...opt }); let z = 0;
-  while (s.sieger === null) { const pi = s.phase === 'block' ? s.kampf.ziel : s.am; const a = K.waehle(s, pi, stufen[pi]); const r = E.aktion(s, pi, a); if (!r.ok) { return { fehler: JSON.stringify(a) + r.fehler }; } if (++z > 5000 || s.runde > 50) return { s, remis: true }; }
+  while (s.sieger === null) { const pi = E.akteur(s); const a = K.waehle(s, pi, stufen[pi]); const r = E.aktion(s, pi, a); if (!r.ok) { return { fehler: JSON.stringify(a) + r.fehler }; } if (++z > 5000 || s.runde > 50) return { s, remis: true }; }
   return { s };
 }
 export function turnier(A, B, n, spiele, param, opts) {

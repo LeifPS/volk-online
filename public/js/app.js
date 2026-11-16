@@ -105,13 +105,13 @@ class LokalCtrl {
   weiter(ms = 420) { clearTimeout(this.t); this.t = setTimeout(() => this.tick(), Math.round(ms * tempoFaktor())); }
   tick() {
     const s = this.s; if (this.gestoppt || s.sieger !== null) { if (s.sieger !== null) { this.speichern(); this.view.render(); } return; }
-    const actor = s.phase === 'block' ? s.kampf.ziel : s.am; if (actor === this.me) return;
+    const actor = E.akteur(s); if (actor === this.me) return;
     if (this.view.erzwungen()) { this.weiter(300); return; }
     const stufe = s.sp[actor].ki || 'mittel';
     let a = KI.waehle(s, actor, stufe), r = E.aktion(s, actor, a);
-    if (!r.ok) { console.warn('KI-Fehler', a, r.fehler); r = E.aktion(s, actor, s.phase === 'block' ? { t: 'blocke', z: {} } : s.phase === 'ziehen' ? { t: 'ziehe', stapel: 1 } : { t: 'ende', abwerfen: E.handZaehlt(s.sp[actor]).slice(0, Math.max(0, E.handZaehlt(s.sp[actor]).length - E.handlimit(s.sp[actor]))).map(c => c.i) }); if (!r.ok) { E.aktion(s, actor, { t: 'ende' }); } }
+    if (!r.ok) { console.warn('KI-Fehler', a, r.fehler); r = E.aktion(s, actor, s.phase === 'block' ? { t: 'blocke', z: {} } : s.phase === 'wahl' ? E.wahlStandard(s, actor) : s.phase === 'ziehen' ? { t: 'ziehe', stapel: 1 } : { t: 'ende', abwerfen: E.handZaehlt(s.sp[actor]).slice(0, Math.max(0, E.handZaehlt(s.sp[actor]).length - E.handlimit(s.sp[actor]))).map(c => c.i) }); if (!r.ok) { E.aktion(s, actor, { t: 'ende' }); } }
     this.speichern(); this.view.render();
-    this.weiter(a.t === 'ziehe' ? 260 : a.t === 'angriff' || a.t === 'schuss' || a.t === 'blocke' ? 1100 : a.t === 'ende' ? 700 : 520);
+    this.weiter(a.t === 'ziehe' ? 260 : a.t === 'angriff' || a.t === 'schuss' || a.t === 'blocke' || a.t === 'abwehr' ? 1100 : a.t === 'ende' ? 700 : 520);
   }
   menue() { menue(); }
   regeln() { regelnSeite(app, D, () => { tisch.render(); }); }

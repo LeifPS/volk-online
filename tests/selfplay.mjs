@@ -6,7 +6,7 @@ export function spiele(n, seed, opt, stufen) {
   const s = E.neuesSpiel(Array.from({ length: n }, (_, i) => ({ name: 'S' + (i + 1) })), { seed, ...opt });
   let zug = 0;
   while (s.sieger === null) {
-    const pi = s.phase === 'block' ? s.kampf.ziel : s.am;
+    const pi = E.akteur(s);
     const a = K.waehle(s, pi, stufen[pi] || 'mittel'); const r = E.aktion(s, pi, a);
     if (!r.ok) { console.log('FEHLER', s.phase, JSON.stringify(a), r.fehler); return null; }
     if (++zug > 6000 || s.runde > 60) { s.grund = 'zu lang'; break; }

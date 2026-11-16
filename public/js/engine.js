@@ -189,6 +189,10 @@ export function aktion(s, pi, a) {
     if (pi !== s.kampf.ziel) return f('Du bist nicht der Verteidiger.');
     return blocke(s, a);
   }
+  if (s.phase === 'wahl') {
+    if (pi !== s.wahl.q[0]) return f('Du bist gerade nicht dran, etwas zu entscheiden.');
+    return wahlAktion(s, pi, a);
+  }
   if (pi !== s.am) return f('Du bist nicht am Zug.');
   if (s.phase === 'ziehen') {
     if (a.t !== 'ziehe') return f('Du musst zuerst Karten ziehen.');
@@ -287,9 +291,12 @@ function naechster(s) {
   const n = s.sp.length; let i = s.am, wrap = false;
   do { i = (i + 1) % n; if (i <= s.am) wrap = true; } while (s.sp[i].tot);
   s.am = i;
-  if (wrap) { ereignis(s); if (s.sieger !== null) return; s.runde++; if (s.sp[s.am].tot) { do { s.am = (s.am + 1) % n; } while (s.sp[s.am].tot); } }
+  if (wrap) { ereignis(s); if (s.sieger !== null) return; if (s.wahl) { s.phase = 'wahl'; return; } rundeWeiter(s); }
   zugStart(s);
 }
+function rundeWeiter(s) { const n = s.sp.length; s.runde++; if (s.sp[s.am].tot) { do { s.am = (s.am + 1) % n; } while (s.sp[s.am].tot); } }
+// Wer gerade etwas entscheiden muss: Verteidiger beim Angriff, Betroffene bei Ereignissen, sonst der Spieler am Zug
+export const akteur = (s) => (s.phase === 'block' ? s.kampf.ziel : s.phase === 'wahl' ? s.wahl.q[0] : s.am);
 
 // ---------- Kampf ----------
 export function staerkeGegen(p, u, g, angriff) {
@@ -381,6 +388,45 @@ export function kartenWert(p, c) {
   if (d.zeitalter > p.alter + 1) return 0.5; return 2 + (d.typ === 'einheit' ? 3 : 2);
 }
 
+// ---------- Entscheidungen bei Ereignissen ----------
+export const verteidiger = (p) => kampfEinheiten(p).filter(u => !u.t);   // nur aufrechte (ungetappte) Einheiten können abwehren
+export const barbStaerke = (p, e) => p.alter + 1 + e.plus;
+function winterAb(s, pi, c) { const p = s.sp[pi]; p.hand.splice(p.hand.indexOf(c), 1); legeAb(s, p, c); log(s, 'winter', p.name + ' legt im Winter ' + def(c).name + ' ab.', pi); }
+function barbWirkung(s, pi, e, u) {
+  const p = s.sp[pi], B = barbStaerke(p, e);
+  if (u) {
+    if (staerkeGegen(p, u, null, false) >= B) { p.gold += e.beute; log(s, 'barb', p.name + ' wehrt die Barbaren mit ' + def(u).name + ' ab (+' + e.beute + ' Gold).', pi); }
+    else { entferne(s, p, u); legeAb(s, p, u); log(s, 'barb', 'Die Barbaren besiegen ' + def(u).name + ' von ' + p.name + '.', pi); }
+  } else if (e.folge === 'stadt') schadenStadt(s, p, B, 'Barbaren');
+  else { p.gold = Math.max(0, p.gold - B); log(s, 'barb', p.name + ' verliert ' + B + ' Gold an die Barbaren.', pi); }
+}
+function wahlAktion(s, pi, a) {
+  const w = s.wahl, p = s.sp[pi], f = (t) => ({ ok: false, fehler: t });
+  if (w.art === 'barb') {
+    if (a.t !== 'abwehr') return f('Entscheide, ob und womit du die Barbaren abwehrst.');
+    let u = null; if (a.u) { u = verteidiger(p).find(x => x.i === a.u); if (!u) return f('Diese Einheit kann nicht abwehren (getappt oder keine Kampfeinheit).'); }
+    barbWirkung(s, pi, w.e, u);
+  } else {
+    if (a.t !== 'winterab') return f('Wähle die Karte, die du ablegst.');
+    const c = handZaehlt(p).find(x => x.i === a.c); if (!c) return f('Diese Karte kannst du nicht ablegen.');
+    winterAb(s, pi, c);
+  }
+  w.q.shift(); while (w.q.length && s.sp[w.q[0]].tot) w.q.shift();
+  if (pruefeSieg(s)) { s.wahl = null; return { ok: true }; }
+  if (!w.q.length) { s.wahl = null; rundeWeiter(s); zugStart(s); }
+  return { ok: true };
+}
+// Vernünftige Standardentscheidung (Computer, Zeitüberschreitung online, Fehler-Rückfall)
+export function wahlStandard(s, pi) {
+  const w = s.wahl, p = s.sp[pi];
+  if (w.art === 'winter') { const z = handZaehlt(p); return { t: 'winterab', c: z.reduce((m, x) => kartenWert(p, x) < kartenWert(p, m) ? x : m).i }; }
+  const B = barbStaerke(p, w.e), v = verteidiger(p).sort((a, b) => def(a).staerke - def(b).staerke);
+  const gut = v.find(u => staerkeGegen(p, u, null, false) >= B); if (gut) return { t: 'abwehr', u: gut.i };
+  const verlust = v[0] ? (def(v[0]).kosten || 1) : 99;
+  const folge = w.e.folge === 'stadt' ? Math.min(B, 6) * 1.5 + (p.hp <= B + 2 ? 20 : 0) : Math.min(B, p.gold);
+  return verlust < folge ? { t: 'abwehr', u: v[0].i } : { t: 'abwehr', u: null };
+}
+
 // ---------- Ereignisse ----------
 function ereignis(s) {
   if (!s.ereig.length) s.ereig = mische(s, s.ereigAblage.splice(0));
@@ -399,18 +445,18 @@ function ereignis(s) {
     else if (e.id === 'fest') for (const p of l) { if (p.religion) p.gold += 2; else ziehe(s, p, maxStapel(p)); }
     else if (e.id === 'heilung') for (const p of l) p.hp = Math.min(R.stadt_hp, p.hp + 3);
   } else if (e.art === 'barbaren') {
-    const m = Math.min(...l.map(p => kampfEinheiten(p).length));
+    const m = Math.min(...l.map(p => kampfEinheiten(p).length)), q = [];
     for (const p of l.filter(p => kampfEinheiten(p).length === m)) {
-      const B = p.alter + 1 + e.plus, bl = kampfEinheiten(p).sort((a, b) => def(a).staerke - def(b).staerke);
-      if (bl.length) {
-        const gut = bl.find(u => def(u).staerke >= B);
-        if (gut) { p.gold += e.beute; log(s, 'barb', p.name + ' wehrt die Barbaren ab (+' + e.beute + ' Gold).', nm(p)); }
-        else { const u = bl[0]; entferne(s, p, u); legeAb(s, p, u); log(s, 'barb', 'Die Barbaren besiegen ' + def(u).name + ' von ' + p.name + '.', nm(p)); }
-      } else { if (e.folge === 'stadt') schadenStadt(s, p, B, 'Barbaren'); else { p.gold = Math.max(0, p.gold - B); log(s, 'barb', p.name + ' verliert ' + B + ' Gold an die Barbaren.', nm(p)); } }
+      if (verteidiger(p).length) q.push(nm(p)); else barbWirkung(s, nm(p), e, null);   // niemand kann abwehren: Folge sofort
     }
+    if (q.length && s.sieger === null) s.wahl = { art: 'barb', e: { id: e.id, name: e.name, plus: e.plus, folge: e.folge, beute: e.beute }, q };
   } else {
     if (e.id === 'regenzeit') for (const p of l) p.gold += 2;
-    else if (e.id === 'winter') for (const p of l) { const z = handZaehlt(p); if (z.length) { const c = z.reduce((m, x) => kartenWert(p, x) < kartenWert(p, m) ? x : m); p.hand.splice(p.hand.indexOf(c), 1); legeAb(s, p, c); log(s, 'winter', p.name + ' legt im Winter eine Karte ab.', nm(p)); } }
+    else if (e.id === 'winter') {
+      const q = [];
+      for (const p of l) { const z = handZaehlt(p); if (z.length === 1) winterAb(s, nm(p), z[0]); else if (z.length > 1) q.push(nm(p)); }
+      if (q.length) s.wahl = { art: 'winter', e: { id: e.id, name: e.name }, q };
+    }
     else if (e.id === 'seuche') for (const p of l) { if (heilung(p) < 2) p.hp -= 2; }
     else if (e.id === 'sonnenwende') { const m = Math.max(...l.map(kultur)); const t = l.filter(p => kultur(p) === m); if (t.length === 1) t[0].gold += 2; }
     else if (e.id === 'diebe') { const m = Math.max(...l.map(p => p.gold)); for (const p of l.filter(p => p.gold === m)) p.gold = Math.max(0, p.gold - 3); }

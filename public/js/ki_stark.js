@@ -82,6 +82,7 @@ function kandidaten(s, pi) {
 function ausfuehren(s, pi, a, verteidiger) {
   const s2 = klon(s), r = E.aktion(s2, pi, a); if (!r.ok) return null;
   if (s2.phase === 'block') { const z = verteidiger(s2, s2.kampf.ziel); E.aktion(s2, s2.kampf.ziel, { t: 'blocke', z }); }
+  for (let n = 0; s2.phase === 'wahl' && n < 12; n++) { const w = E.akteur(s2); E.aktion(s2, w, E.wahlStandard(s2, w)); }
   return s2;
 }
 

@@ -12,7 +12,7 @@ class Klient {
   senden(o) { this.ws.send(JSON.stringify(o)); }
   aktion(a) { return new Promise(res => { const id = ++this.n; this.wait.set(id, res); this.senden({ t: 'a', id, a }); }); }
   async handeln() {
-    if (this.busy || !this.s || this.s.sieger !== null) return; const s = this.s, actor = s.phase === 'block' ? s.kampf.ziel : s.am; if (actor !== this.me) return;
+    if (this.busy || !this.s || this.s.sieger !== null) return; const s = this.s, actor = E.akteur(s); if (actor !== this.me) return;
     this.busy = true; await new Promise(r => setTimeout(r, 5));
     try { const a = K.waehle(this.s, this.me, 'mittel'); const r = await this.aktion(a); if (!r.ok) this.fehler.push('Aktion abgelehnt: ' + JSON.stringify(a) + ' ' + r.fehler); } finally { this.busy = false; }
     setTimeout(() => this.handeln(), 5);

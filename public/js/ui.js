@@ -20,8 +20,8 @@ export class Spieltisch {
   }
   get s() { return this.c.s; } get me() { return this.c.me; }
   p(i) { return this.s.sp[i]; }
-  meinZug() { return this.s.am === this.me && this.s.phase !== 'ende' && this.s.phase !== 'block'; }
-  erzwungen() { const s = this.s; return s.sieger !== null && !this.siegZu || (s.phase === 'block' && s.kampf.ziel === this.me) || this.ereignisOffen(); }
+  meinZug() { return this.s.am === this.me && this.s.phase !== 'ende' && this.s.phase !== 'block' && this.s.phase !== 'wahl'; }
+  erzwungen() { const s = this.s; return s.sieger !== null && !this.siegZu || (s.phase === 'block' && s.kampf.ziel === this.me) || (s.phase === 'wahl' && s.wahl.q[0] === this.me) || this.ereignisOffen(); }
   ereignisOffen() { const s = this.s; return !!(s.letztes && s.letztes.n > this.ereigGesehen && s.sieger === null); }
   blockiert() { return this.erzwungen() || !!this.modalFn; }
   toast(t) {
@@ -39,7 +39,7 @@ export class Spieltisch {
     if (this.letzterAm !== null && this.letzterAm !== s.am && s.am === this.me && s.sieger === null && this.tab !== 'ich') this.tab = 'ich';
     if (s.am !== this.me || s.phase !== 'aktion') this.endeWarn = false;
     this.letzterAm = s.am;
-    const aktiv = s.sp[s.phase === 'block' ? s.kampf.ziel : s.am];
+    const aktiv = s.sp[E.akteur(s)];
     const ticker = s.ev.slice(-3).map(e => esc(e.t)).join('  ›  ');
     const chips = s.sp.map((p, i) => {
       const v = D.voelker.find(x => x.id === p.volk);
@@ -69,6 +69,7 @@ export class Spieltisch {
     if (s.sieger !== null && !this.siegZu) html = this.siegHtml();
     else if (s.phase === 'block' && s.kampf.ziel === this.me) html = this.blockHtml();
     else if (this.ereignisOffen()) html = this.ereignisHtml();
+    else if (s.phase === 'wahl' && s.wahl.q[0] === this.me) html = this.wahlHtml();
     else if (this.modalFn) { html = this.modalFn(); if (html === null) this.modalFn = null; }
     if (html === null || html === undefined) { this.ov.classList.remove('an'); this.ov.innerHTML = ''; return; }
     this.ov.classList.add('an'); const old = this.ov.querySelector('.sheet'); const sc = old ? old.scrollTop : 0;
@@ -98,6 +99,7 @@ export class Spieltisch {
   aktionsHtml() {
     const s = this.s, p = this.p(this.me);
     if (s.sieger !== null) return `<div class="aktionen"><div class="info">Das Spiel ist vorbei.</div><button data-a="siegzeigen">Ergebnis</button></div>`;
+    if (s.phase === 'wahl') return `<div class="aktionen"><div class="info">${s.wahl.q[0] === this.me ? 'Triff deine Entscheidung.' : esc(this.p(s.wahl.q[0]).name) + ' entscheidet (' + esc(s.wahl.e.name) + ') …'}</div></div>`;
     if (s.phase === 'block') return `<div class="aktionen"><div class="info">${s.kampf.ziel === this.me ? 'Du wirst angegriffen!' : esc(this.p(s.kampf.ziel).name) + ' verteidigt sich …'}</div></div>`;
     if (s.am !== this.me) return `<div class="aktionen"><div class="info">${esc(this.p(s.am).name)} ist am Zug · <span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span></div></div>`;
     if (s.phase === 'ziehen') {
@@ -248,6 +250,22 @@ export class Spieltisch {
     const log = s.ev.filter(x => x.n >= s.letztes.n).map(x => `<div class="mini">${esc(x.t)}</div>`).join('');
     return this.fenster(`${ic('x:blitz')} Ereignis: ${esc(e.name)}`, `<div class="ereignis-wrap"><div class="gross">${kk({ id: s.letztes.id }, { eager: true })}</div><div style="flex:1;min-width:180px">${log}</div></div><div class="btns"><button class="gruen" data-a="ereigok">Weiter${ic('ui:pfeil_rechts')}</button></div>`, false);
   }
+  wahlHtml() {
+    const s = this.s, w = s.wahl, p = this.p(this.me), e = w.e;
+    if (w.art === 'winter') {
+      const z = E.handZaehlt(p);
+      return this.fenster(`${ic('ui:meldung')} ${esc(e.name)}`, `<p class="mini">Jeder Spieler legt 1 Handkarte ab. Tippe auf die Karte, die du am wenigsten brauchst.</p><div class="lex-gitter" style="--kw:84px;justify-content:center">${z.map(c => kk(c, { a: 'winterab', v: c.i })).join('')}</div>`, false);
+    }
+    const B = E.barbStaerke(p, e), folge = e.folge === 'stadt' ? `Deine Stadt verliert ${Math.max(1, B - E.schutz(p))} Leben.` : `Du verlierst ${Math.min(B, p.gold)} Gold.`;
+    const reihen = E.kampfEinheiten(p).map(u => {
+      const su = E.staerkeGegen(p, u, null, false), sieg = su >= B;
+      return `<div class="block-reihe"><div class="oben">${kk(u, { cls: u.t ? 'aus' : '' })}<div><b>${esc(def(u).name)}</b> ${ic('ui:staerke')}${su}
+        <div class="mini">${sieg ? `Besiegt die Barbaren, du bekommst ${e.beute} Gold.` : `Zu schwach: ${esc(def(u).name)} geht verloren.`}</div>
+        ${u.t ? '<div class="mini">Getappt: kann nicht abwehren.</div>' : `<button class="chipb ${sieg ? 'an' : ''}" data-a="abwehr" data-v="${u.i}" style="margin-top:6px">Abwehren</button>`}</div></div></div>`;
+    }).join('');
+    return this.fenster(`${ic('ui:krieg')} ${esc(e.name)}`, `<div class="grund">Die Barbaren haben Stärke <b>${B}</b> (Zeitalter ${p.alter + 1} + ${e.plus}). Wähle eine aufrechte Einheit zur Abwehr oder lass sie durch.</div>${reihen}
+      <button class="rot" data-a="abwehr" data-v="" style="width:100%;margin-top:8px;min-height:44px">Nicht abwehren · ${folge}</button>`, false);
+  }
   blockHtml() {
     const s = this.s, k = s.kampf, a = s.sp[k.von], o = this.p(this.me);
     const atk = k.atk.map(id => a.front.find(x => x.i === id)).filter(Boolean), used = new Set(Object.values(this.blk).filter(v => v != null));
@@ -271,7 +289,7 @@ export class Spieltisch {
   angezeigt() { return this.tab === 'ich' ? this.me : this.tab === 'tisch' || this.tab === 'log' ? -1 : +this.tab; }
   snap() {
     const s = this.s;
-    return { sig: s.sp.map(p => p.volk).join(), runde: s.runde, am: s.am, sieger: s.sieger, evn: s.ev.length, ereig: s.letztes ? s.letztes.n : 0,
+    return { sig: s.sp.map(p => p.volk).join(), runde: s.runde, am: s.am, phase: s.phase, sieger: s.sieger, evn: s.ev.length, ereig: s.letztes ? s.letztes.n : 0,
       p: s.sp.map((p, i) => ({ hp: p.hp, k: E.kultur(p), gold: p.gold, alter: p.alter, hand: i === this.me ? p.hand.map(c => c.i) : [], tisch: [...p.geb, ...p.wunder, ...p.staaten, ...p.land, ...p.front, ...p.kaserne].map(c => c.i) })) };
   }
   fxAnwenden() {
@@ -304,7 +322,7 @@ export class Spieltisch {
       letzte?.scrollIntoView({ inline: 'center', block: 'nearest' }); ton('karte');
     }
     if (jetzt.ereig > vor.ereig) ton('ereignis');
-    if (jetzt.am === this.me && vor.am !== this.me && jetzt.sieger === null) { banner('DEIN ZUG', 'zug'); ton('zug'); vibriere(60); }
+    if (jetzt.am === this.me && s.phase === 'ziehen' && (vor.am !== this.me || vor.phase === 'wahl') && jetzt.sieger === null) { banner('DEIN ZUG', 'zug'); ton('zug'); vibriere(60); }
     if (vor.sieger === null && jetzt.sieger !== null) { if (jetzt.sieger === this.me) { konfetti(); ton('sieg'); vibriere([80, 60, 80]); } else ton('niederlage'); }
   }
 
@@ -316,7 +334,7 @@ export class Spieltisch {
     if (k === 'Escape') { if (ovAn && !this.erzwungen()) { this.modalFn = null; this.render(); e.preventDefault(); } return; }
     if (k === 'm' || k === 'M') { setzeOpt('ton'); this.toast(opt.ton ? 'Ton an' : 'Ton aus'); this.render(); return; }
     if (k === 'Enter' || k === ' ') {
-      if (tag === 'button' || s.phase === 'block') return;
+      if (tag === 'button' || s.phase === 'block' || s.phase === 'wahl') return;
       const b = ovAn ? this.ov.querySelector('.sheet .btns .gruen:not(:disabled)') : null;
       if (b) { b.click(); e.preventDefault(); } else if (!ovAn && this.meinZug() && s.phase === 'aktion') { this.root.querySelector('[data-a="ende"]')?.click(); e.preventDefault(); }
       return;
@@ -379,6 +397,8 @@ export class Spieltisch {
       case 'schiessen': sheet(this.schiessenSheet()); break;
       case 'schuss': { const m = t.dataset; const r = await this.senden(m.stadt ? { t: 'schuss', c: +v, stadt: true, p: +m.p } : { t: 'schuss', c: +v, p: +m.p, z: +m.z }); if (r.ok) { this.sel.delete(+v); const rest = [...this.sel].filter(i => p.front.find(u => u.i === i && E.kannSchiessen(u))); if (!rest.length) this.modalFn = null; this.render(); } break; }
       case 'blk': { const ai = +v; if (t.dataset.b === '') this.blk[ai] = null; else this.blk[ai] = +t.dataset.b; this.render(); break; }
+      case 'abwehr': await this.senden({ t: 'abwehr', u: v === '' ? null : +v }); break;
+      case 'winterab': await this.senden({ t: 'winterab', c: +v }); break;
       case 'blkauto': this.blk = KI.blockWahl(s, this.me, 'stark').z; this.render(); break;
       case 'blockgo': { const r = await this.senden({ t: 'blocke', z: this.blk }); if (r.ok) this.blk = {}; break; }
     }
