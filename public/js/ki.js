@@ -97,6 +97,8 @@ function waehleMittel(s, pi, stufe = 'mittel') {
   if (s.phase === 'ziehen') return ziehWahl(s, pi);
   const memo = holeMemo(s); const key = s.runde + ':' + s.am; if (memo.key !== key) { memo.key = key; memo.n = 0; memo.kampf = false; } memo.n++;
   if (memo.n > 70) return ende(s, p);
+  // Wissenschaftssieg: in der Atomzeit sofort bezahlen, wenn möglich
+  if (E.wissenSiegMoeglich(p) && E.aufstiegErlaubt(p) && p.gold >= E.aufstiegKosten(p)) return { t: 'aufstieg' };
   // Missionare ausweisen
   const bei = E.missionenBei(s, p);
   if (bei.length && s.opt.rel) {

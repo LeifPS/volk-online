@@ -129,9 +129,12 @@ export function kosten(p, c) {
   } else if (d.typ === 'gebaeude') k = Math.max(1, k - effekte(p).G);
   return k;
 }
-export const aufstiegErlaubt = (p) => p.alter < 6 && !p.aufN;   // pro Runde nur ein Aufstieg
+export const aufstiegErlaubt = (p) => !p.aufN;   // pro Runde nur ein Aufstieg
+// In der Atomzeit (letztes Zeitalter) kostet der "nächste Aufstieg" feste 20 Gold und gewinnt sofort: Wissenschaftssieg.
+export const wissenSiegKosten = () => R.wissen_sieg || 20;
+export const wissenSiegMoeglich = (p) => p.alter >= 6;
 export function aufstiegKosten(p) {
-  if (p.alter >= 6) return null;
+  if (p.alter >= 6) return wissenSiegKosten();
   return Math.max(1, R.aufstieg[p.alter] - effekte(p).W - (p.volk === 'sternendeuter' ? 1 : 0));
 }
 // Kosten für fehlende Rohstoffe; null = nicht spielbar
@@ -254,7 +257,8 @@ export function aktion(s, pi, a) {
       log(s, 'wunder', p.name + ' baut das Wunder ' + def(w).name + '!', pi, { c: w.id }); pruefeSieg(s); return { ok: true };
     }
     case 'aufstieg': {
-      const kst = aufstiegKosten(p); if (kst === null) return f('Du bist schon im letzten Zeitalter.'); if (p.aufN) return f('Du bist in dieser Runde schon aufgestiegen.'); if (p.gold < kst) return f('Zu wenig Gold.');
+      const kst = aufstiegKosten(p); if (kst === null) return f('Aufstieg nicht möglich.'); if (p.aufN) return f('Du bist in dieser Runde schon aufgestiegen.'); if (p.gold < kst) return f('Zu wenig Gold.');
+      if (p.alter >= 6) { p.gold -= kst; p.aufN = 1; s.sieger = pi; s.grund = 'Wissenschaft'; s.phase = 'ende'; log(s, 'sieg', p.name + ' gewinnt durch Wissenschaft!', pi); return { ok: true }; }
       p.gold -= kst; p.aufN = 1; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + D.zeitalter[p.alter].name + ' auf.', pi, { alter: p.alter }); return { ok: true };
     }
     case 'tribut': {

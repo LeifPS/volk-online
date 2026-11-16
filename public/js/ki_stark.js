@@ -25,7 +25,7 @@ function bedrohung(s, p) {          // erwarteter Schaden, den die Gegner mir im
   return worst;
 }
 export function wert(s, i) {
-  const p = s.sp[i]; if (p.tot || p.hp <= 0) return -1e6; const R = E.REGELN(), T = restRunden(s), e = E.effekte(p);
+  const p = s.sp[i]; if (p.tot || p.hp <= 0) return -1e6; if (s.sieger !== null && s.grund === 'Wissenschaft') return s.sieger === i ? 1e6 : -1e6; const R = E.REGELN(), T = restRunden(s), e = E.effekte(p);
   const k = E.kultur(p); if (k >= R.kultur_sieg) return 1e6;
   let g = 0; if (s.opt.rel && p.religion) { g = E.glaube(s, p); if (g >= s.glaubeZiel) return 1e6; }
   let v = PARAM.wK * k + PARAM.wK2 * k * k / R.kultur_sieg + (k >= R.kultur_sieg - 3 ? PARAM.wKnah * (k - (R.kultur_sieg - 4)) : 0);

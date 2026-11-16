@@ -118,7 +118,9 @@ export class Spieltisch {
       b += `<button class="sek" data-a="selclear">Abwählen</button>`;
     } else {
       const aufGrund = ak === null ? '' : p.aufN ? 'Du bist in dieser Runde schon aufgestiegen.' : p.gold < ak ? `Zu wenig Gold: ${ak} nötig, du hast ${p.gold}.` : '';
-      if (ak !== null) b += `<button class="${aufGrund ? 'aus' : ''}" data-a="aufstieg" ${aufGrund ? `data-grund="${esc(aufGrund)}"` : ''}>${zaIcon(p.alter + 1, 22)}${zaName(p.alter + 1)} <small>(${ak} ${ic('ui:gold')})</small></button>`;
+      if (ak !== null) b += E.wissenSiegMoeglich(p)
+        ? `<button class="${aufGrund ? 'aus' : 'gold'}" data-a="aufstieg" ${aufGrund ? `data-grund="${esc(aufGrund)}"` : ''}>${ic('ui:wissenschaft')}Wissenschaftssieg <small>(${ak} ${ic('ui:gold')})</small></button>`
+        : `<button class="${aufGrund ? 'aus' : ''}" data-a="aufstieg" ${aufGrund ? `data-grund="${esc(aufGrund)}"` : ''}>${zaIcon(p.alter + 1, 22)}${zaName(p.alter + 1)} <small>(${ak} ${ic('ui:gold')})</small></button>`;
       if (s.opt.rel && !p.religion && p.alter >= 1) b += `<button class="sek" data-a="gruenden">${ic('rel:glaube')}Religion gründen <small>(5 ${ic('ui:gold')})</small></button>`;
       b += `<button class="${this.endeWarn ? 'gold' : 'gruen'}" data-a="ende">${this.endeWarn ? 'Trotzdem beenden' : 'Zug beenden'}${ic('ui:pfeil_rechts')}</button>`;
     }
@@ -139,7 +141,7 @@ export class Spieltisch {
       <div class="tfa"><b>Volksfähigkeit</b> ${v.text.map(esc).join(' ')}${rel ? `<br><b>${esc(rel.name)}:</b> ${esc(rel.text)}` : ''}</div>
       <div class="tzeile"><div class="tl">${ic('ui:hp')} Lebenspunkte <b>${hp}/${R.stadt_hp}</b></div><div class="tleiste hp">${zellen(R.stadt_hp, hp, 'hz')}</div></div>
       <div class="tzeile"><div class="tl">${ic('ui:kultur')} Kultur <b>${E.kultur(p)}/${R.kultur_sieg}</b> <small>(${R.kultur_sieg} = Sieg)</small></div><div class="tleiste kultur">${kz}</div></div>
-      <div class="tzeile"><div class="tl">${zaIcon(p.alter, 22)} Zeitalter <b>${ZA[p.alter]} · ${zaName(p.alter)}</b>${ak !== null ? ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>` : ''}</div><div class="tleiste zeit">${zeit}</div></div>
+      <div class="tzeile"><div class="tl">${zaIcon(p.alter, 22)} Zeitalter <b>${ZA[p.alter]} · ${zaName(p.alter)}</b>${ak !== null ? (E.wissenSiegMoeglich(p) ? ` <small>Wissenschaftssieg: ${ak} Gold, einmal pro Runde</small>` : ` <small>nächster Aufstieg: ${ak} Gold, einmal pro Runde</small>`) : ''}</div><div class="tleiste zeit">${zeit}</div></div>
       <div class="tchips">${chip('ui:gold', p.gold, 'gold', '+' + E.einkommen(s, p) + '/Runde')}${chip('ui:schild', E.schutz(p), '', 'Schutz')}${chip('x:karten', p.hand.length, '', isMe ? '/' + E.handlimit(p) : '')}${s.opt.rel && p.religion ? chip('rel:glaube', E.glaube(s, p), '', '/' + s.glaubeZiel) : ''}${chip('ui:gruenden', p.land.length, '', 'Land')}</div></div>`;
   }
   reichHtml(pi) {

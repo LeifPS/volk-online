@@ -9,8 +9,8 @@ const li = (...a) => `<ul>${a.map(x => `<li>${x}</li>`).join('')}</ul>`;
 
 function grundspiel(D) {
   const R = D.regeln;
-  return `<h2>Worum geht es?</h2><p>Du führst ein Volk durch <b>sieben Zeitalter</b> – von der Antike bis zur Atomzeit. Du legst Land, baust Gebäude, bildest Einheiten aus, kaufst Weltwunder und gewinnst Stadtstaaten als Verbündete. Wer als Erste/r <b>${R.kultur_sieg} Kultur</b> erreicht, gewinnt – oder wer als Letzte/r übrig bleibt.</p>
-  <h2>Die sieben Zeitalter</h2><table class="ztab"><tr><th>Symbol</th><th>Zeitalter</th><th>Aufstieg kostet</th><th>Grundeinkommen</th><th>Zieht von</th></tr>${ZA.map((r, i) => `<tr><td>${zaIcon(i, 32)}</td><td><b>${zaName(i)}</b></td><td>${i < 6 ? R.aufstieg[i] + ' Gold' : 'höchste Stufe'}</td><td>${R.basis_einkommen + i}</td><td>Stapel ${ZA[R.stapel_von_zeitalter[i] - 1]}</td></tr>`).join('')}</table>
+  return `<h2>Worum geht es?</h2><p>Du führst ein Volk durch <b>sieben Zeitalter</b> – von der Antike bis zur Atomzeit. Du legst Land, baust Gebäude, bildest Einheiten aus, kaufst Weltwunder und gewinnst Stadtstaaten als Verbündete. Wer als Erste/r <b>${R.kultur_sieg} Kultur</b> erreicht, gewinnt – oder wer als Letzte/r übrig bleibt – oder wer in der Atomzeit den <b>Wissenschaftssieg</b> bezahlt (${R.wissen_sieg || 20} Gold).</p>
+  <h2>Die sieben Zeitalter</h2><table class="ztab"><tr><th>Symbol</th><th>Zeitalter</th><th>Aufstieg kostet</th><th>Grundeinkommen</th><th>Zieht von</th></tr>${ZA.map((r, i) => `<tr><td>${zaIcon(i, 32)}</td><td><b>${zaName(i)}</b></td><td>${i < 6 ? R.aufstieg[i] + ' Gold' : (R.wissen_sieg || 20) + ' Gold = Sieg'}</td><td>${R.basis_einkommen + i}</td><td>Stapel ${ZA[R.stapel_von_zeitalter[i] - 1]}</td></tr>`).join('')}</table>
   <h2>Start</h2>${li(`Du hast <b>${R.start_gold} Gold</b>, <b>${R.stadt_hp} Lebenspunkte</b> (${ic('ui:hp')}) und ${R.start_hand} Handkarten vom Stapel I.`, 'Es gibt <b>3 Kartenstapel</b> (I, II, III), 8 Weltwunder (3 liegen offen) und 12 Stadtstaaten (3 liegen offen).', 'Jedes Volk hat eine eigene Fähigkeit (Reiter „Völker“).')}
   <h2>Dein Zug</h2>
   <h3>1 · Aufwecken</h3><p>Alle erschöpften Einheiten stehen wieder auf. Einheiten aus der <b>Kaserne</b> rücken an die <b>Front</b>. Deine Stadt heilt Lebenspunkte (Gebäude und Sanitäter).</p>
@@ -24,7 +24,7 @@ function grundspiel(D) {
   <h2>Schlüsselwörter</h2><div class="reg-tab">${Object.entries(SCHL_TXT).filter(([k]) => k !== 'mission').map(([k, v]) => `<div><b>${esc(SCHL[k])}</b></div><div>${esc(v)}</div>`).join('')}</div>
   <h2>Ereignisse</h2><p>Nach jeder Runde wird ein Ereignis aufgedeckt. <b>Wetter</b> trifft alle (z. B. Ernte, Seuche, Diebe; im Winter wählst du selbst, welche Handkarte du ablegst). <b>Barbaren</b> überfallen den Spieler mit dem schwächsten Heer: Ihre Stärke ist <i>dein Zeitalter + 1 + Bonus</i>. Du entscheidest selbst, ob und mit welcher <b>aufrechten</b> (nicht getappten) Einheit du abwehrst: Ist sie mindestens so stark, wehrt sie den Überfall ab und du bekommst Beute. Ist sie zu schwach, geht sie verloren, dafür entfällt die Folge. Wehrst du nicht ab, trifft es deine Stadt oder dein Gold.</p>
   <div class="reg-tab">${D.ereignisse.map(e => `<div><b>${esc(e.name)}</b></div><div>${esc(e.beschreibung || '')}${e.text ? ' ' + esc(e.text.join(' ')) : ''}</div>`).join('')}</div>
-  <h2>Siegbedingungen</h2>${li(`<b>Kultur:</b> ${R.kultur_sieg} Kultur (aus Gebäuden, Wundern, Verbündeten) – sofort bei Erreichen.`, `<b>Eroberung:</b> Alle anderen Städte sind bei 0 ${ic('ui:hp')}.`)}`;
+  <h2>Siegbedingungen</h2>${li(`<b>Kultur:</b> ${R.kultur_sieg} Kultur (aus Gebäuden, Wundern, Verbündeten) – sofort bei Erreichen.`, `<b>Eroberung:</b> Alle anderen Städte sind bei 0 ${ic('ui:hp')}.`, `<b>Wissenschaft:</b> Bist du in der <b>Atomzeit</b>, kostet der „nächste Aufstieg“ ${R.wissen_sieg || 20} Gold. Zahlst du ihn, gewinnst du sofort. Wie jeder Aufstieg geht das nur einmal pro Runde, am Tag deines Aufstiegs in die Atomzeit also noch nicht.`)}`;
 }
 function volkskarten(D) {
   const vs = D.voelker;
@@ -34,7 +34,7 @@ function volkskarten(D) {
 }
 function glaube(D) {
   const R = D.regeln;
-  return `<h2>Erweiterung 2: Götter & Glaube</h2><p>Acht Religionen, neue Gebäude, Missionare – und ein dritter Siegweg: der <b>Glaubenssieg</b>.</p>
+  return `<h2>Erweiterung 2: Götter & Glaube</h2><p>Acht Religionen, neue Gebäude, Missionare – und ein weiterer Siegweg: der <b>Glaubenssieg</b>.</p>
   <h3>Religion gründen</h3>${li('Ab <b>Zeitalter II</b> darfst du einmal pro Spiel eine Religion gründen: <b>5 Gold</b> zahlen und <b>1 Handkarte</b> opfern.', 'Jede Religion gibt es nur <b>einmal</b> – wer zuerst gründet, wählt.', 'Du bekommst einen eigenen <b>Glaubensstapel</b> mit 7 Karten (Heiligtum, Tempel, Halle, Stätte, Prophet, 2 Missionare). Beim Ziehen darfst du <b>1 Karte pro Zug</b> davon nehmen.', 'Jede Religion hat eine <b>dauerhafte Fähigkeit</b>.')}
   <h3>Glaube</h3><p><b>Dein Glaube</b> = 1 + Glaube deiner Religionsgebäude und Propheten + eigene Missionare bei Gegnern − fremde Missionare in deiner Stadt. Mit <b>${D.glaube_sieg} Glaube</b> (mit Volkskarten ${D.glaube_sieg_vk}) gewinnst du sofort.</p>
   <h3>Missionare</h3>${li('Ein Missionar kostet Gold und wird zu einem <b>Gegner</b> gesandt (höchstens einer pro Gegner). Er erhöht deinen Glauben und senkt den des Gegners.', 'Der Gegner kann ihn für <b>2 Gold</b> ausweisen – der Missionar kehrt dann auf deine Hand zurück.', 'Stirbt ein Spieler, kehren alle beteiligten Missionare heim.')}
