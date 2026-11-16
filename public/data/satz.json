@@ -2754,7 +2754,7 @@
    "zeitalter": 6,
    "kosten": 16,
    "effekte": {
-    "W": 4
+    "E": 4
    },
    "prov": [],
    "braucht": [],
@@ -2774,8 +2774,8 @@
    "zeitalter": 6,
    "kosten": 18,
    "effekte": {
-    "K": 3,
-    "W": 3
+    "E": 3,
+    "K": 3
    },
    "prov": [],
    "braucht": [],
@@ -3664,8 +3664,8 @@
    "zeitalter": 6,
    "kosten": 42,
    "effekte": {
+    "E": 3,
     "K": 3,
-    "W": 3,
     "Z": 1
    },
    "braucht": [
@@ -4934,7 +4934,7 @@
    "zeitalter": 6,
    "kosten": 16,
    "effekte": {
-    "W": 3,
+    "E": 3,
     "K": 3
    },
    "prov": [],
