@@ -12,6 +12,12 @@ export const daten = () => D;
 export const def = (c) => ID[c.id];
 export const REGELN = () => R;
 export const ZIVIL = ['zivil', 'haendler', 'see_zivil'];
+// Alles, was als Karte in der eigenen Auslage liegt (ohne Einheiten): wird im Reich als Hex-Tile um die Stadt gezeigt.
+export const reichKarten = (p) => [...p.land, ...p.geb, ...p.wunder, ...p.staaten, ...(p.regierung ? [p.regierung] : []), ...(p.pers || []), ...(p.natur || [])];
+/** Gibt der Karte den kleinsten freien Platz (0 = erstes Tile neben der Stadt). */
+function platz(p, c) { const b = new Set(reichKarten(p).filter(x => x !== c && x.pl != null).map(x => x.pl)); let n = 0; while (b.has(n)) n++; c.pl = n; return c; }
+/** Alte Spielstände: Karten ohne Platz bekommen der Reihe nach einen. */
+export function reichOrdnen(p) { for (const c of reichKarten(p)) if (c.pl == null) platz(p, c); }
 
 // ---------- Zufall (mulberry32, Zustand im Spielzustand) ----------
 function zuf(s) { let t = (s.rng += 0x6D2B79F5) >>> 0; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
@@ -228,7 +234,7 @@ export function aktion(s, pi, a) {
     case 'land': {
       if (!k || def(k).typ !== 'land') return f('Das ist keine Land-Karte.');
       if (p.landG >= landErlaubt(p)) return f('Du hast dein Land für diesen Zug schon gespielt.');
-      p.hand.splice(p.hand.indexOf(k), 1); p.land.push(k); p.landG++; log(s, 'land', p.name + ' legt ' + def(k).name + '.', pi, { c: k.id }); return { ok: true };
+      p.hand.splice(p.hand.indexOf(k), 1); p.land.push(platz(p, k)); p.landG++; log(s, 'land', p.name + ' legt ' + def(k).name + '.', pi, { c: k.id }); return { ok: true };
     }
     case 'spiele': {
       if (!k) return f('Karte nicht auf der Hand.');
@@ -236,15 +242,15 @@ export function aktion(s, pi, a) {
       if (d.klasse === 'missionar') return f('Missionare werden mit „Mission“ ausgesandt.');
       const g = sperrGrund(s, p, k); if (g) return f(g);
       p.gold -= kostenGesamt(p, k); p.hand.splice(p.hand.indexOf(k), 1);
-      if (d.typ === 'gebaeude') p.geb.push(k);
-      else if (d.schluessel.includes('gruenden')) { for (let n = 0; n < 2; n++) { const l = p.hand.find(c => def(c).typ === 'land'); if (l) { p.hand.splice(p.hand.indexOf(l), 1); p.land.push(l); } } legeAb(s, p, k); }
+      if (d.typ === 'gebaeude') p.geb.push(platz(p, k));
+      else if (d.schluessel.includes('gruenden')) { for (let n = 0; n < 2; n++) { const l = p.hand.find(c => def(c).typ === 'land'); if (l) { p.hand.splice(p.hand.indexOf(l), 1); p.land.push(platz(p, l)); } } legeAb(s, p, k); }
       else { k.t = 0; p.kaserne.push(k); for (let n = 0; n < (d.ziehen || 0); n++) ziehe(s, p, maxStapel(p)); }
       log(s, 'spiele', p.name + ' spielt ' + d.name + '.', pi, { c: k.id }); pruefeSieg(s); return { ok: true };
     }
     case 'wunder': {
       const w = s.wunderOffen.find(x => x.i === a.c); if (!w) return f('Dieses Wunder ist nicht offen.');
       const g = sperrGrund(s, p, w); if (g) return f(g);
-      p.gold -= kostenGesamt(p, w); s.wunderOffen.splice(s.wunderOffen.indexOf(w), 1); p.wunder.push(w); wunderNach(s);
+      p.gold -= kostenGesamt(p, w); s.wunderOffen.splice(s.wunderOffen.indexOf(w), 1); p.wunder.push(platz(p, w)); wunderNach(s);
       log(s, 'wunder', p.name + ' baut das Wunder ' + def(w).name + '!', pi, { c: w.id }); pruefeSieg(s); return { ok: true };
     }
     case 'aufstieg': {
@@ -254,7 +260,7 @@ export function aktion(s, pi, a) {
     case 'tribut': {
       const t = s.auslage.find(x => x.i === a.c); if (!t) return f('Stadtstaat nicht verfügbar.');
       if (p.staaten.length >= 2) return f('Du hast schon 2 Verbündete.'); if (p.gold < def(t).kosten) return f('Zu wenig Gold.');
-      p.gold -= def(t).kosten; s.auslage.splice(s.auslage.indexOf(t), 1); p.staaten.push(t); if (s.staatStapel.length) s.auslage.push(s.staatStapel.pop());
+      p.gold -= def(t).kosten; s.auslage.splice(s.auslage.indexOf(t), 1); p.staaten.push(platz(p, t)); if (s.staatStapel.length) s.auslage.push(s.staatStapel.pop());
       log(s, 'tribut', p.name + ' verbündet sich mit ' + def(t).name + '.', pi, { c: t.id }); pruefeSieg(s); return { ok: true };
     }
     case 'ablegen': {
@@ -290,20 +296,20 @@ export function aktion(s, pi, a) {
     case 'regierung': {
       const c = (D.regierungen || []).find(x => x.id === a.r); if (!c) return f('Unbekannte Regierung.');
       const g = civGrund(s, p, c, 'regierung'); if (g) return f(g);
-      p.gold -= c.kosten; p.regierung = neu(s, c.id); p.civN++; log(s, 'regierung', p.name + ' führt die Regierung ' + c.name + ' ein.', pi, { c: c.id }); pruefeSieg(s); return { ok: true };
+      p.gold -= c.kosten; { const nr = neu(s, c.id); if (p.regierung && p.regierung.pl != null) nr.pl = p.regierung.pl; p.regierung = nr; if (nr.pl == null) platz(p, nr); } p.civN++; log(s, 'regierung', p.name + ' führt die Regierung ' + c.name + ' ein.', pi, { c: c.id }); pruefeSieg(s); return { ok: true };
     }
     case 'person': case 'natur': {
       const art = a.t === 'person' ? 'pers' : 'natur'; const w = s.civ && s.civ[art].offen.find(x => x.i === a.c); if (!w) return f('Diese Karte ist nicht in der Reihe.');
       const g = civGrund(s, p, w, art); if (g) return f(g); const d = def(w);
       p.gold -= d.kosten; s.civ[art].offen.splice(s.civ[art].offen.indexOf(w), 1); p.civN++;
       const em = d.einmal || {};
-      if (art === 'natur') p.natur.push(w);
+      if (art === 'natur') p.natur.push(platz(p, w));
       else if (Object.keys(em).length) {
         if (em.gold) p.gold += em.gold; if (em.heilen) p.hp = Math.min(R.stadt_hp, p.hp + em.heilen);
         if (em.aufrichten) for (const u of einheiten(p)) u.t = 0;
         for (let n = 0; n < (em.ziehen || 0); n++) ziehe(s, p, maxStapel(p));
         s.civ.pers.stapel.push(w);
-      } else p.pers.push(w);
+      } else p.pers.push(platz(p, w));
       civNach(s, art); log(s, art === 'pers' ? 'person' : 'natur', p.name + (art === 'pers' ? ' gewinnt ' : ' erschließt ') + d.name + '.', pi, { c: w.id }); pruefeSieg(s); return { ok: true };
     }
     case 'schuss': return schuss(s, pi, a);

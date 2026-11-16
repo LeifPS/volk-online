@@ -5,6 +5,7 @@ import { spr, ic } from './sprites.js';
 import { kk, stapelBild } from './karten.js';
 import { kartenArt, braucht, benoetigt, ZA, SCHL_TXT, ROH } from './text.js';
 import { zaIcon, zaName } from './epochen.js';
+import { hexReich } from './reich.js';
 import { setHtml } from './morph.js';
 import { opt, ton, vibriere, schwebe, banner, konfetti, setzeOpt, optionenInhalt } from './fx.js';
 const { def } = E;
@@ -153,11 +154,12 @@ export class Spieltisch {
     }).join('');
     const mis = E.missionenBei(s, p), meine = E.missionenAus(s, p);
     const misHtml = (list, wohin) => list.map(m => { const o = s.sp[wohin ? m.host : m.owner], r = D.religionen.find(x => x.id === s.sp[m.owner].religion); return `<span class="mis">${spr(`rel:${r.id}:missionar`, r.farbe, 1)}${wohin ? 'zu ' : 'von '}${esc(o.name)}${!wohin && isMe && aktion ? `<button data-a="ausweisen" data-v="${m.c.i}">Ausweisen (${p.religion === 'flammenorden' ? 1 : 2} ${ic('ui:gold')})</button>` : ''}</span>`; }).join('');
+    this.reichSicht = this.reichSicht || {}; const ids = E.reichKarten(p).map(c => c.i), alt = this.reichSicht[pi];
+    const neuKarten = alt ? new Set(ids.filter(i => !alt.has(i))) : new Set(); this.reichSicht[pi] = new Set(ids);
     const hand = !isMe && p.hand.length ? `<div class="abschnitt"><h4>${ic('x:karten')} Handkarten <span class="mini">(${p.hand.length})</span></h4><div class="reihe dicht">${p.hand.map(() => kk({ id: '?' }, { rueck: 'rueck_1' })).join('')}</div></div>` : '';
     return `<div>
       ${this.tafelHtml(p, isMe)}
-      <div class="abschnitt"><h4>${ic('ui:bau')} Gebäude, Wunder & Verbündete</h4>${reihe([...p.geb, ...p.wunder, ...p.staaten, ...(p.regierung ? [p.regierung] : []), ...(p.pers || []), ...(p.natur || [])], 'Noch nichts gebaut. Spiele Karten aus deiner Hand.')}</div>
-      <div class="abschnitt"><h4>${ic('ui:gruenden')} Land <span class="mini">(${p.land.length})</span></h4>${reihe(p.land, 'Noch kein Land.')}</div>
+      <div class="abschnitt"><h4>${ic('ui:bau')} Dein Reich <span class="mini">(${E.reichKarten(p).length} Karten · Feld antippen)</span></h4>${hexReich(p, pi, Math.max(200, (this.buehne ? this.buehne.clientWidth : innerWidth) - 30), neuKarten)}</div>
       <div class="abschnitt"><h4>${ic('ui:staerke')} Heer an der Front</h4><div class="reihe">${p.front.length ? einh(p.front) : '<span class="leer">Keine Einheiten an der Front.</span>'}</div></div>
       ${p.kaserne.length ? `<div class="abschnitt"><h4>${ic('ui:lager')} Kaserne <span class="mini">(rückt im nächsten Zug an die Front)</span></h4><div class="reihe">${einh(p.kaserne, true)}</div></div>` : ''}
       ${s.opt.rel && (mis.length || meine.length || p.religion) ? `<div class="abschnitt"><h4>${ic('rel:glaube')} Glaube</h4>${rel ? `<div class="reihe">${kk({ id: 'reltafel_' + rel.id }, { a: 'info', v: 'reltafel_' + rel.id, data: { p: pi } })}</div>` : ''}
