@@ -5,6 +5,7 @@ import { spr, ic } from './sprites.js';
 import { kk, stapelBild } from './karten.js';
 import { kartenArt, braucht, benoetigt, ZA, SCHL_TXT, ROH } from './text.js';
 import { zaIcon, zaName } from './epochen.js';
+import { setHtml } from './morph.js';
 import { opt, ton, vibriere, schwebe, banner, konfetti, setzeOpt, optionenInhalt } from './fx.js';
 const { def } = E;
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -13,6 +14,7 @@ const st = (ico, txt) => `<span>${ic(ico)}${txt}</span>`;
 export class Spieltisch {
   constructor(root, overlay, ctrl) {
     this.root = root; this.ov = overlay; this.c = ctrl; this.tab = 'ich'; this.sel = new Set(); this.modalFn = null; this.blk = {}; this.ereigGesehen = 0; this.siegZu = false; this.vor = null; this.letzterAm = null; this.endeWarn = false;
+    this.root.innerHTML = ''; this.ov.innerHTML = '';   // sauberer Start, damit nichts aus dem Menü (z. B. onclick-Handler) übrig bleibt
     document.onkeydown = (e) => this.taste(e);
     root.onclick = (e) => this.klick(e); overlay.onclick = (e) => { if (e.target === overlay && !this.erzwungen()) { this.modalFn = null; this.render(); } else this.klick(e); };
   }
@@ -51,14 +53,14 @@ export class Spieltisch {
     if (this.tab === 'ich') inhalt = this.reichHtml(this.me); else if (this.tab === 'tisch') inhalt = this.tischHtml(); else if (this.tab === 'log') inhalt = this.logHtml(); else inhalt = this.reichHtml(+this.tab);
     const stp = this.buehne ? this.buehne.scrollTop : 0, hs = this.handEl ? this.handEl.scrollLeft : 0;
     const av = D.voelker.find(x => x.id === aktiv.volk);
-    this.root.innerHTML = `<div class="spiel">
+    setHtml(this.root, `<div class="spiel">
       <div class="kopf"><div class="titel"><span class="punkt" style="background:${av.farbe}"></span>RUNDE ${s.runde} · ${esc(aktiv.name)}${s.am === this.me && s.phase !== 'block' ? ' (DU)' : ''}</div>
         <button data-a="optionen" aria-label="Optionen">${ic(opt.ton ? 'ui:ton_an' : 'ui:ton_aus')}</button><button data-a="regeln" aria-label="Regeln">${ic('ui:hilfe')}</button><button data-a="menue" aria-label="Menü">${ic('ui:menue')}</button></div>
       <div class="ticker">${ticker || '&nbsp;'}</div>
       <div class="leiste">${chips}</div>
       <div class="tabs">${tabs}</div>
       <div class="buehne">${inhalt}</div>
-      <div class="dock">${this.aktionsHtml()}<div class="hand ${me.hand.length ? '' : 'leer'}">${this.handHtml()}</div></div></div>`;
+      <div class="dock">${this.aktionsHtml()}<div class="hand ${me.hand.length ? '' : 'leer'}">${this.handHtml()}</div></div></div>`);
     this.buehne = this.root.querySelector('.buehne'); this.buehne.scrollTop = stp; this.handEl = this.root.querySelector('.hand'); this.handEl.scrollLeft = hs;
     this.renderModal(); this.fxAnwenden();
   }
@@ -70,7 +72,7 @@ export class Spieltisch {
     else if (this.modalFn) { html = this.modalFn(); if (html === null) this.modalFn = null; }
     if (html === null || html === undefined) { this.ov.classList.remove('an'); this.ov.innerHTML = ''; return; }
     this.ov.classList.add('an'); const old = this.ov.querySelector('.sheet'); const sc = old ? old.scrollTop : 0;
-    this.ov.innerHTML = `<div class="sheet ${old ? 'still' : ''}">${html}</div>`; const nw = this.ov.querySelector('.sheet'); if (nw) nw.scrollTop = sc;
+    setHtml(this.ov, `<div class="sheet ${old ? 'still' : ''}">${html}</div>`); const nw = this.ov.querySelector('.sheet'); if (nw) nw.scrollTop = sc;
   }
   fenster(titel, inhalt, zu = true) { return `<div class="fk"><h3>${titel}</h3>${zu ? `<button class="knopf" data-a="zu" aria-label="Schließen" style="min-height:32px;padding:3px 8px">${ic('ui:kreuz')}</button>` : ''}</div><div class="fi">${inhalt}</div>`; }
 
