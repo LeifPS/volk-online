@@ -42,6 +42,16 @@ function glaube(D) {
   <h2>Die 8 Religionen</h2><div class="reg-tab">${D.religionen.map(r => `<div style="color:${r.rahmen}"><b>${spr(`rel:${r.id}:emblem`, r.farbe, 1)} ${esc(r.name)}</b></div><div><b>${esc(r.titel)}:</b> ${esc(r.text)}<br><i class="mini">${esc(r.flavor)}</i></div>`).join('')}</div>
   <h2>Alle Glaubenskarten</h2><div class="lex-gitter">${D.relkarten.map(k => lexikonKarte(k.id, { farbe: k.farbe_rel, klein: true, a: 'lex', v: k.id })).join('')}</div>`;
 }
+function zivilisation(D) {
+  const C = D.civ, tab = (l) => l.map(k => `<div><b>${esc(k.name)}</b></div><div>`);
+  const eff = (k) => Object.entries(k.effekte).map(([a, b]) => ({ E: 'Einkommen', K: 'Kultur', W: 'Wissen', S: 'Schutz', H: 'Heilung', A: 'Ausbildung', HL: 'Handlimit', G: 'Bauherr', L: 'Land', Z: 'Ziehen', F: 'Glaube', SCHIFF: 'Seefahrt' }[a] + ' ' + b)).join(', ');
+  return `<h2>Erweiterung 3: Zivilisation</h2><p>Drei neue Kartenarten aus dem großen Vorbild: <b>Regierungen</b>, <b>Große Persönlichkeiten</b> und <b>Naturwunder</b>. Du darfst pro Zug <b>höchstens 1 Karte</b> dieser Erweiterung nehmen.</p>
+  <h3>Regierungen</h3>${li('Ab dem genannten Zeitalter darfst du in deinem Zug <b>eine Regierung einführen</b>: Kosten zahlen, die Karte liegt vor dir und wirkt dauerhaft.', 'Eine neue Regierung <b>ersetzt</b> die alte; du zahlst die neuen Kosten voll.', 'Jede Regierung kann jeder Spieler wählen.')}
+  <h3>Große Persönlichkeiten</h3>${li(`Eine offene Reihe von <b>${C.pers_offen}</b> Persönlichkeiten. Du holst eine, wenn dein Zeitalter reicht und du zahlst.`, `<b>Dauerhafte</b> bleiben vor dir liegen (höchstens ${C.pers_max}) und geben Boni.`, '<b>Einmalige</b> (Sunzi, Marco Polo, Florence Nightingale) wirken sofort und kommen dann unter den Stapel.')}
+  <h3>Naturwunder</h3>${li(`Eine offene Reihe von <b>${C.natur_offen}</b> Naturwundern. Du brauchst <b>Zeitalter II</b> und eine <b>Land-Karte mit dem passenden Gelände</b> in deiner Auslage.`, 'Jedes Naturwunder gibt es nur einmal im Spiel.')}
+  <h2>Die 8 Regierungen</h2><div class="reg-tab">${D.regierungen.map(k => `<div><b>${esc(k.name)}</b><br><span class="mini">ab Zeitalter ${k.zeitalter + 1} · ${k.kosten} Gold</span></div><div>${esc(eff(k))}<br><i class="mini">${esc(k.flavor)}</i></div>`).join('')}</div>
+  <h2>Alle Karten</h2><div class="lex-gitter">${[...D.regierungen, ...D.personen, ...D.naturwunder].map(k => lexikonKarte(k.id, { farbe: k.farbe, klein: true, a: 'lex', v: k.id })).join('')}</div>`;
+}
 function voelkerSeite(D) {
   return `<h2>Die fünf Völker</h2>${D.voelker.map(v => `<div class="band" style="--vf:${v.farbe};margin:8px 0">${spr('stadt:stadtstaat', v.farbe, 1)}<div><div class="vn">${esc(v.name)}</div><div class="mini">${esc(v.herrscher)}</div></div><div class="fa">${esc(v.beschreibung)}<br><b>${v.text.map(esc).join(' ')}</b></div></div>`).join('')}`;
 }
@@ -50,18 +60,18 @@ function bedienung() {
   <h2>Unterschiede zum Papierspiel</h2>${li('Der Rechner führt Aufwecken, Einkommen, Ereignisse, Barbaren und den Neulingsschutz selbst aus.', 'Die Computer-Gegner gibt es in drei Stufen: <b>Leicht</b> (macht Fehler), <b>Mittel</b> und <b>Stark</b>.')}`;
 }
 function lexikon(D) {
-  const alle = [].concat(D.karten.map(k => ({ ...k, kat: k.typ })), D.wunder.map(k => ({ ...k, kat: 'wunder' })), D.staaten.map(k => ({ ...k, kat: 'staat' })), D.volkskarten.map(k => ({ ...k, kat: 'volk' })), D.relkarten.map(k => ({ ...k, kat: 'glaube' })));
+  const alle = [].concat(D.karten.map(k => ({ ...k, kat: k.typ })), D.wunder.map(k => ({ ...k, kat: 'wunder' })), D.staaten.map(k => ({ ...k, kat: 'staat' })), D.volkskarten.map(k => ({ ...k, kat: 'volk' })), D.relkarten.map(k => ({ ...k, kat: 'glaube' })), D.regierungen.map(k => ({ ...k, kat: 'civ' })), D.personen.map(k => ({ ...k, kat: 'civ' })), D.naturwunder.map(k => ({ ...k, kat: 'civ' })));
   return alle;
 }
 
 export function regelnSeite(app, D, zurueck, start = 'grund') {
-  const tabs = [['grund', 'Grundspiel'], ['volk', 'Volkskarten'], ['glaube', 'Götter & Glaube'], ['voelker', 'Völker'], ['lex', 'Karten-Lexikon'], ['bed', 'Bedienung']];
+  const tabs = [['grund', 'Grundspiel'], ['volk', 'Volkskarten'], ['glaube', 'Götter & Glaube'], ['civ', 'Zivilisation'], ['voelker', 'Völker'], ['lex', 'Karten-Lexikon'], ['bed', 'Bedienung']];
   let tab = start, kat = 'alle', suche = '';
   const zeichne = () => {
     let inh;
-    if (tab === 'grund') inh = grundspiel(D); else if (tab === 'volk') inh = volkskarten(D); else if (tab === 'glaube') inh = glaube(D); else if (tab === 'voelker') inh = voelkerSeite(D); else if (tab === 'bed') inh = bedienung();
+    if (tab === 'grund') inh = grundspiel(D); else if (tab === 'volk') inh = volkskarten(D); else if (tab === 'glaube') inh = glaube(D); else if (tab === 'civ') inh = zivilisation(D); else if (tab === 'voelker') inh = voelkerSeite(D); else if (tab === 'bed') inh = bedienung();
     else {
-      const kats = [['alle', 'Alle'], ['land', 'Land'], ['einheit', 'Einheiten'], ['gebaeude', 'Gebäude'], ['wunder', 'Wunder'], ['staat', 'Stadtstaaten'], ['volk', 'Volkskarten'], ['glaube', 'Glaube']];
+      const kats = [['alle', 'Alle'], ['land', 'Land'], ['einheit', 'Einheiten'], ['gebaeude', 'Gebäude'], ['wunder', 'Wunder'], ['staat', 'Stadtstaaten'], ['volk', 'Volkskarten'], ['glaube', 'Glaube'], ['civ', 'Zivilisation']];
       const liste = lexikon(D).filter(k => (kat === 'alle' || k.kat === kat) && (!suche || (k.name + ' ' + (k.beschreibung || '') + ' ' + (k.flavor || '')).toLowerCase().includes(suche.toLowerCase())));
       inh = `<h2>Karten-Lexikon</h2><input type="text" id="lex-s" placeholder="Karte suchen …" value="${esc(suche)}" style="width:100%;margin-bottom:6px"><div class="chips" style="margin-bottom:8px">${kats.map(([k, n]) => `<span class="chipb ${kat === k ? 'an' : ''}" data-kat="${k}">${n}</span>`).join('')}</div><div class="mini">${liste.length} Karten</div><div class="lex-gitter">${liste.map(k => lexikonKarte(k.id, { st: k.stapel, a: 'lex', v: k.id })).join('')}</div>`;
     }

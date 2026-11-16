@@ -64,6 +64,7 @@ function kandidaten(s, pi) {
   const ak = E.aufstiegKosten(p); if (ak !== null && E.aufstiegErlaubt(p) && p.gold >= ak) out.push({ t: 'aufstieg' });
   if (p.staaten.length < 2) for (const t of s.auslage) if (p.gold >= def(t).kosten) out.push({ t: 'tribut', c: t.i });
   if (p.ablN < R.ablegen_max) { const ids = new Set(); for (const c of p.hand) if (!c.vk && !ids.has(c.id)) { ids.add(c.id); out.push({ t: 'ablegen', c: c.i }); } }
+  if (s.opt.civ) for (const x of civOpt(s, p)) out.push(x);
   if (s.opt.rel) {
     if (!p.religion && p.alter >= 1 && p.gold >= 5 && s.relFrei.length) { const op = p.hand.filter(c => !c.vk && !def(c).relkarte).sort((a, b) => E.kartenWert(p, a) - E.kartenWert(p, b)).slice(0, 2); for (const r of s.relFrei) for (const o of op) out.push({ t: 'gruenden', rel: r, c: o.i }); }
     if (p.religion) for (const c of p.hand) if (def(c).klasse === 'missionar' && p.gold >= E.kosten(p, c)) for (const o of E.gegner(s, p)) if (!s.missionen.some(m => m.owner === pi && s.sp[m.host] === o)) out.push({ t: 'mission', c: c.i, ziel: s.sp.indexOf(o) });
@@ -77,6 +78,12 @@ function kandidaten(s, pi) {
     const bereit = p.front.filter(E.kannAngreifen).sort((a, b) => def(b).staerke - def(a).staerke);
     if (bereit.length) for (const o of E.gegner(s, p)) { const zi = s.sp.indexOf(o), seen = new Set(); for (let k = 1; k <= bereit.length; k++) { for (const sub of [bereit.slice(0, k), bereit.slice(bereit.length - k)]) { const key = sub.map(u => u.i).sort().join(','); if (!seen.has(key)) { seen.add(key); out.push({ t: 'angriff', ids: sub.map(u => u.i), ziel: zi }); } } } }
   }
+  return out;
+}
+function civOpt(s, p) {
+  const out = []; if (p.civN >= E.daten().civ.pro_zug) return out;
+  for (const c of E.daten().regierungen) if (E.civGrund(s, p, c, 'regierung') === null) out.push({ t: 'regierung', r: c.id });
+  for (const [art, t] of [['pers', 'person'], ['natur', 'natur']]) for (const w of s.civ[art].offen) if (E.civGrund(s, p, w, art) === null) out.push({ t, c: w.i });
   return out;
 }
 function ausfuehren(s, pi, a, verteidiger) {

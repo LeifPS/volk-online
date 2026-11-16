@@ -156,7 +156,7 @@ export class Spieltisch {
     const hand = !isMe && p.hand.length ? `<div class="abschnitt"><h4>${ic('x:karten')} Handkarten <span class="mini">(${p.hand.length})</span></h4><div class="reihe dicht">${p.hand.map(() => kk({ id: '?' }, { rueck: 'rueck_1' })).join('')}</div></div>` : '';
     return `<div>
       ${this.tafelHtml(p, isMe)}
-      <div class="abschnitt"><h4>${ic('ui:bau')} Gebäude, Wunder & Verbündete</h4>${reihe([...p.geb, ...p.wunder, ...p.staaten], 'Noch nichts gebaut. Spiele Karten aus deiner Hand.')}</div>
+      <div class="abschnitt"><h4>${ic('ui:bau')} Gebäude, Wunder & Verbündete</h4>${reihe([...p.geb, ...p.wunder, ...p.staaten, ...(p.regierung ? [p.regierung] : []), ...(p.pers || []), ...(p.natur || [])], 'Noch nichts gebaut. Spiele Karten aus deiner Hand.')}</div>
       <div class="abschnitt"><h4>${ic('ui:gruenden')} Land <span class="mini">(${p.land.length})</span></h4>${reihe(p.land, 'Noch kein Land.')}</div>
       <div class="abschnitt"><h4>${ic('ui:staerke')} Heer an der Front</h4><div class="reihe">${p.front.length ? einh(p.front) : '<span class="leer">Keine Einheiten an der Front.</span>'}</div></div>
       ${p.kaserne.length ? `<div class="abschnitt"><h4>${ic('ui:lager')} Kaserne <span class="mini">(rückt im nächsten Zug an die Front)</span></h4><div class="reihe">${einh(p.kaserne, true)}</div></div>` : ''}
@@ -174,12 +174,32 @@ export class Spieltisch {
     const stp = [1, 2, 3].map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: ziehen && k <= E.maxStapel(p) ? 'ziehe' : '', v: k, cls: `${k > E.maxStapel(p) ? 'aus' : ''} ${ziehen && k <= E.maxStapel(p) ? 'zieh' : ''}`, unten: `STAPEL ${ZA[k - 1]}` })).join('')
       + stapelBild('rueck_0', s.ereig.length, { unten: 'EREIGNISSE' });
     const rels = s.opt.rel ? `<div class="abschnitt"><h4>${ic('rel:glaube')} Religionen <span class="mini">(gründen ab Zeitalter II · 5 Gold + 1 Handkarte)</span></h4><div class="reihe">${D.religionen.map(r => { const frei = s.relFrei.includes(r.id), inh = s.sp.find(x => x.religion === r.id); return kk({ id: 'reltafel_' + r.id }, { a: 'info', v: 'reltafel_' + r.id, data: { p: this.me }, cls: frei ? '' : 'aus', badge: frei ? 'frei' : esc(inh.name) }); }).join('')}</div></div>` : '';
+    const civ = s.opt.civ ? this.civHtml(p, aktion) : '';
     return `<div>
       <div class="abschnitt"><h4>${ic('ui:wunder')} Weltwunder <span class="mini">(tippen zum Bauen)</span></h4><div class="reihe">${wun || '<span class="leer">Alle Wunder sind gebaut.</span>'}</div></div>
       <div class="abschnitt"><h4>${ic('ui:stadt')} Stadtstaaten <span class="mini">(Tribut ${R.tribut_kosten} Gold · höchstens 2 Verbündete)</span></h4><div class="reihe">${sta || '<span class="leer">Keine Stadtstaaten mehr.</span>'}</div></div>
       <div class="abschnitt"><h4>${ic('x:karten')} Kartenstapel</h4><div class="stapel-reihe">${stp}</div>${p.religion ? `<div class="note">Dein Glaubensstapel: ${p.relStapel.length} Karten.</div>` : ''}</div>
-      ${rels}
+      ${rels}${civ}
       <div class="note">${ic('x:blitz')} Nach jeder Runde wird ein Ereignis aufgedeckt. ${E.schutzAktiv(s) ? `<b>Neulingsschutz:</b> bis zum Ereignis ${R.schutz_runden} darf niemand angreifen oder schießen (bisher ${s.ereigZ}).` : 'Der Neulingsschutz ist vorbei, Angriffe sind erlaubt.'}</div></div>`;
+  }
+  civHtml(p, aktion) {
+    const s = this.s, D = E.daten(), C = D.civ;
+    const kost = (c) => `${ic('ui:gold')}${def(c).kosten}`;
+    const reg = D.regierungen.map(r => kk(r, { a: 'civinfo', v: 'regierung:' + r.id, cls: `${p.regierung && p.regierung.id === r.id ? 'sel' : ''} ${r.zeitalter > p.alter ? 'aus' : (aktion && !E.civGrund(s, p, r, 'regierung') ? 'spielbar' : '')}`, badge: p.regierung && p.regierung.id === r.id ? 'aktiv' : kost(r) })).join('');
+    const per = s.civ.pers.offen.map(w => kk(w, { a: 'civinfo', v: 'pers:' + w.i, cls: def(w).zeitalter > p.alter ? 'aus' : (aktion && !E.civGrund(s, p, w, 'pers') ? 'spielbar' : ''), badge: kost(w) })).join('');
+    const nat = s.civ.natur.offen.map(w => kk(w, { a: 'civinfo', v: 'natur:' + w.i, cls: def(w).zeitalter > p.alter ? 'aus' : (aktion && !E.civGrund(s, p, w, 'natur') ? 'spielbar' : ''), badge: kost(w) })).join('');
+    return `<div class="abschnitt"><h4>${ic('ui:stadt')} Regierungen <span class="mini">(tippen · 1 Karte der Erweiterung pro Zug)</span></h4><div class="reihe">${reg}</div></div>
+      <div class="abschnitt"><h4>${ic('ui:befoerderung')} Große Persönlichkeiten <span class="mini">(höchstens ${C.pers_max} dauerhafte)</span></h4><div class="reihe">${per || '<span class="leer">Keine mehr.</span>'}</div></div>
+      <div class="abschnitt"><h4>${ic('ui:erkunden')} Naturwunder <span class="mini">(ab Zeitalter II · passendes Gelände nötig)</span></h4><div class="reihe">${nat || '<span class="leer">Keine mehr.</span>'}</div></div>`;
+  }
+  civSheet(key) {
+    return () => {
+      const s = this.s, p = this.p(this.me), D = E.daten(); const [art, id] = key.split(':');
+      const c = art === 'regierung' ? D.regierungen.find(x => x.id === id) : s.civ[art].offen.find(x => x.i === +id); if (!c) return null; const d = def(c);
+      const mein = this.meinZug() && s.phase === 'aktion'; const g = mein ? E.civGrund(s, p, c, art) : 'Du bist gerade nicht am Zug.';
+      const lab = art === 'regierung' ? (p.regierung ? 'Regierung wechseln' : 'Regierung einführen') : art === 'pers' ? 'Holen' : 'Erschließen';
+      return this.fenster(esc(d.name), `${this.kartenSheetKopf(c.i ? c : { id: d.id }, p)}${g ? `<div class="grund">${esc(g)}</div>` : ''}<div class="btns">${!g ? `<button class="gruen" data-a="civ" data-k="${art}" data-v="${art === 'regierung' ? id : c.i}">${ic('ui:befoerderung')}${lab} (${d.kosten} ${ic('ui:gold')})</button>` : ''}</div>`);
+    };
   }
   logHtml() { return `<div class="log pix">${this.s.ev.slice().reverse().map(e => `<div>${esc(e.t)}</div>`).join('')}</div>`; }
 
@@ -290,7 +310,7 @@ export class Spieltisch {
   snap() {
     const s = this.s;
     return { sig: s.sp.map(p => p.volk).join(), runde: s.runde, am: s.am, phase: s.phase, sieger: s.sieger, evn: s.ev.length, ereig: s.letztes ? s.letztes.n : 0,
-      p: s.sp.map((p, i) => ({ hp: p.hp, k: E.kultur(p), gold: p.gold, alter: p.alter, hand: i === this.me ? p.hand.map(c => c.i) : [], tisch: [...p.geb, ...p.wunder, ...p.staaten, ...p.land, ...p.front, ...p.kaserne].map(c => c.i) })) };
+      p: s.sp.map((p, i) => ({ hp: p.hp, k: E.kultur(p), gold: p.gold, alter: p.alter, hand: i === this.me ? p.hand.map(c => c.i) : [], tisch: [...p.geb, ...p.wunder, ...p.staaten, ...(p.regierung ? [p.regierung] : []), ...(p.pers || []), ...(p.natur || []), ...p.land, ...p.front, ...p.kaserne].map(c => c.i) })) };
   }
   fxAnwenden() {
     const s = this.s, jetzt = this.snap(), vor = this.vor; this.vor = jetzt;
@@ -367,6 +387,8 @@ export class Spieltisch {
       case 'ereigok': this.ereigGesehen = s.letztes.n; this.render(); this.c.weiter?.(); break;
       case 'hand': sheet(this.handSheet(+v)); break;
       case 'info': sheet(this.infoSheet(v, +t.dataset.p)); break;
+      case 'civinfo': sheet(this.civSheet(v)); break;
+      case 'civ': { const k = t.dataset.k; const r = await this.senden(k === 'regierung' ? { t: 'regierung', r: v } : { t: k === 'pers' ? 'person' : 'natur', c: +v }); if (r.ok) { this.modalFn = null; this.render(); } break; }
       case 'wunderinfo': sheet(this.wunderSheet(+v)); break;
       case 'staatinfo': sheet(this.staatSheet(+v)); break;
       case 'ziehe': await this.senden({ t: 'ziehe', stapel: v === 'rel' ? 'rel' : +v }); break;

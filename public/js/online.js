@@ -14,7 +14,7 @@ let sitzung = null;     // aktive Verbindung
 export function offeneSitzung() { return ls.get('volk.on', null); }
 
 export function onlineMenue(app, D, zurueck, _start, vorCode) {
-  const c = Object.assign({ name: ls.get('volk.setup', {}).name || 'Spieler', max: 2, vk: false, rel: false }, ls.get('volk.onsetup', {}));
+  const c = Object.assign({ name: ls.get('volk.setup', {}).name || 'Spieler', max: 2, vk: false, rel: false, civ: false }, ls.get('volk.onsetup', {}));
   const alt = offeneSitzung();
   const zeichne = (fehler = '') => {
     app.innerHTML = `<div class="menue"><h2>${ic('x:erde')} Online spielen</h2>
@@ -27,6 +27,7 @@ export function onlineMenue(app, D, zurueck, _start, vorCode) {
         <div class="zeile"><label>Spieler</label><div class="chips">${[2, 3, 4].map(n => `<span class="chipb ${c.max === n ? 'an' : ''}" data-max="${n}">${n}</span>`).join('')}</div></div>
         <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Volkskarten</b><small>Erweiterung 1</small></div></div>
         <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Götter & Glaube</b><small>Erweiterung 2</small></div></div>
+        <div class="modul ${c.civ ? 'an' : ''}" data-m="civ"><span class="haken">${c.civ ? ic('ui:haken') : ''}</span><div><b>Zivilisation</b><small>Erweiterung 3</small></div></div>
         <div class="btns" style="grid-template-columns:1fr"><button id="o-schnell">${ic('x:blitz')}Schnellsuche starten</button></div></div>
       <div class="btns"><button class="sek" id="o-zu">Zurück</button></div></div>`;
     document.getElementById('o-zu').onclick = zurueck;
@@ -34,10 +35,10 @@ export function onlineMenue(app, D, zurueck, _start, vorCode) {
     app.querySelectorAll('[data-max]').forEach(e => e.onclick = () => { name(); c.max = +e.dataset.max; zeichne(); });
     app.querySelectorAll('[data-m]').forEach(e => e.onclick = () => { name(); c[e.dataset.m] = !c[e.dataset.m]; zeichne(); });
     if (alt) document.getElementById('o-zurueck').onclick = () => verbinde(app, D, zurueck, { code: alt.code, name: name(), erstelle: false });
-    document.getElementById('o-neu').onclick = () => verbinde(app, D, zurueck, { code: neuerCode(), name: name(), erstelle: true, cfg: { max: 4, vk: false, rel: false }, versuche: 5 });
+    document.getElementById('o-neu').onclick = () => verbinde(app, D, zurueck, { code: neuerCode(), name: name(), erstelle: true, cfg: { max: 4, vk: false, rel: false, civ: false }, versuche: 5 });
     document.getElementById('o-bei').onclick = () => { const code = document.getElementById('o-code').value.trim().toUpperCase(); if (code.length < 3) return zeichne('Bitte einen Raum-Code eingeben.'); verbinde(app, D, zurueck, { code, name: name(), erstelle: false }); };
     document.getElementById('o-schnell').onclick = async () => {
-      name(); try { const r = await (await fetch('/api/schnell', { method: 'POST', body: JSON.stringify({ max: c.max, vk: c.vk, rel: c.rel }) })).json(); verbinde(app, D, zurueck, { code: r.code, name: c.name, erstelle: r.neu, cfg: { max: c.max, vk: c.vk, rel: c.rel, schnell: true } }); } catch { zeichne('Die Schnellsuche ist gerade nicht erreichbar.'); }
+      name(); try { const r = await (await fetch('/api/schnell', { method: 'POST', body: JSON.stringify({ max: c.max, vk: c.vk, rel: c.rel, civ: c.civ }) })).json(); verbinde(app, D, zurueck, { code: r.code, name: c.name, erstelle: r.neu, cfg: { max: c.max, vk: c.vk, rel: c.rel, civ: c.civ, schnell: true } }); } catch { zeichne('Die Schnellsuche ist gerade nicht erreichbar.'); }
     };
   };
   zeichne();
@@ -105,7 +106,8 @@ class Sitzung {
       <div class="karte-panel"><h3>Module</h3>
         <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b></div></div>
         <div class="modul ${L.opt.vk ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="vk"><span class="haken">${L.opt.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b></div></div>
-        <div class="modul ${L.opt.rel ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="rel"><span class="haken">${L.opt.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Glaubenssieg bei ${L.glaubeZiel}</small></div></div></div>
+        <div class="modul ${L.opt.rel ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="rel"><span class="haken">${L.opt.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Glaubenssieg bei ${L.glaubeZiel}</small></div></div>
+        <div class="modul ${L.opt.civ ? 'an' : ''} ${L.host && !L.schnell ? '' : 'fest'}" data-m="civ"><span class="haken">${L.opt.civ ? ic('ui:haken') : ''}</span><div><b>Erweiterung 3: Zivilisation</b><small>Regierungen, Persönlichkeiten, Naturwunder</small></div></div></div>
       <div class="btns">${L.host ? `<button class="gruen" id="l-start" ${L.sitze.length < 2 ? 'disabled' : ''}>${ic('x:los')}Spiel starten</button>` : '<div class="hinweis" style="color:#fff">Der Gastgeber startet das Spiel.</div>'}<button class="sek" id="l-weg">Raum verlassen</button></div></div>`;
     document.getElementById('l-copy').onclick = async () => { try { await navigator.clipboard.writeText(link); this.banner('Link kopiert'); } catch { prompt('Link:', link); } };
     document.getElementById('l-share').onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Volk – Das Kartenspiel', text: 'Spiel mit mir Volk! Raum-Code: ' + L.code, url: link }); } catch { } } else document.getElementById('l-copy').click(); };

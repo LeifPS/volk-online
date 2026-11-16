@@ -5,7 +5,7 @@
 let D = null, ID = {}, R = null;
 export function setzeDaten(daten) {
   D = daten; R = D.regeln; ID = {};
-  for (const l of [D.karten, D.volkskarten, D.relkarten, D.wunder, D.staaten, D.ereignisse]) for (const k of l) ID[k.id] = k;
+  for (const l of [D.karten, D.volkskarten, D.relkarten, D.wunder, D.staaten, D.ereignisse, D.regierungen || [], D.personen || [], D.naturwunder || []]) for (const k of l) ID[k.id] = k;
   for (const e of D.rel_ereignisse) ID[e.id] = Object.assign({ typ: 'ereignis', art: 'rel', plus: 0 }, e);
 }
 export const daten = () => D;
@@ -22,9 +22,9 @@ const neu = (s, id, extra) => Object.assign({ i: s.nid++, id }, extra || {});
 // ---------- Spiel erzeugen ----------
 // spieler: [{name, volk?, ki?}], opt: {vk:true/false, rel:true/false, seed}
 export function neuesSpiel(spieler, opt = {}) {
-  const s = { v: 1, rng: (opt.seed ?? Math.floor(Math.random() * 2 ** 31)) >>> 0, nid: 1, seq: 0, ev: [], opt: { vk: !!opt.vk, rel: !!opt.rel }, runde: 1, am: 0, phase: 'ziehen', sieger: null, grund: null, ereigZ: 0 };
+  const s = { v: 1, rng: (opt.seed ?? Math.floor(Math.random() * 2 ** 31)) >>> 0, nid: 1, seq: 0, ev: [], opt: { vk: !!opt.vk, rel: !!opt.rel, civ: !!opt.civ }, runde: 1, am: 0, phase: 'ziehen', sieger: null, grund: null, ereigZ: 0 };
   const volkIds = D.voelker.map(v => v.id); const frei = mische(s, volkIds.filter(v => !spieler.some(p => p.volk === v)));
-  s.sp = spieler.map((p, i) => ({ name: p.name, ki: p.ki || null, volk: p.volk || frei.pop(), volkF: '', hand: [], land: [], geb: [], wunder: [], staaten: [], front: [], kaserne: [], gold: R.start_gold, hp: R.stadt_hp, alter: 0, landG: 0, ablN: 0, tot: false, religion: null, relStapel: [], relBenutzt: false }));
+  s.sp = spieler.map((p, i) => ({ name: p.name, ki: p.ki || null, volk: p.volk || frei.pop(), volkF: '', hand: [], land: [], geb: [], wunder: [], staaten: [], front: [], kaserne: [], gold: R.start_gold, hp: R.stadt_hp, alter: 0, landG: 0, ablN: 0, tot: false, religion: null, relStapel: [], relBenutzt: false, regierung: null, pers: [], natur: [], civN: 0 }));
   for (const p of s.sp) p.volkF = D.voelker.find(v => v.id === p.volk).farbe;
   s.stapel = { 1: [], 2: [], 3: [] }; s.ablage = { 1: [], 2: [], 3: [] };
   for (const k of D.karten) for (let n = 0; n < k.kopien; n++) s.stapel[k.stapel].push(neu(s, k.id, k.typ === 'land' ? { st: k.stapel } : null));
@@ -33,6 +33,7 @@ export function neuesSpiel(spieler, opt = {}) {
   s.staatStapel = mische(s, D.staaten.map(x => neu(s, x.id))); s.auslage = [];
   s.ereig = D.ereignisse.map(e => neu(s, e.id)); if (s.opt.rel) for (const e of D.rel_ereignisse) s.ereig.push(neu(s, e.id));
   mische(s, s.ereig); s.ereigAblage = [];
+  s.civ = null; if (s.opt.civ) { const C = D.civ; s.civ = { pers: { stapel: mische(s, D.personen.map(x => neu(s, x.id))), offen: [] }, natur: { stapel: mische(s, D.naturwunder.map(x => neu(s, x.id))), offen: [] } }; civNach(s, 'pers'); civNach(s, 'natur'); }
   s.missionen = []; s.relFrei = s.opt.rel ? D.religionen.map(r => r.id) : [];
   s.glaubeZiel = s.opt.vk ? D.glaube_sieg_vk : D.glaube_sieg;
   for (const p of s.sp) { for (let k = 0; k < R.start_hand; k++) ziehe(s, p, 1); volkskarte(s, p); }
@@ -41,6 +42,9 @@ export function neuesSpiel(spieler, opt = {}) {
   zugStart(s);
   return s;
 }
+// ---------- Erweiterung 3: Zivilisation ----------
+const CIV_OFFEN = { pers: 3, natur: 4 };
+function civNach(s, art) { const z = s.civ[art]; while (z.offen.length < (art === 'pers' ? (D.civ.pers_offen) : D.civ.natur_offen) && z.stapel.length) z.offen.push(z.stapel.shift()); }
 function wunderNach(s) { if (s.wunderStapel.length) s.wunderOffen.push(s.wunderStapel.shift()); }
 function log(s, k, t, p, extra) { s.ev.push(Object.assign({ n: ++s.seq, k, t, p: p ?? null }, extra || {})); if (s.ev.length > 80) s.ev.splice(0, s.ev.length - 80); }
 
@@ -69,7 +73,7 @@ export const istZivil = (c) => ZIVIL.includes(def(c).klasse);
 export const kampfEinheiten = (p) => einheiten(p).filter(u => def(u).staerke > 0 && !istZivil(u));
 export function effekte(p) {
   const e = {};
-  for (const c of p.geb.concat(p.wunder, p.staaten)) for (const [a, b] of Object.entries(def(c).effekte || {})) e[a] = (e[a] || 0) + b;
+  for (const c of p.geb.concat(p.wunder, p.staaten, p.pers || [], p.natur || [], p.regierung ? [p.regierung] : [])) for (const [a, b] of Object.entries(def(c).effekte || {})) e[a] = (e[a] || 0) + b;
   if (p.religion === 'mondgilde') e.HL = (e.HL || 0) + 2; else if (p.religion === 'hain') e.H = (e.H || 0) + 2;
   else if (p.religion === 'berggeister') e.S = (e.S || 0) + 2; else if (p.religion === 'sternenorakel') e.W = (e.W || 0) + 1;
   return new Proxy(e, { get: (t, k) => t[k] || 0 });
@@ -142,6 +146,18 @@ export function sperrGrund(s, p, c) {
   if (d.typ === 'gebaeude' && p.geb.some(g => g.id === c.id)) return 'Du hast dieses Gebäude schon.';
   return null;
 }
+// Erweiterung 3: Grund, warum eine Zivilisationskarte nicht genommen werden kann (null = ok)
+export function civGrund(s, p, c, art) {
+  const d = def(c), C = D.civ;
+  if (!s.opt.civ) return 'Die Erweiterung „Zivilisation“ ist nicht aktiv.';
+  if (p.civN >= C.pro_zug) return 'Pro Zug darfst du nur 1 Karte dieser Erweiterung nehmen.';
+  if (d.zeitalter > p.alter) return 'Dein Zeitalter ist zu niedrig.';
+  if (art === 'regierung' && p.regierung && p.regierung.id === c.id) return 'Das ist schon deine Regierung.';
+  if (art === 'pers' && !Object.keys(d.einmal || {}).length && (p.pers || []).length >= C.pers_max) return 'Du hast schon ' + C.pers_max + ' Persönlichkeiten.';
+  if (art === 'natur' && !(p.land || []).some(l => def(l).gelaende === d.gelaende)) return 'Du brauchst Land mit dem Gelände ' + d.gelaende_name + '.';
+  if (p.gold < d.kosten) return 'Zu wenig Gold (' + d.kosten + ' nötig).';
+  return null;
+}
 export function ablegenGold(p, c) { return def(c).relkarte ? 0 : R.ablegen_gold + (p.volk === 'goldener_bund' || effekte(p).ABLEGEN ? 1 : 0) + (p.religion === 'mondgilde' ? 1 : 0); }
 export const landErlaubt = (p) => 1 + effekte(p).L;
 export const schutzAktiv = (s) => s.ereigZ < R.schutz_runden;
@@ -154,7 +170,7 @@ function zugStart(s) {
   p.hp = Math.min(R.stadt_hp, p.hp + heilung(p));
   const g = einkommen(s, p); p.gold += g;
   log(s, 'zug', p.name + ' ist am Zug (+' + g + ' Gold).', s.am, { gold: g });
-  p.landG = 0; p.ablN = 0; p.relBenutzt = false; p.aufN = 0;
+  p.landG = 0; p.ablN = 0; p.relBenutzt = false; p.aufN = 0; p.civN = 0;
   s.zieh = R.ziehen + effekte(p).Z + (p.religion === 'mondgilde' ? 1 : 0);
   ziehCheck(s);
 }
@@ -270,6 +286,25 @@ export function aktion(s, pi, a) {
       const m = s.missionen.find(x => x.c.i === a.c && x.host === pi); if (!m) return f('Kein Missionar bei dir.');
       const kst = p.religion === 'flammenorden' ? 1 : 2; if (p.gold < kst) return f('Zu wenig Gold (' + kst + ' nötig).');
       p.gold -= kst; missionEnde(s, m); return { ok: true };
+    }
+    case 'regierung': {
+      const c = (D.regierungen || []).find(x => x.id === a.r); if (!c) return f('Unbekannte Regierung.');
+      const g = civGrund(s, p, c, 'regierung'); if (g) return f(g);
+      p.gold -= c.kosten; p.regierung = neu(s, c.id); p.civN++; log(s, 'regierung', p.name + ' führt die Regierung ' + c.name + ' ein.', pi, { c: c.id }); pruefeSieg(s); return { ok: true };
+    }
+    case 'person': case 'natur': {
+      const art = a.t === 'person' ? 'pers' : 'natur'; const w = s.civ && s.civ[art].offen.find(x => x.i === a.c); if (!w) return f('Diese Karte ist nicht in der Reihe.');
+      const g = civGrund(s, p, w, art); if (g) return f(g); const d = def(w);
+      p.gold -= d.kosten; s.civ[art].offen.splice(s.civ[art].offen.indexOf(w), 1); p.civN++;
+      const em = d.einmal || {};
+      if (art === 'natur') p.natur.push(w);
+      else if (Object.keys(em).length) {
+        if (em.gold) p.gold += em.gold; if (em.heilen) p.hp = Math.min(R.stadt_hp, p.hp + em.heilen);
+        if (em.aufrichten) for (const u of einheiten(p)) u.t = 0;
+        for (let n = 0; n < (em.ziehen || 0); n++) ziehe(s, p, maxStapel(p));
+        s.civ.pers.stapel.push(w);
+      } else p.pers.push(w);
+      civNach(s, art); log(s, art === 'pers' ? 'person' : 'natur', p.name + (art === 'pers' ? ' gewinnt ' : ' erschließt ') + d.name + '.', pi, { c: w.id }); pruefeSieg(s); return { ok: true };
     }
     case 'schuss': return schuss(s, pi, a);
     case 'angriff': return angriff(s, pi, a);
@@ -470,6 +505,7 @@ export function sicht(s, me) {
   const c = JSON.parse(JSON.stringify(s)); c.rng = 0;
   for (const k of [1, 2, 3]) { c.stapel[k] = new Array(c.stapel[k].length).fill(0); c.ablage[k] = new Array(c.ablage[k].length).fill(0); }
   c.wunderStapel = new Array(c.wunderStapel.length).fill(0); c.staatStapel = new Array(c.staatStapel.length).fill(0);
+  if (c.civ) { c.civ.pers.stapel = new Array(c.civ.pers.stapel.length).fill(0); c.civ.natur.stapel = new Array(c.civ.natur.stapel.length).fill(0); }
   c.ereig = new Array(c.ereig.length).fill(0); c.ereigAblage = c.ereigAblage.map(x => x);
   c.sp.forEach((p, i) => { if (i !== me) { p.hand = p.hand.map(() => ({ i: 0, id: '?' })); p.relStapel = new Array(p.relStapel.length).fill(0); } });
   return c;

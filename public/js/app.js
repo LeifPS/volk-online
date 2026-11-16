@@ -57,7 +57,7 @@ function optionenFenster() {
 
 // ---------------------------------------------------------------- Einstellungen
 function setup() {
-  const c = Object.assign({ name: 'Spieler', gegner: 2, volk: ['', '', '', ''], stufe: ['mittel', 'mittel', 'mittel'], vk: false, rel: false }, ls.get('volk.setup', {}));
+  const c = Object.assign({ name: 'Spieler', gegner: 2, volk: ['', '', '', ''], stufe: ['mittel', 'mittel', 'mittel'], vk: false, rel: false, civ: false }, ls.get('volk.setup', {}));
   const zeichne = () => {
     const vopt = (sel) => `<option value="">Zufällig</option>${D.voelker.map(v => `<option value="${v.id}" ${sel === v.id ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}`;
     const sitze = Array.from({ length: c.gegner }, (_, i) => `<div class="sitz"><b>Gegner ${i + 1}</b><select data-k="volk" data-i="${i + 1}">${vopt(c.volk[i + 1])}</select><select data-k="stufe" data-i="${i}">${['leicht', 'mittel', 'stark'].map(st => `<option value="${st}" ${c.stufe[i] === st ? 'selected' : ''}>${KI.STUFEN[st].name}</option>`).join('')}</select></div>`).join('');
@@ -70,7 +70,8 @@ function setup() {
       <div class="karte-panel"><h3>Spielmodule</h3>
         <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung oder Kultur (12).</small></div></div>
         <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
-        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div></div>
+        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div>
+        <div class="modul ${c.civ ? 'an' : ''}" data-m="civ"><span class="haken">${c.civ ? ic('ui:haken') : ''}</span><div><b>Erweiterung 3: Zivilisation</b><small>${D.regierungen.length} Regierungen, ${D.personen.length} Große Persönlichkeiten und ${D.naturwunder.length} Naturwunder aus dem Vorbild Civilization.</small></div></div></div>
       <div class="btns"><button class="gruen" id="s-los">${ic('x:los')}Spiel starten</button><button class="sek" id="s-zu">Zurück</button></div></div>`;
     app.querySelectorAll('[data-g]').forEach(e => e.onclick = () => { c.gegner = +e.dataset.g; zeichne(); });
     app.querySelectorAll('[data-m]').forEach(e => e.onclick = () => { c[e.dataset.m] = !c[e.dataset.m]; zeichne(); });
@@ -88,7 +89,7 @@ function starteLokal(cfg, gespeichert) {
   if (!s) {
     const sp = [{ name: cfg.name, volk: cfg.volk[0] || undefined }];
     for (let i = 0; i < cfg.gegner; i++) sp.push({ name: 'Computer ' + (i + 1), volk: cfg.volk[i + 1] || undefined, ki: cfg.stufe[i] });
-    s = E.neuesSpiel(sp, { vk: cfg.vk, rel: cfg.rel });
+    s = E.neuesSpiel(sp, { vk: cfg.vk, rel: cfg.rel, civ: cfg.civ });
     s.sp.forEach((p, i) => { if (i > 0) { const v = D.voelker.find(x => x.id === p.volk); p.name = v.herrscher.split(' ').slice(0, 2).join(' '); } });
   }
   ctrl = new LokalCtrl(s, cfg); tisch = new Spieltisch(app, overlay, ctrl); ctrl.view = tisch;

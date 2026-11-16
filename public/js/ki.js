@@ -33,6 +33,22 @@ function einhWert(s, p, c) {
   return v / Math.max(1, E.kosten(p, c));
 }
 function staatWert(a) { const e = def(a).effekte, d = def(a); return (e.E || 0) * 3 + (e.K || 0) * 3 + (e.W || 0) * 2 + (e.S || 0) * 0.8 + (e.H || 0) * 0.6 + (e.A || 0) + (e.L || 0) * 1.5 + (e.HL || 0) * 0.3 + ((d.prov || []).length ? 1 : 0) + (e.ABLEGEN || 0) * 0.5 + (e.SCHIFF || 0) * 0.3; }
+// Erweiterung 3: mögliche Zivilisations-Aktionen mit Wert je Gold
+export function civWert(p, d) {
+  const e = d.effekte || {}, em = d.einmal || {};
+  let v = (e.E || 0) * 3.2 + (e.K || 0) * 3.2 + (e.W || 0) * (p.alter < 5 ? 2.2 : 0.5) + (e.S || 0) * 0.9 + (e.H || 0) * 0.8 + (e.F || 0) * (p.religion ? 2.8 : 0) + Math.min(3, e.A || 0) + (e.HL || 0) * 0.6 + (e.G || 0) * 1.5 + (e.L || 0) * 2 + (e.Z || 0) * 2.2 + (e.SCHIFF || 0) * 0.3;
+  v += (em.gold || 0) * 0.9 + (em.ziehen || 0) * 1.3 + (em.heilen || 0) * (p.hp < E.REGELN().stadt_hp - 3 ? 0.5 : 0.1) + (em.aufrichten ? 0.5 : 0);
+  return v;
+}
+export function civOptionen(s, p) {
+  const out = []; if (!s.opt.civ || p.civN >= E.daten().civ.pro_zug) return out;
+  for (const c of E.daten().regierungen) if (E.civGrund(s, p, c, 'regierung') === null) {
+    const alt = p.regierung ? civWert(p, def(p.regierung)) : 0, neu = civWert(p, c);
+    if (neu - alt >= 2) out.push({ a: { t: 'regierung', r: c.id }, wert: (neu - alt) / c.kosten, kosten: c.kosten });
+  }
+  for (const [art, t] of [['pers', 'person'], ['natur', 'natur']]) for (const w of s.civ[art].offen) if (E.civGrund(s, p, w, art) === null) out.push({ a: { t, c: w.i }, wert: civWert(p, def(w)) / def(w).kosten, kosten: def(w).kosten });
+  return out;
+}
 const spielbar = (s, p, c) => E.sperrGrund(s, p, c) === null;
 const nichtZivil = (c) => !E.istZivil(c);
 
@@ -116,6 +132,8 @@ function waehleMittel(s, pi, stufe = 'mittel') {
   // 5. Gebäude
   const gk = p.hand.filter(c => def(c).typ === 'gebaeude' && spielbar(s, p, c) && gebWert(s, p, c) >= 0.45);
   if (gk.length) return { t: 'spiele', c: gk.reduce((m, x) => gebWert(s, p, x) > gebWert(s, p, m) ? x : m).i };
+  // 5b. Zivilisation (Regierung, Persönlichkeiten, Naturwunder)
+  { const co = civOptionen(s, p).filter(o => o.wert >= 0.45 && p.gold >= o.kosten + (E.kultur(p) >= E.REGELN().kultur_sieg - 3 ? 0 : 1)).sort((a, b) => b.wert - a.wert); if (co.length) return co[0].a; }
   // 6. Aufstieg
   const ak = E.aufstiegKosten(p); if (ak !== null && E.aufstiegErlaubt(p) && p.gold >= ak) return { t: 'aufstieg' };
   // 7. Tribut

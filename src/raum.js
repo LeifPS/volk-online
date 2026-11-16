@@ -41,7 +41,7 @@ export class Raum extends DurableObject {
       case 'volk': { if (d.phase !== 'lobby') return; const v = m.volk && satz.voelker.some(x => x.id === m.volk) ? m.volk : ''; if (v && d.sitze.some((x, i) => i !== idx && x.volk === v)) return this.senden(ws, { t: 'fehler', text: 'Dieses Volk ist schon vergeben.' }); d.sitze[idx].volk = v; break; }
       case 'name': d.sitze[idx].name = san(m.name) || d.sitze[idx].name; break;
       case 'einst': {
-        if (!host || d.phase !== 'lobby' || d.schnell) return; if (m.opt) d.opt = { vk: !!m.opt.vk, rel: !!m.opt.rel };
+        if (!host || d.phase !== 'lobby' || d.schnell) return; if (m.opt) d.opt = { vk: !!m.opt.vk, rel: !!m.opt.rel, civ: !!m.opt.civ };
         if (m.max) d.max = Math.max(d.sitze.length, Math.min(4, Math.max(2, +m.max | 0))); break;
       }
       case 'ki': { if (!host || d.phase !== 'lobby' || d.schnell || d.sitze.length >= d.max) return; const stufe = ['leicht', 'mittel', 'stark'].includes(m.stufe) ? m.stufe : 'mittel'; d.sitze.push({ token: null, name: 'Computer', volk: '', ki: stufe, weg: 0 }); break; }
@@ -63,7 +63,7 @@ export class Raum extends DurableObject {
     const name = san(m.name) || 'Spieler';
     if (!this.d) {
       if (!m.erstelle) return this.senden(ws, { t: 'fehler', text: 'Diesen Raum gibt es nicht.', weg: true });
-      const c = m.cfg || {}; this.d = { phase: 'lobby', opt: { vk: !!c.vk, rel: !!c.rel }, max: [2, 3, 4].includes(+c.max) ? +c.max : 4, schnell: !!c.schnell, sitze: [], s: null, startAt: 0, code: san(m.code, 8).toUpperCase() };
+      const c = m.cfg || {}; this.d = { phase: 'lobby', opt: { vk: !!c.vk, rel: !!c.rel, civ: !!c.civ }, max: [2, 3, 4].includes(+c.max) ? +c.max : 4, schnell: !!c.schnell, sitze: [], s: null, startAt: 0, code: san(m.code, 8).toUpperCase() };
     } else if (m.erstelle && !this.d.sitze.some(x => x.token === token)) return this.senden(ws, { t: 'fehler', text: 'Code schon belegt.', belegt: true });
     const d = this.d; let st = d.sitze.find(x => x.token === token);
     if (!st) {

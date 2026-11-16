@@ -25,7 +25,8 @@ export function kartenArt(d) {
   if (d.typ === 'land') return `Land · ${d.gelaende_name}`;
   if (d.typ === 'gebaeude') return d.relkarte ? `Religion · ${d.sorte === 'heiligtum' ? 'Heiligtum' : d.sorte === 'tempel' ? 'Tempel' : d.sorte === 'halle' ? 'Halle' : 'Stätte'}` : 'Gebäude';
   if (d.typ === 'einheit') return KLASSE[d.klasse] || 'Einheit';
-  if (d.typ === 'wunder') return 'Wunder'; if (d.typ === 'stadtstaat') return 'Stadtstaat'; return d.typ;
+  if (d.typ === 'wunder') return 'Wunder'; if (d.typ === 'stadtstaat') return 'Stadtstaat';
+  if (d.typ === 'regierung') return 'Regierung'; if (d.typ === 'person') return 'Große Persönlichkeit'; if (d.typ === 'natur') return 'Naturwunder'; return d.typ;
 }
 export function kartenZeilen(d) {
   const z = [];
