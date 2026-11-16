@@ -29,7 +29,7 @@ function grundspiel(D) {
 function volkskarten(D) {
   const vs = D.voelker;
   return `<h2>Erweiterung 1: Volkskarten</h2><p>Jedes Volk bekommt <b>7 eigene Karten</b> – eine für jedes Zeitalter. Es sind besondere Einheiten und Gebäude, die nur dieses Volk hat.</p>
-  ${li('<b>Start:</b> Zu deinen Handkarten bekommst du die <b>Volkskarte I</b>.', '<b>Aufstieg:</b> Bei jedem Aufstieg kommt die Volkskarte des neuen Zeitalters auf deine Hand.', 'Volkskarten zählen <b>nicht</b> zum Handlimit und lassen sich <b>nicht ablegen</b>. Wird eine zerstört, kehrt sie auf deine Hand zurück.', 'Mit „Götter & Glaube“ genügen 12 statt 13 Glaube zum Sieg – und beim Gründen einer Religion darfst du keine Volkskarte opfern.')}
+  ${li('<b>Start:</b> Zu deinen Handkarten bekommst du die <b>Volkskarte I</b>.', '<b>Aufstieg:</b> Bei jedem Aufstieg kommt die Volkskarte des neuen Zeitalters auf deine Hand.', 'Volkskarten zählen <b>zum Handlimit</b> und lassen sich wie andere Karten <b>gegen Gold ablegen</b> – abgelegt ist die Karte aus dem Spiel. Wird eine Volkskarten-Einheit zerstört, kehrt sie auf deine Hand zurück.', 'Mit „Götter & Glaube“ genügen 12 statt 13 Glaube zum Sieg – und beim Gründen einer Religion darfst du keine Volkskarte opfern.')}
   <h2>Alle 35 Volkskarten</h2>${vs.map(v => `<h3>${esc(v.name)}</h3><div class="lex-gitter">${D.volkskarten.filter(k => k.volk === v.id).map(k => lexikonKarte(k.id, { farbe: v.farbe, klein: true, a: 'lex', v: k.id })).join('')}</div>`).join('')}`;
 }
 function glaube(D) {

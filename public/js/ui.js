@@ -222,7 +222,7 @@ export class Spieltisch {
       else if (d.klasse === 'missionar') {
         if (mein) { if (!p.religion) grund = 'Du brauchst zuerst eine Religion.'; else if (p.gold < E.kosten(p, c)) grund = `Zu wenig Gold (${E.kosten(p, c)} nötig).`; else { const z = E.gegner(s, p).filter(o => !s.missionen.some(m => m.owner === this.me && s.sp[m.host] === o)); if (!z.length) grund = 'Bei allen Gegnern ist schon ein Missionar von dir.'; else btns += z.map(o => `<button class="gruen" data-a="mission" data-v="${c.i}" data-z="${s.sp.indexOf(o)}">Zu ${esc(o.name)} senden (${E.kosten(p, c)} ${ic('ui:gold')})</button>`).join(''); } }
       } else if (d.typ === 'einheit' || d.typ === 'gebaeude') { if (mein) { const g = E.sperrGrund(s, p, c); if (g) grund = g; else { btns += `<button class="gruen" data-a="spiele" data-v="${c.i}">${d.typ === 'gebaeude' ? ic('ui:bau') + 'Bauen' : ic('ui:einheit') + 'Ausbilden'} (${E.kostenGesamt(p, c)} ${ic('ui:gold')})</button>`; const z = E.zukauf(p, c); if (z) ok = `Enthält ${z} Gold für einen fehlenden Rohstoff.`; } } }
-      if (mein && !c.vk) { if (p.ablN >= E.REGELN().ablegen_max) { if (!grund) grund = `Du hast schon ${E.REGELN().ablegen_max} Karten abgelegt.`; } else btns += `<button class="sek" data-a="ablegen" data-v="${c.i}">${ic('ui:handel')}Ablegen${E.ablegenGold(p, c) ? ' (+' + E.ablegenGold(p, c) + ' ' + ic('ui:gold') + ')' : ''}</button>`; }
+      if (mein) { if (p.ablN >= E.REGELN().ablegen_max) { if (!grund) grund = `Du hast schon ${E.REGELN().ablegen_max} Karten abgelegt.`; } else btns += `<button class="sek" data-a="ablegen" data-v="${c.i}">${ic('ui:handel')}Ablegen${E.ablegenGold(p, c) ? ' (+' + E.ablegenGold(p, c) + ' ' + ic('ui:gold') + ')' : ''}</button>`; }
       return this.fenster(esc(d.name), `${this.kartenSheetKopf(c, p)}${grund ? `<div class="grund">${esc(grund)}</div>` : ''}${ok ? `<div class="ok">${esc(ok)}</div>` : ''}<div class="btns">${btns}</div>`);
     };
   }
@@ -266,7 +266,7 @@ export class Spieltisch {
     this.ab = new Set();
     return () => {
       const p = this.p(this.me), zu = E.handZaehlt(p).length - E.handlimit(p); if (zu <= 0) return null;
-      return this.fenster('Handlimit überschritten', `<p>Lege <b>${zu}</b> Karte(n) ab (Volkskarten zählen nicht mit):</p><div class="chips">${E.handZaehlt(p).map(c => `<span class="chipb ${this.ab.has(c.i) ? 'an' : ''}" data-a="abw" data-v="${c.i}">${esc(def(c).name)}</span>`).join('')}</div><div class="btns"><button class="gruen" data-a="abwgo" ${this.ab.size === zu ? '' : 'disabled'}>Ablegen & Zug beenden</button><button class="sek" data-a="zu">Zurück</button></div>`, false);
+      return this.fenster('Handlimit überschritten', `<p>Lege <b>${zu}</b> Karte(n) ab (auch Volkskarten, sie verlassen dann das Spiel):</p><div class="chips">${E.handZaehlt(p).map(c => `<span class="chipb ${this.ab.has(c.i) ? 'an' : ''}" data-a="abw" data-v="${c.i}">${esc(def(c).name)}</span>`).join('')}</div><div class="btns"><button class="gruen" data-a="abwgo" ${this.ab.size === zu ? '' : 'disabled'}>Ablegen & Zug beenden</button><button class="sek" data-a="zu">Zurück</button></div>`, false);
     };
   }
   ereignisHtml() {

@@ -72,6 +72,8 @@ export function legeAb(s, p, c) {
   if (c.vk) { p.hand.push(c); return; }
   if (d.stapel) s.ablage[d.stapel].push(c);
 }
+// Abgelegte Volkskarten verlassen das Spiel (zerstörte Einheiten dagegen kehren auf die Hand zurück, siehe legeAb).
+export function wirfAb(s, p, c) { if (c.vk) { c.t = 0; return; } legeAb(s, p, c); }
 export const lebende = (s) => s.sp.filter(p => !p.tot);
 export const gegner = (s, p) => s.sp.filter(o => o !== p && !o.tot);
 export const einheiten = (p) => p.front.concat(p.kaserne);
@@ -114,7 +116,7 @@ export function einkommen(s, p) {
   return g;
 }
 export const handlimit = (p) => R.handlimit + effekte(p).HL;
-export const handZaehlt = (p) => p.hand.filter(c => !c.vk);
+export const handZaehlt = (p) => p.hand;
 export function kosten(p, c) {
   const d = def(c); let k = d.kosten;
   if (d.typ === 'einheit') {
@@ -268,9 +270,9 @@ export function aktion(s, pi, a) {
       log(s, 'tribut', p.name + ' verbündet sich mit ' + def(t).name + '.', pi, { c: t.id }); pruefeSieg(s); return { ok: true };
     }
     case 'ablegen': {
-      if (!k) return f('Karte nicht auf der Hand.'); if (k.vk) return f('Volkskarten kann man nicht ablegen.');
+      if (!k) return f('Karte nicht auf der Hand.');
       if (p.ablN >= R.ablegen_max) return f('Du hast schon ' + R.ablegen_max + ' Karten abgelegt.');
-      p.hand.splice(p.hand.indexOf(k), 1); const rel = def(k).relkarte; legeAb(s, p, k); p.ablN++;
+      p.hand.splice(p.hand.indexOf(k), 1); const rel = def(k).relkarte; wirfAb(s, p, k); p.ablN++;
       const gg = rel ? 0 : ablegenGold(p, k);
       p.gold += gg; log(s, 'ablegen', p.name + ' legt eine Karte ab' + (gg ? ' (+' + gg + ' Gold)' : '') + '.', pi); return { ok: true };
     }
@@ -322,8 +324,9 @@ export function aktion(s, pi, a) {
       const zuviel = handZaehlt(p).length - handlimit(p);
       if (zuviel > 0) {
         const ids = a.abwerfen || []; if (ids.length !== zuviel) return f('Du musst ' + zuviel + ' Karte(n) ablegen.');
-        for (const id of ids) { const c = p.hand.find(x => x.i === id); if (!c || c.vk) return f('Ungültige Karte zum Ablegen.'); }
-        for (const id of ids) { const c = p.hand.find(x => x.i === id); p.hand.splice(p.hand.indexOf(c), 1); legeAb(s, p, c); }
+        for (const id of ids) { const c = p.hand.find(x => x.i === id); if (!c) return f('Ungültige Karte zum Ablegen.'); }
+        if (new Set(ids).size !== ids.length) return f('Ungültige Karte zum Ablegen.');
+        for (const id of ids) { const c = p.hand.find(x => x.i === id); p.hand.splice(p.hand.indexOf(c), 1); wirfAb(s, p, c); }
       }
       naechster(s); return { ok: true };
     }
@@ -436,7 +439,7 @@ export function kartenWert(p, c) {
 // ---------- Entscheidungen bei Ereignissen ----------
 export const verteidiger = (p) => kampfEinheiten(p).filter(u => !u.t);   // nur aufrechte (ungetappte) Einheiten können abwehren
 export const barbStaerke = (p, e) => p.alter + 1 + e.plus;
-function winterAb(s, pi, c) { const p = s.sp[pi]; p.hand.splice(p.hand.indexOf(c), 1); legeAb(s, p, c); log(s, 'winter', p.name + ' legt im Winter ' + def(c).name + ' ab.', pi); }
+function winterAb(s, pi, c) { const p = s.sp[pi]; p.hand.splice(p.hand.indexOf(c), 1); wirfAb(s, p, c); log(s, 'winter', p.name + ' legt im Winter ' + def(c).name + ' ab.', pi); }
 function barbWirkung(s, pi, e, u) {
   const p = s.sp[pi], B = barbStaerke(p, e);
   if (u) {
