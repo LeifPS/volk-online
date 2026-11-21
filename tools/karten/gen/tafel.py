@@ -47,20 +47,21 @@ def tafel_vorn(c, v):
     icon(c, 'zeitalter', 12 * mm, 52.8 * mm, 7 * mm)
     links(c, 'ZEITALTER', 20 * mm, 55.3 * mm, 'PXB', 11, '#2b2118')
     links(c, 'Setze deinen Zeitalter-Marker. Nach jedem Aufstieg bekommst du +1 Einkommen und besseren Zugriff auf die Stapel.', 53 * mm, 55.6 * mm, 'DV', 7.2, '#6a6458')
-    cw_ = 37.4 * mm; gap = 1.2 * mm; x0 = 12 * mm
-    for z in range(7):
+    gap = 1.0 * mm; x0 = 12 * mm; cw_ = (PW - 2 * x0 - 10 * gap) / 11
+    for z in range(11):
         x = x0 + z * (cw_ + gap); zf = ZA[z]['farbe']
         rrect(c, x, 8 * mm, cw_, 42 * mm, 2 * mm, fill=hell(zf, .84), stroke=zf, lw=1)
-        za_icon(c, z, x + 5.5 * mm, 45 * mm, 7.6 * mm)
-        links(c, ZA[z]['name'], x + 11 * mm, 43.6 * mm, 'PXB', 10, '#2b2118')
-        zeichne_bild(c, 'stadt:stadt@%d@2' % z, x + 2.5 * mm, 25 * mm, cw_ - 5 * mm, 15.5 * mm, farbe=f, zuschnitt=True)
-        auf = ('Aufstieg: %d Gold' % R['aufstieg'][z]) if z < 6 else ('Sieg: %d Gold' % R['wissen_sieg'])
-        links(c, 'Einkommen: %d + Land …' % (R['basis_einkommen'] + z), x + 2.5 * mm, 21.2 * mm, 'DV', 6.8, '#4a443a')
-        links(c, auf, x + 2.5 * mm, 17.4 * mm, 'DVB', 6.8, '#4a443a')
+        za_icon(c, z, x + 2 * mm, 43.6 * mm, 5.6 * mm)
+        nm = ZA[z]['name']; sz = fit(c, nm, 'PXB', 7.6, 4.6, cw_ - 3.5 * mm)
+        links(c, nm, x + 2 * mm, 37.6 * mm, 'PXB', sz, '#2b2118')
+        zeichne_bild(c, 'stadt:stadt@%d@2' % z, x + 1.8 * mm, 24.6 * mm, cw_ - 3.6 * mm, 11.6 * mm, farbe=zf, zuschnitt=True)
+        auf = ('Aufstieg: %d Gold' % R['aufstieg'][z]) if z < 10 else ('Sieg: %d Gold' % R['wissen_sieg'])
+        links(c, 'Einkommen: %d+' % (R['basis_einkommen'] + z), x + 2 * mm, 21.4 * mm, 'DV', 5.2, '#4a443a')
+        links(c, auf, x + 2 * mm, 17.8 * mm, 'DVB', 5.2, '#4a443a')
         stp = karten.STAPELNAME[R['stapel_von_zeitalter'][z]].split(' · ')[0]
-        links(c, 'zieht von ' + stp.title().replace('Stapel', 'Stapel'), x + 2.5 * mm, 13.9 * mm, 'DV', 5.6, '#7a7468')
+        links(c, 'zieht: ' + stp.title(), x + 2 * mm, 14.2 * mm, 'DV', 4.8, '#7a7468')
         c.saveState(); c.setStrokeColor(hexc(dunkel(zf, .2))); c.setLineWidth(.6); c.setDash(1.2, 1.2)
-        c.circle(x + cw_ - 6.2 * mm, 16.5 * mm, 3.6 * mm, stroke=1, fill=0); c.restoreState()
+        c.circle(x + cw_ / 2, 11 * mm, 0.01 * mm, stroke=0, fill=0); c.restoreState()
     zentriert(c, 'VOLK – Grundspiel · Marker aus dem Marker-Bogen', PW / 2, 3.6 * mm, 'DV', 5.5, '#9a9488')
 
 def spalte(c, x, y, breite, bloecke):
@@ -81,7 +82,7 @@ SPIELHILFE = [
     [('DEIN ZUG', [
         '1. Aufwecken: Alle Einheiten aufrichten. Einheiten aus der Kaserne an die Front. Deine Stadt heilt (Heilung + Sanitäter).',
         '2. Einkommen: 2 + Zeitalter-Nummer (I = 0 … VII = 6) + Ertrag aller Land-Karten + Einkommen von Gebäuden, Wundern, Verbündeten und Handels-Einheiten. Nimm so viel Gold.',
-        '3. Ziehen: 2 Karten vom Stapel deines Zeitalters (I–II: Stapel I · III–IV: Stapel II · V–VII: Stapel III) oder von einem niedrigeren. Du darfst aufteilen.',
+        '3. Ziehen: 2 Karten vom Stapel deines Zeitalters (I–II: Stapel I · III–IV: Stapel II · V–VII: Stapel III · VIII–XI: Stapel IV) oder von einem niedrigeren. Du darfst aufteilen.',
         '4. Aktionen in beliebiger Reihenfolge, so oft du kannst: 1 Land spielen (gratis) · Karten spielen · Wunder kaufen · Aufstieg (1× pro Runde) · Tribut · Karten ablegen · Angreifen.',
         '5. Zugende: Höchstens 7 Handkarten (+ Handlimit-Bonus), den Rest ablegen. Nach der letzten Spielerin / dem letzten Spieler der Runde wird 1 Ereigniskarte aufgedeckt. Die Krone wandert weiter.']),
      ('KARTEN SPIELEN', [
@@ -96,7 +97,7 @@ SPIELHILFE = [
          'Fliegend, Luftabwehr, Tarnung, Ansturm, Ramme: siehe Karte.']),
      ('NEULINGSSCHUTZ', ['Solange noch keine 3 Ereigniskarten aufgedeckt wurden, darf niemand angreifen oder schießen. Barbaren ignorieren den Schutz!'])],
     [('SIEG', [
-        'Du gewinnst sofort, wenn du %d Kultur erreichst, alle anderen Städte erobert sind (Lebenspunkte 0) – oder wenn du in der Atomzeit %d Gold für den Aufstieg zahlst (Wissenschaft).' % (R['kultur_sieg'], R['wissen_sieg'])]),
+        'Du gewinnst sofort, wenn du %d Kultur erreichst, alle anderen Städte erobert sind (Lebenspunkte 0) – oder wenn du im Sternenzeitalter %d Gold für den Aufstieg zahlst (Wissenschaft).' % (R['kultur_sieg'], R['wissen_sieg'])]),
      ('WUNDER', ['Offen ausliegend. Kaufe sie mit Gold, Marmor-Symbol und passendem Zeitalter. Jedes Wunder gibt es nur 1× im Spiel und bringt Kultur.']),
      ('STADTSTAATEN', ['Drei liegen offen aus. Zahle 6 Gold Tribut in deinem Zug und lege dir eine davon vor dich (höchstens 2 Verbündete). Dann wird eine neue offen gelegt.']),
      ('EREIGNISSE UND BARBAREN', [

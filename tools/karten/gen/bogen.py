@@ -10,10 +10,10 @@ os.makedirs(AUS, exist_ok=True)
 PW, PH = A4
 RX, RY = (PW - 3 * CW) / 2, (PH - 3 * CH) / 2
 TYPREIHE = {'einheit': 0, 'gebaeude': 1, 'land': 2}
-ROEM_ST = {1: 'I', 2: 'II', 3: 'III'}
+ROEM_ST = {1: 'I', 2: 'II', 3: 'III', 4: 'IV'}
 
 def alle_karten():
-    stapel = {1: [], 2: [], 3: []}
+    stapel = {1: [], 2: [], 3: [], 4: []}
     for k in SATZ['karten']:
         for i in range(k['kopien']): stapel[k['stapel']].append(dict(k))
     for st in stapel:
@@ -48,7 +48,7 @@ def schreibe(dateiname, karten_liste, ruecken_stapel, titel):
 if __name__ == '__main__':
     stapel, welt = alle_karten()
     erg = []
-    for st, name in ((1, 'Stapel_I'), (2, 'Stapel_II'), (3, 'Stapel_III')):
+    for st, name in ((1, 'Stapel_I'), (2, 'Stapel_II'), (3, 'Stapel_III'), (4, 'Stapel_IV')):
         erg.append(schreibe('1_Grundspiel_Karten_%s.pdf' % name, stapel[st], st, 'Volk Karten Stapel ' + ROEM_ST[st]))
     erg.append(schreibe('1_Grundspiel_Karten_Welt.pdf', welt, 0, 'Volk Karten Welt (Wunder, Stadtstaaten, Ereignisse)'))
     for p, n in erg: print(os.path.basename(p), n, 'Blätter', round(os.path.getsize(p) / 1e6, 1), 'MB')

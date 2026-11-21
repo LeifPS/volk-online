@@ -1,4 +1,4 @@
-"""Rückseite, Info- und Übersichtskarte für die Volkskarten + Druckbogen 2_Erweiterung_Volkskarten_Karten.pdf."""
+"""Rückseite, Info- und Übersichtskarte für die Volkskarten + Druckbogen 1_Grundspiel_Volkskarten.pdf (11 Karten je Volk)."""
 import os, sys
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -26,7 +26,7 @@ def ruecken(c, vid):
     s = fit(c, nm, 'PXB', 11, 7, CW - 14 * mm)
     zentriert(c, nm, CW / 2, 15.5 * mm, 'PXB', s, dunkel(f, .2))
     zentriert(c, 'nur für dieses Volk', CW / 2, 10.8 * mm, 'DV', 5.6, dunkel(f, .1))
-    zentriert(c, 'ERWEITERUNG 1', CW / 2, CH - 34 * mm, 'SS', 5.6, dunkel(f, .1))
+    zentriert(c, 'GRUNDSPIEL', CW / 2, CH - 34 * mm, 'SS', 5.6, dunkel(f, .1))
 
 def info(c, vid):
     v = VOELKER[vid]; f = RAHMEN[vid]; fv = FARBE[vid]
@@ -41,24 +41,22 @@ def info(c, vid):
     ab = [v['text'][0], ('i', v['beschreibung'])]
     karten.text_block(c, ab, 5.0 * mm, 46.0 * mm, CW - 10.0 * mm, 22 * mm)
     zentriert(c, 'Start: 3 Gold · 5 Karten · Volkskarte I', CW / 2, 8.2 * mm, 'DV', 5.4, '#6a6458')
-    karten.fuss(c, 'VK-' + vid[:2].upper(), 0, f, 1)
+    karten.fuss(c, 'VK-' + vid[:2].upper(), 0, f, 0)
 
 def liste(c, vid):
     f = RAHMEN[vid]; fv = FARBE[vid]; ks = nach_volk()[vid]
     c.setFillColor(hexc(f)); c.rect(0, 0, CW, CH, stroke=0, fill=1)
     rrect(c, 2.2 * mm, 2.2 * mm, CW - 4.4 * mm, CH - 4.4 * mm, 2.2 * mm, fill=PAPIER)
     zentriert(c, 'DEINE VOLKSKARTEN', CW / 2, CH - 8.3 * mm, 'PXB', 9.5, dunkel(f, .25))
-    y = CH - 14 * mm
+    y = CH - 12.5 * mm
     for k in ks:
-        za_icon(c, k['zeitalter'], 8.5 * mm, y - 2.1 * mm, 5.6 * mm)
-        s = fit(c, k['name'], 'DVB', 7.0, 5.4, 33 * mm)
-        links(c, k['name'], 13.5 * mm, y - 3.0 * mm, 'DVB', s, '#2b2118')
-        typ = 'Einheit' if k['typ'] == 'einheit' else 'Gebäude'
-        links(c, typ, 13.5 * mm, y - 6.3 * mm, 'DV', 4.8, '#7a7468')
-        kreis(c, CW - 9 * mm, y - 2.3 * mm, 2.9 * mm, fill='#fff3c4', stroke=dunkel(f, .1), lw=.6)
-        zentriert(c, str(k['kosten']), CW - 9 * mm, y - 3.9 * mm, 'PXB', 6.8 if k['kosten'] < 10 else 5.8, '#2b2118')
-        y -= 8.7 * mm
-    zentriert(c, 'Beim Aufstieg ins Zeitalter bekommst du die Karte.', CW / 2, 11.4 * mm, 'DV', 4.8, '#6a6458')
+        za_icon(c, k['zeitalter'], 8.3 * mm, y - 2.0 * mm, 5.0 * mm)
+        s = fit(c, k['name'] + ' (E)', 'DVB', 6.4, 4.8, 33 * mm)
+        links(c, k['name'] + (' (E)' if k['typ'] == 'einheit' else ' (G)'), 13.5 * mm, y - 3.0 * mm, 'DVB', s, '#2b2118')
+        kreis(c, CW - 9 * mm, y - 2.3 * mm, 2.5 * mm, fill='#fff3c4', stroke=dunkel(f, .1), lw=.6)
+        zentriert(c, str(k['kosten']), CW - 9 * mm, y - 3.9 * mm, 'PXB', 6.0 if k['kosten'] < 10 else 5.2, '#2b2118')
+        y -= 5.3 * mm
+    zentriert(c, 'E = Einheit, G = Gebäude. Beim Aufstieg bekommst du die Karte.', CW / 2, 11.0 * mm, 'DV', 4.8, '#6a6458')
     zentriert(c, 'Sie zählt zum Handlimit, lässt sich ablegen (Gold)', CW / 2, 8.6 * mm, 'DV', 4.8, '#6a6458')
     zentriert(c, 'und ist weg, wenn sie zerstört wird.', CW / 2, 5.9 * mm, 'DV', 4.8, '#6a6458')
 
@@ -69,11 +67,14 @@ def vorn(c, k):
     else: karten.zeichne_vorn(c, k)
 
 def schreibe():
-    pfad = os.path.join(AUS, '2_Erweiterung_Volkskarten_Karten.pdf')
+    pfad = os.path.join(AUS, '1_Grundspiel_Volkskarten.pdf')
     c = canvas.Canvas(pfad, pagesize=A4); c.setTitle('Volk Volkskarten'); c.setAuthor('Volk')
     d = nach_volk(); reihenfolge = [v['id'] for v in SATZ['voelker']]
-    for b, vid in enumerate(reihenfolge):
-        teil = [dict(info=1, typ='info', volk=vid)] + [dict(k) for k in d[vid]] + [dict(typ='liste', volk=vid)]
+    teile = []
+    for vid in reihenfolge:
+        alle = [dict(info=1, typ='info', volk=vid)] + [dict(k) for k in d[vid]] + [dict(typ='liste', volk=vid)]
+        for j in range(0, len(alle), 9): teile.append((vid, alle[j:j + 9], j // 9 + 1, (len(alle) + 8) // 9))
+    for n, (vid, teil, bj, bn) in enumerate(teile, 1):
         for seite in ('rueck', 'vorn'):
             for i, k in enumerate(teil):
                 col, row = i % 3, i // 3
@@ -84,7 +85,7 @@ def schreibe():
                 else: vorn(c, k)
                 c.restoreState()
             c.setFillColor(hexc('#9a9488')); c.setFont('DV', 5.5)
-            c.drawCentredString(PW / 2, PH - 9 * mm, 'Volkskarten %s · Blatt %d von 5 · %s' % (VOELKER[vid]['name'], b + 1, 'RÜCKSEITE (zuerst drucken, dann Blatt wenden)' if seite == 'rueck' else 'VORDERSEITE'))
+            c.drawCentredString(PW / 2, PH - 9 * mm, 'Volkskarten %s · Teil %d von %d · Blatt %d von %d · %s' % (VOELKER[vid]['name'], bj, bn, n, len(teile), 'RÜCKSEITE (zuerst drucken, dann Blatt wenden)' if seite == 'rueck' else 'VORDERSEITE'))
             c.showPage()
     c.save(); return pfad
 

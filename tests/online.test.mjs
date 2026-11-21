@@ -19,14 +19,14 @@ class Klient {
   }
 }
 const code = 'T' + Math.random().toString(36).slice(2, 6).toUpperCase();
-const a = new Klient(code, 'Anna', true, { max: 4, vk: true, rel: true }); await a.verbinde();
+const a = new Klient(code, 'Anna', true, { max: 4 }); await a.verbinde();
 const b = new Klient(code, 'Ben', false); await b.verbinde();
 console.log('Lobby:', a.lobby.code, b.lobby.sitze.map(x => x.name));
 a.senden({ t: 'ki', stufe: 'mittel' }); a.senden({ t: 'ki', stufe: 'stark' }); await new Promise(r => setTimeout(r, 300));
 const c = new Klient(code, 'Cleo', false); await c.verbinde(); console.log('Voll-Fehler:', c.fehler);
 a.senden({ t: 'start' });
 const t0 = Date.now();
-while (!(a.s && a.s.sieger !== null) && Date.now() - t0 < 170000) await new Promise(r => setTimeout(r, 500));
+while (!(a.s && a.s.sieger !== null) && Date.now() - t0 < 420000) await new Promise(r => setTimeout(r, 500));
 console.log('Ende:', a.s?.sieger, a.s?.grund, 'Runde', a.s?.runde, 'Dauer s', Math.round((Date.now() - t0) / 1000));
 console.log('Sicht Anna fremde Hand verborgen:', a.s.sp[1].hand.every(h => h.id === '?'), '| eigene sichtbar:', a.s.sp[0].hand.every(h => h.id !== '?'));
 console.log('Fehler:', a.fehler, b.fehler);

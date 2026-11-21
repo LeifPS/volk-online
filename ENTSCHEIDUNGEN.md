@@ -29,10 +29,43 @@ Alle neuen Grafiken sind selbst gezeichnet (Pixel für Pixel per Code, `tools/ka
 - Stärken steigen etwa um 2 je Zeitalter weiter (VIII: 11–14, IX: 13–17, X: 14–17, XI: 18–22). Kosten ebenso (Einheiten 12–24, Gebäude 15–30).
 - Jede Einheit mit Rohstoff-Symbolen braucht höchstens zwei neue/alte Rohstoffe. Raumschiffe brauchen ein Flugfeld (der Raumhafen zählt als Flugfeld).
 
-## Zahlen
-- Aufstieg kostet 6, 8, 10, 12, 14, 16, **18, 20, 22, 24**.
-- Kultursieg: **16** (vorher 12).
-- Wissenschaftssieg wandert ins **Sternenzeitalter (XI)**: Der „Aufstieg“ aus Zeitalter XI kostet 26 Gold und gewinnt das Spiel.
-- Handlimit und Startwerte unverändert.
+## Zahlen (endgültig)
+- Aufstieg kostet 6, 8, 10, 12, 14, 16, **18, 20, 22, 24** Gold.
+- Kultursieg: **28** Kultur (vorher 12). Der Auftrag nannte 16; das beendete die Partien aber vor den neuen Zeitaltern (siehe Balance).
+- Wissenschaftssieg: Der „Aufstieg“ aus dem Sternenzeitalter (XI) kostet pauschal **24** Gold und gewinnt. Eine Spielerin, die in dieser Runde erst aufgestiegen ist, kann frühestens in der nächsten Runde gewinnen.
+- Stapel: I = Zeitalter I–II, II = III–IV, III = V–VII, IV = VIII–XI.
+- Handlimit und Startwerte unverändert (3 Gold, 5 Karten + Volkskarte I, 25 Lebenspunkte).
 
-(Details zu Balance-Zahlen folgen nach den Selbstspiel-Läufen.)
+## Karten je Zeitalter (Anzahl verschiedener Karten, ohne Wunder und Volkskarten)
+| Zeitalter | Einheiten | Gebäude | Land |
+|---|---|---|---|
+| VIII KI | 6 | 6 | (Land-Karten von Stapel IV, siehe unten) |
+| IX Fusion | 7 | 5 | – |
+| X Weltraum | 7 | 6 | – |
+| XI Sterne | 5 | 4 | – |
+Stapel IV insgesamt 66 Karten (mit Kopien), darunter 19 Land-Karten mit den vier neuen Rohstoffen. Dazu 12 Weltwunder (4 neu: Weltgehirn, Künstliche Sonne, Weltraumaufzug, Sternenarche) und 55 Volkskarten (11 je Volk).
+
+## Balance (Selbstspiel, Computer gegen Computer)
+Methode: `node tests/bilanz.mjs 200 mittel 2,3,4`, je 200 Partien, Stufe „mittel“, zufällige Völker.
+
+| Spieler | Median Runden | Kultur | Wissenschaft | Eroberung | Höchstes Zeitalter (Median) |
+|---|---|---|---|---|---|
+| 2 | 16 | 99 | 22 | 79 | VII |
+| 3 | 19 | 115 | 70 | 15 | X |
+| 4 | 20 | 102 | 85 | 13 | XI |
+
+- Alle Partien enden regulär (0 Fehler, 0 zu lange). Das alte Spiel dauerte 10–11 Runden; jetzt 16–20 Runden, also **mehr als 50 % länger** (Abweichung vom Auftrag, bewusst: sonst kommen die neuen Zeitalter nie vor).
+- Kultursieg 16 (Auftrag) ließ die meisten Partien enden, bevor jemand Zeitalter VIII erreichte. Kultur 28 und Wissenschaft 24 sind der Kompromiss, bei dem zu dritt und zu viert die neuen Zeitalter wirklich gespielt werden.
+- Volks-Siegquoten: zu viert 18–35 % (ideal 25 %), zu dritt 26–40 % (ideal 33 %), zu zweit 41–58 % (ideal 50 %). Kein Volk fällt aus.
+- Computer „stark“ gegen „mittel“ (nach Abstimmung mit `tests/tune.mjs`): gewinnt 72 % (2 Spieler), 43 % (3), 49 % (4). Zufall wäre 50 / 33 / 25 %.
+- Schwäche: Zu zweit gewinnt die Eroberung häufig, weil zwei Spieler kaum bis in die neuen Zeitalter kommen. Das Einkommen wächst spät sehr stark (etwa +50 Gold je Runde in Runde 18), dadurch wird der Wissenschaftssieg nach Erreichen von XI fast automatisch.
+- Karten, die der Computer „mittel“ nie spielt: Quantenrechner, KI-Labor, Orbitalstation, Weltgehirn, Sternenarche, Antimaterie-Rakete, Sternenkreuzer, Orbitalkanone (der Computer bewertet Wissen und Spezialeffekte spät im Spiel gering). Das ist eine Schwäche der KI, nicht der Karten; Menschen können sie nutzen. 42 von 50 neuen Karten werden zu dritt/viert gespielt.
+
+## Erweiterungen
+Götter & Glaube und Zivilisation sind vorerst aus: nicht im Menü, nicht online (Engine erzwingt `rel:false, civ:false`). Code, Daten und Tests bleiben im Repo und sind dormant.
+
+## Commit-Hinweis
+Der Commit 8f14961 (Generator ins Repo, Grafiken, Daten) trägt „Kleines Update:“, obwohl er für Spieler unsichtbar war; richtig wäre „Patch:“ gewesen. Nicht umgeschrieben.
+
+## Tests
+`tests/engine.test`, `wahl.test`, `wissen.test`, `volkkarte.test`, `civ.test`, `zukunft.test`, `regression.mjs` (feste Seeds), `validiere.mjs`, `bilanz.mjs`, `stark.mjs`. `online.test.mjs` braucht den lokalen Worker (wrangler) und wurde nicht ausgeführt, außer wie im Abschlussbericht vermerkt.

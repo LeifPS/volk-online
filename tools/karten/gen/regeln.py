@@ -36,7 +36,7 @@ def titel(c, doc):
     zeichne_bild(c, 'stadt:stadt@2@3', 15 * mm, H - 68 * mm, 55 * mm, 48 * mm, farbe='#b5483b', zuschnitt=True)
     links(c, 'VOLK', 76 * mm, H - 40 * mm, 'PXB', 44, '#b5483b')
     links(c, 'Das Kartenspiel für 2–4 Völker', 77 * mm, H - 50 * mm, 'PX', 13, '#2b2118')
-    links(c, 'GRUNDSPIEL · komplett spielbar ohne Erweiterungen', 77 * mm, H - 64.5 * mm, 'SS', 7.5, '#b5483b')
+    links(c, 'GRUNDSPIEL · 11 Zeitalter von der Antike bis zu den Sternen', 77 * mm, H - 64.5 * mm, 'SS', 7.5, '#b5483b')
     links(c, 'Ab 10 Jahren · ca. 45–75 Minuten · Karten, Tafeln und Marker zum Ausdrucken', 77 * mm, H - 57 * mm, 'DV', 7.8, '#6a6458')
     c.restoreState()
 
@@ -51,44 +51,45 @@ from reportlab.platypus import NextPageTemplate
 def za_tabelle():
     kopf = [Paragraph('<b>Symbol</b>', T), Paragraph('<b>Zeitalter</b>', T), Paragraph('<b>Aufstieg kostet</b>', T), Paragraph('<b>Grundeinkommen</b>', T), Paragraph('<b>Zieht von</b>', T)]
     rows = [kopf]
-    for z in range(7):
+    for z in range(11):
         rows.append([Paragraph(za_inline(z, 16), T), Paragraph('<b>%s</b>' % ZA[z]['name'], T),
-                     Paragraph(('%d Gold' % R['aufstieg'][z]) if z < 6 else '%d Gold = <b>Wissenschaftssieg</b>' % R['wissen_sieg'], T), Paragraph('%d' % (R['basis_einkommen'] + z), T),
-                     Paragraph('Stapel ' + ['I', 'II', 'III'][R['stapel_von_zeitalter'][z] - 1], T)])
+                     Paragraph(('%d Gold' % R['aufstieg'][z]) if z < 10 else '%d Gold = <b>Wissenschaftssieg</b>' % R['wissen_sieg'], T), Paragraph('%d' % (R['basis_einkommen'] + z), T),
+                     Paragraph('Stapel ' + ['I', 'II', 'III', 'IV'][R['stapel_von_zeitalter'][z] - 1], T)])
     tb = Table(rows, colWidths=[20 * mm, 38 * mm, 40 * mm, 38 * mm, 30 * mm], hAlign='LEFT')
     tb.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), .4, hexc('#c9bfa6')), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('BACKGROUND', (0, 0), (-1, 0), hexc('#efe6d0')), ('TOPPADDING', (0, 0), (-1, -1), 2), ('BOTTOMPADDING', (0, 0), (-1, -1), 2)]))
     return tb
 
 n = []
 n += [Paragraph('Worum geht es?', H1),
- p('Jede Spielerin und jeder Spieler führt ein Volk durch sieben Zeitalter – von der Antike bis zur Atomzeit. Du baust Gebäude, stellst Einheiten auf, kaufst Weltwunder und gewinnst Stadtstaaten als Verbündete. '
-   'Wer als Erste/r <b>%d Kultur</b> erreicht, gewinnt. Oder du eroberst alle gegnerischen Städte. Oder du erreichst die Atomzeit und zahlst dort <b>%d Gold</b> für den Aufstieg ins nächste Zeitalter (Wissenschaftssieg).' % (R['kultur_sieg'], R['wissen_sieg'])),
+ p('Jede Spielerin und jeder Spieler führt ein Volk durch elf Zeitalter – von der Antike bis zum Sternenzeitalter. Du baust Gebäude, stellst Einheiten auf, kaufst Weltwunder und gewinnst Stadtstaaten als Verbündete. '
+   'Wer als Erste/r <b>%d Kultur</b> erreicht, gewinnt. Oder du eroberst alle gegnerischen Städte. Oder du erreichst das Sternenzeitalter und zahlst dort <b>%d Gold</b> für den Aufstieg ins nächste Zeitalter (Wissenschaftssieg).' % (R['kultur_sieg'], R['wissen_sieg'])),
  Paragraph('Material', H1),
- b('<b>3 Kartenstapel</b> (1_Grundspiel_Karten_Stapel_I/II/III) mit Einheiten, Gebäuden und Land. Jede Karte hat eine Zeitalter-Zahl und eine Stapel-Nummer.'),
- b('<b>Welt-Karten</b> (1_Grundspiel_Karten_Welt): 8 Weltwunder, 12 Stadtstaaten, 12 Ereigniskarten (Barbaren und Wetter).'),
- b('<b>5 Volkstafeln</b> mit Lebenspunkte-, Kultur- und Zeitalter-Leiste (1_Grundspiel_Volkstafeln) – dazu Spielmarken: Gold, Marker, Krone (1_Grundspiel_Spielmarken).'),
+ b('<b>4 Kartenstapel</b> (1_Grundspiel_Karten_Stapel_I bis IV) mit Einheiten, Gebäuden und Land. Jede Karte hat eine Zeitalter-Zahl und eine Stapel-Nummer.'),
+ b('<b>Welt-Karten</b> (1_Grundspiel_Karten_Welt): 12 Weltwunder, 12 Stadtstaaten, 12 Ereigniskarten (Barbaren und Wetter).'),
+ b('<b>5 Völker</b>: je 1 Volkstafel und <b>11 Volkskarten</b> (1_Grundspiel_Volkskarten) – eine besondere Einheit oder ein besonderes Gebäude für jedes Zeitalter, nur für dieses Volk.'),
+ b('<b>Volkstafeln</b> mit Lebenspunkte-, Kultur- und Zeitalter-Leiste (1_Grundspiel_Volkstafeln) – dazu Spielmarken: Gold, Marker, Krone (1_Grundspiel_Spielmarken).'),
  b('Erkennbar sind alle Grundspiel-Karten an der Fußzeile <b>„VOLK · Grundspiel“</b>.'),
  b('Druck: Karten 63 × 88 mm, 9 Stück pro A4-Blatt. Erst die Rückseiten drucken, dann dasselbe Blatt wenden und die Vorderseiten drucken (lange Kante wenden).'),
- Paragraph('Die sieben Zeitalter', H1), za_tabelle(), Spacer(1, 3 * mm),
+ Paragraph('Die elf Zeitalter', H1), za_tabelle(), Spacer(1, 3 * mm),
  Paragraph('Aufbau', H1),
- b('Mische die drei Stapel getrennt und lege sie in die Mitte, die Weltwunder sortiert nach Zeitalter daneben. Decke die ersten 3 Wunder auf.'),
+ b('Mische die vier Stapel getrennt und lege sie in die Mitte, die Weltwunder sortiert nach Zeitalter daneben. Decke die ersten 3 Wunder auf.'),
  b('Mische die Ereigniskarten (verdeckt) und die 12 Stadtstaaten. Decke 3 Stadtstaaten auf.'),
  b('Jede/r wählt eine Volkstafel, nimmt die Marker in der Volksfarbe: Herz auf <b>25</b>, Kultur auf <b>0</b>, Zeitalter-Marker auf %s (<b>Antike</b>).' % za_inline(0)),
- b('Startvermögen: <b>3 Gold</b>. Ziehe 5 Karten vom Stapel I. Wer zuletzt etwas gebaut hat, nimmt die Krone (Startspieler).'),
+ b('Startvermögen: <b>3 Gold</b>. Ziehe 5 Karten vom Stapel I und nimm dazu deine <b>Volkskarte I</b>. Wer zuletzt etwas gebaut hat, nimmt die Krone (Startspieler).'),
  Paragraph('Dein Zug', H1),
  Paragraph('1 · Aufwecken', H2),
  p('Richte alle gedrehten (erschöpften) Einheiten auf. Einheiten in der <b>Kaserne</b> rücken an die <b>Front</b>. Deine Stadt heilt 1 Lebenspunkt (mehr mit Heilen-Karten).'),
  Paragraph('2 · Einkommen', H2),
- p('Nimm Gold: <b>2 + Zeitalter-Nummer</b> (I = 0 … VII = 6) <b>+ Ertrag aller Land-Karten + Einkommen</b> von Gebäuden, Wundern, Verbündeten und Handels-Einheiten. Es gibt keine Obergrenze für Gold.'),
+ p('Nimm Gold: <b>2 + Zeitalter-Nummer</b> (I = 0 … XI = 10) <b>+ Ertrag aller Land-Karten + Einkommen</b> von Gebäuden, Wundern, Verbündeten und Handels-Einheiten. Es gibt keine Obergrenze für Gold.'),
  Paragraph('3 · Ziehen', H2),
- p('Ziehe 2 Karten. Du darfst vom Stapel deines Zeitalters ziehen oder von einem niedrigeren: Zeitalter I–II → Stapel I, III–IV → Stapel II, V–VII → Stapel III. Du darfst die Karten auf mehrere Stapel verteilen. '
+ p('Ziehe 2 Karten. Du darfst vom Stapel deines Zeitalters ziehen oder von einem niedrigeren: Zeitalter I–II → Stapel I, III–IV → Stapel II, V–VII → Stapel III, VIII–XI → Stapel IV. Du darfst die Karten auf mehrere Stapel verteilen. '
    'Sind die Stapel leer, mische die Ablage neu.'),
  Paragraph('4 · Aktionen', H2),
  p('In beliebiger Reihenfolge und so oft du magst:'),
  b('<b>1 Land</b> pro Zug gratis spielen (Rohstoff- oder Geländekarte). Land gibt dauerhaft Gold und Rohstoff-Symbole.'),
  b('<b>Karten spielen</b>: Goldkosten (Zahl im Kreis oben links) zahlen. Das Zeitalter der Karte darf nicht höher sein als deines. Einheiten kommen in die Kaserne, Gebäude in deine Auslage; jedes Gebäude nur 1× je Spieler. Steht „Benötigt“ auf der Karte, muss das genannte Gebäude schon liegen.'),
  b('<b>Wunder kaufen</b>: Gold zahlen, Rohstoff und Zeitalter passen. Das Wunder liegt vor dir; ein neues wird aufgedeckt.'),
- b('<b>Aufstieg</b> ins nächste Zeitalter: Gold laut Zeitalter-Leiste (%s). Dein Zeitalter-Marker rückt vor. <b>Pro Runde darfst du nur einmal aufsteigen.</b> In der Atomzeit kostet der letzte Aufstieg %d Gold und gewinnt das Spiel.' % (' / '.join(str(x) for x in R['aufstieg']), R['wissen_sieg'])),
+ b('<b>Aufstieg</b> ins nächste Zeitalter: Gold laut Zeitalter-Leiste (%s). Dein Zeitalter-Marker rückt vor. <b>Pro Runde darfst du nur einmal aufsteigen.</b> Bei jedem Aufstieg bekommst du die <b>Volkskarte</b> des neuen Zeitalters. Im Sternenzeitalter kostet der letzte Aufstieg %d Gold und gewinnt das Spiel.' % (' / '.join(str(x) for x in R['aufstieg']), R['wissen_sieg'])),
  b('<b>Tribut</b>: %d Gold an einen offenen Stadtstaat zahlen → er wird dein Verbündeter (max. 2).' % R['tribut_kosten']),
  b('<b>Ablegen für Gold</b>: bis zu %d Handkarten ablegen, je %d Gold.' % (R['ablegen_max'], R['ablegen_gold'])),
  b('<b>Angreifen</b> (siehe Kampf).'),
@@ -124,14 +125,14 @@ n += [tab2,
  Paragraph('Siegbedingungen', H1),
  b('<b>Kultur:</b> %d Kultur – sofort bei Erreichen, auch mitten im Zug.' % R['kultur_sieg']),
  b('<b>Eroberung:</b> Alle anderen Städte haben 0 Lebenspunkte.'),
- b('<b>Wissenschaft:</b> Du bist in der Atomzeit und zahlst %d Gold für den Aufstieg ins „nächste Zeitalter“ – du gewinnst sofort. Wer erst in dieser Runde in die Atomzeit aufgestiegen ist, kann frühestens in der nächsten Runde gewinnen (ein Aufstieg pro Runde).' % R['wissen_sieg']),
+ b('<b>Wissenschaft:</b> Du bist im Sternenzeitalter und zahlst %d Gold für den Aufstieg ins „nächste Zeitalter“ – du gewinnst sofort. Wer erst in dieser Runde ins Sternenzeitalter aufgestiegen ist, kann frühestens in der nächsten Runde gewinnen (ein Aufstieg pro Runde).' % R['wissen_sieg']),
  Paragraph('Varianten und Tipps', H1),
  b('<b>Zu zweit:</b> Nur 2 Stadtstaaten aufdecken. <b>Zu viert:</b> Wunder und Stadtstaaten sind knapp – Tempo zählt.'),
  b('<b>Einsteiger:</b> Spielt ohne Neulingsschutz-Zähler und ohne Barbaren-Karten, bis alle die Regeln kennen.'),
- Paragraph('Erweiterungen (optional)', H1),
- p('Zu diesem Grundspiel gibt es zwei Erweiterungen, die unabhängig voneinander dazugenommen werden dürfen: <b>Erweiterung 1 · Volkskarten</b> und <b>Erweiterung 2 · Götter &amp; Glaube</b>. Ohne sie gilt dieses Heft unverändert. Was du für welche Kombination brauchst, steht in der <b>Modul-Übersicht</b> (0_Modul_Uebersicht).'),
+ Paragraph('Volkskarten', H1),
+ p('Volkskarten zählen zum Handlimit. Du darfst sie wie andere Karten gegen Gold ablegen – abgelegt oder zerstört ist die Karte aus dem Spiel und kommt nicht zurück. Die Erweiterungen „Götter &amp; Glaube“ und „Zivilisation“ sind vorerst nicht Teil des Spiels.'),
  Spacer(1, 4),
- Paragraph('Hinweis: Die Regeln des Grundspiels wurden mit Computer-Simulationen (einfache Spielroboter, je 120 Partien) auf Ausgewogenheit geprüft: Partien dauern im Median 10 bis 13 Runden und enden fast immer mit Kultursieg. Zu dritt und zu viert liegen die Völker meist bei etwa 20–40 % Siegen (4 Spieler: ideal wären 25 %), zu zweit liegen Steppenreiter und Sternendeuter hinten. In echten Runden getestet ist es noch nicht. Wenn etwas hakt: Hausregeln erlaubt – sagt gern, was ihr ändern würdet!', S)]
+ Paragraph('Hinweis: Die Regeln wurden mit Computer-Simulationen (Spielroboter, je 200 Partien) auf Ausgewogenheit geprüft: Partien dauern im Median etwa 16 bis 20 Runden. Je nach Spielerzahl entscheidet mal die Kultur, mal die Wissenschaft, zu zweit auch oft die Eroberung. In echten Runden getestet ist es noch nicht. Wenn etwas hakt: Hausregeln erlaubt – sagt gern, was ihr ändern würdet!', S)]
 story = [NextPageTemplate('normal')] + n
 doc.build(story)
 print('ok')

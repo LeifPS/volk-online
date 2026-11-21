@@ -333,7 +333,7 @@ def zeichne_hilfe(c, seite, nr):
     if seite == 'vorn':
         zentriert(c, 'DEIN ZUG', CW / 2, CH - 9 * mm, 'PXB', 12, '#2b2118')
         sch = [('1', 'Aufwecken', 'Einheiten aufrichten, Kaserne → Front, Stadt heilt.', 'befoerderung'),
-               ('2', 'Einkommen', '2 + Zeitalter (0–6) + Land + Gebäude + Wunder + Verbündete.', 'gold'),
+               ('2', 'Einkommen', '2 + Zeitalter (0–10) + Land + Gebäude + Wunder + Verbündete.', 'gold'),
                ('3', 'Ziehen', '2 Karten vom Stapel deines Zeitalters oder einem niedrigeren.', 'karte_tausch'),
                ('4', 'Aktionen', '1 Land, Karten spielen, Aufstieg, Tribut, Ablegen (1 Gold, 2×), Angreifen.', 'bau'),
                ('5', 'Ende', 'Handlimit 7. Nach der Runde: Ereigniskarte aufdecken.', 'zeit')]
@@ -351,17 +351,19 @@ def zeichne_hilfe(c, seite, nr):
     else:
         zentriert(c, 'ZEITALTER', CW / 2, CH - 9 * mm, 'PXB', 12, '#2b2118')
         y = CH - 12.8 * mm
-        links(c, 'Aufstieg kostet', 6 * mm, y - 1.5 * mm, 'DV', 5.2, '#6a6458')
+        links(c, 'Aufstieg (Gold)', 33 * mm, y - 1.5 * mm, 'DV', 5.2, '#6a6458')
         rechts(c, 'Einkommen', CW - 6 * mm, y - 1.5 * mm, 'DV', 5.2, '#6a6458')
         y -= 3.5 * mm
-        for z in range(7):
-            za_icon(c, z, 8.0 * mm, y - 3.4 * mm, 6.4 * mm)
-            links(c, ZA[z]['name'], 13 * mm, y - 4.4 * mm, 'PXB', 7.4, '#2b2118')
-            if z < 6:
-                rechts(c, str(R['aufstieg'][z]) + ' Gold → ' + ROEM[z + 1], 41 * mm, y - 4.4 * mm, 'DV', 5.2, '#4a443a')
-            rechts(c, '%d + Land …' % (R['basis_einkommen'] + z), CW - 6 * mm, y - 4.4 * mm, 'DV', 5.2, '#4a443a')
-            y -= 7.4 * mm
-        absatz(c, 'Stapel I: Zeitalter I–II, Stapel II: III–IV, Stapel III: V–VII. Gespielt wird nur bis zum eigenen Zeitalter.', 6 * mm, y + 0.5 * mm, CW - 12 * mm, 'DV', 5.0)
+        for z in range(11):
+            za_icon(c, z, 7.6 * mm, y - 2.9 * mm, 4.6 * mm)
+            links(c, ZA[z]['name'], 12.6 * mm, y - 3.5 * mm, 'PXB', fit(c, ZA[z]['name'], 'PXB', 6.2, 4.2, 21.5 * mm), '#2b2118')
+            if z < 10:
+                rechts(c, str(R['aufstieg'][z]) + ' → ' + ROEM[z + 1], 45 * mm, y - 3.5 * mm, 'DV', 4.6, '#4a443a')
+            else:
+                rechts(c, 'Sieg: %d' % R['wissen_sieg'], 45 * mm, y - 3.5 * mm, 'DVB', 4.8, '#b8860b')
+            rechts(c, '%d + Land' % (R['basis_einkommen'] + z), CW - 5 * mm, y - 3.5 * mm, 'DV', 4.4, '#4a443a')
+            y -= 4.65 * mm
+        absatz(c, 'Stapel I: Zeitalter I–II · Stapel II: III–IV · Stapel III: V–VII · Stapel IV: VIII–XI. Gespielt wird nur bis zum eigenen Zeitalter.', 6 * mm, y - 1.0 * mm, CW - 12 * mm, 'DV', 4.6)
         absatz(c, 'Fehlt 1 Rohstoff: für 3 Gold zukaufen.', 6 * mm, 11.6 * mm, CW - 12 * mm, 'DVB', 5.2)
     zentriert(c, 'VOLK · Spielhilfe %d' % nr, CW / 2, 4.1 * mm, 'DV', 4.2, '#8a8374')
 
