@@ -593,10 +593,13 @@ def _(m):
 GROESSE = lambda k: (64, 64) if k.startswith('wunder:') else (16, 16) if k.startswith(('rohstoff:', 'za:')) else (64, 56) if k.startswith('stadt:') else (32, 32)
 
 def lade():
-    import zukunft_spr2  # noqa  (Volkskarten-Motive, Städte)
+    import zukunft_spr2  # noqa  (erste Fassung, nur noch als Rückfall)
+    from zk_basis import Bild
+    import zk_einheiten, zk_gebaeude, zk_welt          # zweite Fassung im Stil der alten Sprites
+    for mod in (zk_einheiten, zk_gebaeude, zk_welt): REG.update(mod.NEU)
     for key, fn in REG.items():
-        w, h = GROESSE(key); m = Px(w, h); fn(m)
-        spr._S[key] = m.fertig(kontur=not key.startswith(('wunder:', 'za:')) or key.startswith('za:'))
+        w, h = GROESSE(key); m = Bild(w, h); fn(m)
+        spr._S[key] = m.fertig(kontur=not key.startswith('za:'))
     for r in ('seltene_erden', 'deuterium', 'titan', 'helium3'): spr._S['ui:' + r] = spr._S['rohstoff:' + r]
 
 def webexport(pfad, praefixe=None):

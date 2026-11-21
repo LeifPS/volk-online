@@ -22,7 +22,9 @@ Stand: 21.11.2026. Wird mit jeder Stufe ergänzt.
 Technisch Zeitalter-Index 7 bis 10 (bisher 0 bis 6).
 
 ## Grafiken
-Alle neuen Grafiken sind selbst gezeichnet (Pixel für Pixel per Code, `tools/karten/gen/zukunft_spr.py` und `zukunft_spr2.py`), nichts kopiert oder KI-generiert. 25 Einheiten, 21 Gebäude, 4 Wunder, 4 Rohstoffe, 20 Volkskarten-Motive, 12 Stadtbilder (je Zeitalter 3 Größen), 4 Zeitalter-Symbole. Stil: 16x16- bis 32x32-Pixel, Kontur, wenige Farben, wie die bestehenden Karten.
+Alle neuen Grafiken sind selbst gezeichnet (Pixel für Pixel per Code), nichts kopiert oder KI-generiert. 25 Einheiten, 21 Gebäude, 4 Wunder, 4 Rohstoffe, 20 Volkskarten-Motive, 12 Stadtbilder (je Zeitalter 3 Größen), 4 Zeitalter-Symbole.
+
+Zweite Fassung (22.11.2026, auf Leifs Wunsch „deutlich besser, so wie die im Spiel“): alle 90 Motive neu im Stil der alten Sprites – warme braune Kontur (#2b2118), Gebäude als Kästen mit Front, Seite und Dach, schattierte Kugeln und Kuppeln, Figuren mit Gesicht und Spielerfarbe, Schiffe auf Wasser, Flieger mit Schatten, Wunder auf Wiese/Meer mit Funkeln. Zeitalter-Symbole VIII–XI zeigen jetzt wie I–VII römische Ziffern. Code: `tools/karten/gen/zk_basis.py` (Werkzeug), `zk_einheiten.py`, `zk_gebaeude.py`, `zk_welt.py`; Vorschau mit `python3 zk_vorschau.py ausgabe.png einheit 4`. Die erste Fassung (`zukunft_spr.py`, `zukunft_spr2.py`) liegt noch als Rückfall im Repo.
 
 ## Karten (Stapel IV)
 - 25 Einheiten (1 Kopie, Exoskelett-Infanterie 2), 21 Gebäude, 19 Land-Karten, 4 Wunder, 20 Volkskarten.

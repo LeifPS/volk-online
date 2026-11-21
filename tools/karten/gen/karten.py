@@ -156,13 +156,13 @@ def fuss(c, nr, stapel, frame, modul=0):
         g = 6.6 * mm   # Pixel-Symbol der Erweiterung statt Schild
         icon(c, 'mod:%d' % modul, CW - 4.4 * mm - g, 2.0 * mm, g)
 
-def symbol_chips(c, braucht, x_rechts, y, hoehe=7.4 * mm):
+def symbol_chips(c, braucht, x_rechts, y, hoehe=7.4 * mm, frei_ab=0):
     """Rechtsbündig: 'Braucht'-Symbole."""
     if not braucht: return
     ic = hoehe * .78
     gesamt = len(braucht) * (ic + .8 * mm)
     x = x_rechts - gesamt
-    links(c, 'braucht', x - 9.6 * mm, y + hoehe / 2 - 1.0 * mm, 'PX' if THEMA['pixel'] else 'DV', 4.4, '#8f9bc0' if THEMA['pixel'] else '#7a7468')
+    if x - 9.6 * mm >= frei_ab + .6 * mm: links(c, 'braucht', x - 9.6 * mm, y + hoehe / 2 - 1.0 * mm, 'PX' if THEMA['pixel'] else 'DV', 4.4, '#8f9bc0' if THEMA['pixel'] else '#7a7468')
     for b in braucht:
         icon(c, symbol_icon(b), x, y + (hoehe - ic) / 2, ic); x += ic + .8 * mm
 
@@ -195,7 +195,7 @@ def zeichne_einheit(c, k):
     if k.get('glaube'): x += chip(c, x, y, 'rel:glaube', str(k['glaube']))
     if k['fern'] > 0:
         x += chip(c, x, y, 'fernkampf', str(k['fern']))
-    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y)
+    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y, frei_ab=x)
     # Text
     ab = []
     if zivil: ab.append('Zivil: Kann weder angreifen noch blocken.')
@@ -228,7 +228,7 @@ def zeichne_gebaeude(c, k):
     for key in ('F', 'E', 'K', 'W', 'S', 'H', 'A', 'HL', 'G', 'L', 'Z'):
         if k['effekte'].get(key): x += chip(c, x, y, EFFEKT_ICON[key], ('+' if key in ('E', 'HL') else '') + str(k['effekte'][key]))
     for pv in k['prov']: x += chip(c, x, y, symbol_icon(pv), SYMBOL_NAMEN[pv], schrift='DVB', size=7.2)
-    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y)
+    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y, frei_ab=x)
     ab = []
     for key in ('F', 'E', 'K', 'W', 'S', 'H', 'A', 'HL', 'G', 'L', 'Z'):
         if k['effekte'].get(key): ab.append(EFFEKT_TEXT[key].format(n=k['effekte'][key]))
@@ -272,7 +272,7 @@ def zeichne_wunder(c, k):
     eng = sum(1 for key in ('K', 'E', 'W', 'S', 'G', 'L', 'Z') if k['effekte'].get(key)) >= 3 and k['braucht']
     for key in ('K', 'E', 'W', 'S', 'G', 'L', 'Z'):
         if k['effekte'].get(key): x += chip(c, x, y, EFFEKT_ICON[key], ('+' if key in ('E', 'L') else '') + str(k['effekte'][key]), **(dict(hoehe=6.2 * mm, size=10) if eng else {}))
-    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y)
+    symbol_chips(c, k['braucht'], CW - 5.0 * mm, y, frei_ab=x)
     ab = []
     for key in ('K', 'E', 'W', 'S'):
         if k['effekte'].get(key): ab.append(EFFEKT_TEXT[key].format(n=k['effekte'][key]))
