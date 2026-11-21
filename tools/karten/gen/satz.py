@@ -17,9 +17,9 @@ ROEM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
 
 # ---------------- Regel-Konstanten (werden von Simulation UND Druck benutzt) ----------------
 REGELN = dict(
-    stadt_hp=25, kultur_sieg=16, start_gold=3, start_hand=5, ziehen=2, handlimit=7,
+    stadt_hp=25, kultur_sieg=28, start_gold=3, start_hand=5, ziehen=2, handlimit=7,
     basis_einkommen=2,                 # + Zeitalter-Nummer (0..10)
-    aufstieg=[6, 8, 10, 12, 14, 16, 18, 20, 22, 24], wissen_sieg=26,    # Kosten Zeitalter 0->1 ... 9->10; Wissenschaftssieg im Sternenzeitalter (XI)
+    aufstieg=[6, 8, 10, 12, 14, 16, 18, 20, 22, 24], wissen_sieg=24,    # Kosten Zeitalter 0->1 ... 9->10; Wissenschaftssieg im Sternenzeitalter (XI)
     stapel_von_zeitalter=[1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4],
     ablegen_gold=1, ablegen_max=2, tribut_kosten=6, schutz_runden=3, zukauf_preis=3, zukauf_max=1,
 )

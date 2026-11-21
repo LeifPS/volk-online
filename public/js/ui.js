@@ -104,7 +104,7 @@ export class Spieltisch {
     if (s.phase === 'block') return `<div class="aktionen"><div class="info">${s.kampf.ziel === this.me ? 'Du wirst angegriffen!' : esc(this.p(s.kampf.ziel).name) + ' verteidigt sich …'}</div></div>`;
     if (s.am !== this.me) return `<div class="aktionen"><div class="info">${esc(this.p(s.am).name)} ist am Zug · <span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span></div></div>`;
     if (s.phase === 'ziehen') {
-      const piles = [1, 2, 3].filter(k => k <= E.maxStapel(p)).map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: 'ziehe', v: k, cls: 'zieh', unten: 'STAPEL ' + ZA[k - 1] })).join('');
+      const piles = E.STAPEL.filter(k => k <= E.maxStapel(p)).map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: 'ziehe', v: k, cls: 'zieh', unten: 'STAPEL ' + ZA[k - 1] })).join('');
       const rel = p.religion && p.relStapel.length && !p.relBenutzt ? stapelBild('rueck_r_' + p.religion, p.relStapel.length, { a: 'ziehe', v: 'rel', cls: 'zieh', unten: 'GLAUBE' }) : '';
       return `<div class="aktionen"><div class="info">Ziehe noch <b>${s.zieh}</b> Karte(n). Tippe auf einen Stapel. <span data-fx="gold">${ic('ui:gold')}<b>${p.gold}</b></span></div><div class="zieher">${piles}${rel}</div></div>`;
     }
@@ -175,7 +175,7 @@ export class Spieltisch {
     const aktion = this.meinZug() && s.phase === 'aktion', ziehen = this.meinZug() && s.phase === 'ziehen';
     const wun = s.wunderOffen.map(w => kk(w, { a: 'wunderinfo', v: w.i, cls: aktion && !E.sperrGrund(s, p, w) ? 'spielbar' : '', badge: `${ic('ui:gold')}${E.kostenGesamt(p, w) ?? '-'}` })).join('');
     const sta = s.auslage.map(t => kk(t, { a: 'staatinfo', v: t.i, badge: `${ic('ui:gold')}${def(t).kosten}` })).join('');
-    const stp = [1, 2, 3].map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: ziehen && k <= E.maxStapel(p) ? 'ziehe' : '', v: k, cls: `${k > E.maxStapel(p) ? 'aus' : ''} ${ziehen && k <= E.maxStapel(p) ? 'zieh' : ''}`, unten: `STAPEL ${ZA[k - 1]}` })).join('')
+    const stp = E.STAPEL.map(k => stapelBild('rueck_' + k, s.stapel[k].length, { a: ziehen && k <= E.maxStapel(p) ? 'ziehe' : '', v: k, cls: `${k > E.maxStapel(p) ? 'aus' : ''} ${ziehen && k <= E.maxStapel(p) ? 'zieh' : ''}`, unten: `STAPEL ${ZA[k - 1]}` })).join('')
       + stapelBild('rueck_0', s.ereig.length, { unten: 'EREIGNISSE' });
     const rels = s.opt.rel ? `<div class="abschnitt"><h4>${ic('rel:glaube')} Religionen <span class="mini">(gründen ab Zeitalter II · 5 Gold + 1 Handkarte)</span></h4><div class="reihe">${D.religionen.map(r => { const frei = s.relFrei.includes(r.id), inh = s.sp.find(x => x.religion === r.id); return kk({ id: 'reltafel_' + r.id }, { a: 'info', v: 'reltafel_' + r.id, data: { p: this.me }, cls: frei ? '' : 'aus', badge: frei ? 'frei' : esc(inh.name) }); }).join('')}</div></div>` : '';
     const civ = s.opt.civ ? this.civHtml(p, aktion) : '';

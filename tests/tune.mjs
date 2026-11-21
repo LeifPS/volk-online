@@ -11,7 +11,7 @@ if (!isMainThread) {
     S.setzeParam(param); let score = 0, ges = 0;
     for (let j = 0; j < spiele; j++) {
       const n = [2, 3, 4][j % 3], pos = Math.floor(j / 3) % n, st = Array.from({ length: n }, (_, k) => k === pos ? 'stark' : 'mittel'), c = j % 4;
-      const s = E.neuesSpiel(st.map((_, i) => ({ name: 'S' + i })), { seed: seeds + j, vk: c === 1 || c === 3, rel: c >= 2 }); let z = 0, ok = true;
+      const s = E.neuesSpiel(st.map((_, i) => ({ name: 'S' + i })), { seed: seeds + j }); let z = 0, ok = true;
       while (s.sieger === null) { const pi = E.akteur(s); const r = E.aktion(s, pi, K.waehle(s, pi, st[pi])); if (!r.ok || ++z > 5000 || s.runde > 50) { ok = false; break; } }
       if (!ok) continue; ges++; score += (s.sieger === pos ? 1 : 0) - 1 / n;
     }

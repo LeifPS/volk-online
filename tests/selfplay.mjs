@@ -15,10 +15,10 @@ export function spiele(n, seed, opt, stufen) {
 }
 if (process.argv[1].endsWith('selfplay.mjs')) {
   const N = +process.argv[2] || 100;
-  for (const n of [2, 3, 4]) for (const [vk, rel] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+  for (const n of [2, 3, 4]) {
     const gr = {}, w = {}, a = {}; const rn = []; let fe = 0;
-    for (let i = 0; i < N; i++) { const s = spiele(n, 100 + i, { vk: !!vk, rel: !!rel }, []); if (!s) { fe++; continue; } gr[s.grund] = (gr[s.grund] || 0) + 1; rn.push(s.runde); for (const p of s.sp) a[p.volk] = (a[p.volk] || 0) + 1; if (s.sieger !== null) { const v = s.sp[s.sieger].volk; w[v] = (w[v] || 0) + 1; } }
+    for (let i = 0; i < N; i++) { const s = spiele(n, 100 + i, {}, []); if (!s) { fe++; continue; } gr[s.grund] = (gr[s.grund] || 0) + 1; rn.push(s.runde); for (const p of s.sp) a[p.volk] = (a[p.volk] || 0) + 1; if (s.sieger !== null && s.sp[s.sieger]) w[s.sp[s.sieger].volk] = (w[s.sp[s.sieger].volk] || 0) + 1; }
     rn.sort((x, y) => x - y);
-    console.log(`n=${n} VK=${vk} REL=${rel} Fehler=${fe}`, JSON.stringify(gr), 'Median', rn[rn.length >> 1], 'Quote', Object.keys(a).sort().map(v => v.slice(0, 4) + ':' + Math.round(100 * (w[v] || 0) / a[v])).join(' '));
+    console.log(`n=${n} Fehler=${fe}`, JSON.stringify(gr), 'Median', rn[rn.length >> 1], 'Quote', Object.keys(a).sort().map(v => v.slice(0, 4) + ':' + Math.round(100 * (w[v] || 0) / a[v])).join(' '));
   }
 }

@@ -1,7 +1,7 @@
 {
  "regeln": {
   "stadt_hp": 25,
-  "kultur_sieg": 16,
+  "kultur_sieg": 28,
   "start_gold": 3,
   "start_hand": 5,
   "ziehen": 2,
@@ -19,7 +19,7 @@
    22,
    24
   ],
-  "wissen_sieg": 26,
+  "wissen_sieg": 24,
   "stapel_von_zeitalter": [
    1,
    1,

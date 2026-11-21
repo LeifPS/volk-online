@@ -6,12 +6,12 @@ const GUELTIG_MS = 3 * 60 * 1000;
 
 export class Lobby extends DurableObject {
   constructor(ctx, env) { super(ctx, env); this.offen = new Map(); }
-  schluessel(c) { return `${c.max}|${c.vk ? 1 : 0}|${c.rel ? 1 : 0}|${c.civ ? 1 : 0}`; }
+  schluessel(c) { return `${c.max}`; }
   async fetch(request) {
     const url = new URL(request.url); const jetzt = Date.now();
     for (const [code, e] of this.offen) if (jetzt - e.t > GUELTIG_MS) this.offen.delete(code);
     if (url.pathname === '/schnell') {
-      const c = await request.json(); const max = [2, 3, 4].includes(+c.max) ? +c.max : 2; const cfg = { max, vk: !!c.vk, rel: !!c.rel, civ: !!c.civ };
+      const c = await request.json(); const max = [2, 3, 4].includes(+c.max) ? +c.max : 2; const cfg = { max };
       for (const [code, e] of this.offen) if (e.k === this.schluessel(cfg) && e.n < e.max && e.n >= 1) { e.n++; e.t = jetzt; return Response.json({ code, neu: false, cfg }); }
       const code = neuerCode(); this.offen.set(code, { k: this.schluessel(cfg), n: 1, max, t: jetzt }); return Response.json({ code, neu: true, cfg });
     }

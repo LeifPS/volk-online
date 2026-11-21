@@ -8,7 +8,7 @@ const GELAENDE = {                       // Farben aus dem Echtzeit-Volk: [Grund
   grasland: ['#6aa84f', '#78b85a', '#5f9a47'], ebene: ['#a8b45a', '#b5c068', '#9ba64f'], wald: ['#4a8c44', '#3f7d3a', '#559a4e'],
   dschungel: ['#37a05a', '#2f8f4e', '#3fb066'], savanne: ['#c9b458', '#d4c066', '#bba84c'], huegel: ['#8fa456', '#9cb062', '#82964b'],
   gebirge: ['#9a9a9a', '#8c8c8c', '#a8a8a8'], wueste: ['#e0c27a', '#ebcf8c', '#d4b56a'], tundra: ['#8e9a7e', '#9aa68a', '#838f73'],
-  kueste: ['#4c9ad8', '#58a6e0', '#4290cf'], stadt: ['#7d9a55', '#89a661', '#728e4d'], leer: ['#161c2b', '#1a2132', '#131827'],
+  kueste: ['#4c9ad8', '#58a6e0', '#4290cf'], kristallgebirge: ['#8f86b8', '#9d95c6', '#8178a9'], stadt: ['#7d9a55', '#89a661', '#728e4d'], leer: ['#161c2b', '#1a2132', '#131827'],
 };
 const RAND = { land: '#2f4a28', geb: '#3a2f20', wunder: '#e8b92f', staat: '#3a2f20', civ: '#8a6be0', stadt: '#4d3f2a', leer: '#2a3350' };
 

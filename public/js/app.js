@@ -24,10 +24,10 @@ async function start() {
 function menue() {
   overlay.classList.remove('an'); overlay.innerHTML = ''; ctrl?.stop(); ctrl = null; tisch = null;
   const save = ls.get('volk.save', null), weiter = save && save.s && save.s.sieger === null;
-  const buehne = [1, 2, 3].map(k => kk({ id: '?' }, { rueck: 'rueck_' + k, eager: true })).join('');
+  const buehne = [1, 2, 3, 4].map(k => kk({ id: '?' }, { rueck: 'rueck_' + k, eager: true })).join('');
   const helden = D.voelker.map(v => spr('stadt:stadtstaat', v.farbe, 1)).join('');
   app.innerHTML = `<div class="menue"><h1>VOLK</h1><div class="unter">Das Kartenspiel · baue dein Volk und steige durch die Zeitalter auf</div>
-    <div class="zeitreihe">${[0, 1, 2, 3, 4, 5, 6].map(i => `<span style="--d:${i}">${zaIcon(i, 30)}</span>`).join('')}</div><div class="buehnenbild">${buehne}</div><div class="hero">${helden}</div>
+    <div class="zeitreihe">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => `<span style="--d:${i}">${zaIcon(i, 26)}</span>`).join('')}</div><div class="buehnenbild">${buehne}</div><div class="hero">${helden}</div>
     <div class="btns">
       ${weiter ? `<button class="gruen" id="b-weiter">${ic('x:los', 2)}Weiterspielen <small>(Runde ${save.s.runde})</small></button>` : ''}
       <button id="b-ki">${ic('x:roboter', 2)}Gegen den Computer</button>
@@ -36,7 +36,7 @@ function menue() {
       <button id="b-opt" class="sek">${ic('ui:einstellungen', 2)}Optionen</button>
       ${window.LGH ? `<button id="b-einst" class="sek">${ic('ui:menue', 2)}Einstellungen</button>` : ''}
     </div>
-    <div class="fuss">Grundspiel · Erweiterung 1: Volkskarten · Erweiterung 2: Götter & Glaube</div></div>`;
+    <div class="fuss">Elf Zeitalter · von der Antike bis zu den Sternen</div></div>`;
   document.getElementById('b-ki').onclick = setup;
   document.getElementById('b-regeln').onclick = () => regelnSeite(app, D, menue);
   document.getElementById('b-opt').onclick = optionenFenster;
@@ -57,7 +57,7 @@ function optionenFenster() {
 
 // ---------------------------------------------------------------- Einstellungen
 function setup() {
-  const c = Object.assign({ name: 'Spieler', gegner: 2, volk: ['', '', '', ''], stufe: ['mittel', 'mittel', 'mittel'], vk: false, rel: false, civ: false }, ls.get('volk.setup', {}));
+  const c = Object.assign({ name: 'Spieler', gegner: 2, volk: ['', '', '', ''], stufe: ['mittel', 'mittel', 'mittel'] }, ls.get('volk.setup', {}));
   const zeichne = () => {
     const vopt = (sel) => `<option value="">Zufällig</option>${D.voelker.map(v => `<option value="${v.id}" ${sel === v.id ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}`;
     const sitze = Array.from({ length: c.gegner }, (_, i) => `<div class="sitz"><b>Gegner ${i + 1}</b><select data-k="volk" data-i="${i + 1}">${vopt(c.volk[i + 1])}</select><select data-k="stufe" data-i="${i}">${['leicht', 'mittel', 'stark'].map(st => `<option value="${st}" ${c.stufe[i] === st ? 'selected' : ''}>${KI.STUFEN[st].name}</option>`).join('')}</select></div>`).join('');
@@ -67,14 +67,10 @@ function setup() {
         <div class="zeile"><label>Gegner</label><div class="chips">${[1, 2, 3].map(n => `<span class="chipb ${c.gegner === n ? 'an' : ''}" data-g="${n}">${n}</span>`).join('')}</div></div>
         ${sitze}
         <div class="hinweis">Leicht: macht Fehler · Mittel: solides Spiel · Stark: rechnet jeden Zug im Voraus durch und verteidigt klug.</div></div>
-      <div class="karte-panel"><h3>Spielmodule</h3>
-        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Grundspiel</b><small>Land, Gebäude, Einheiten, Wunder, Stadtstaaten und Ereignisse. Sieg durch Eroberung, Kultur (12) oder Wissenschaft (Atomzeit + 20 Gold).</small></div></div>
-        <div class="modul ${c.vk ? 'an' : ''}" data-m="vk"><span class="haken">${c.vk ? ic('ui:haken') : ''}</span><div><b>Erweiterung 1: Volkskarten</b><small>Jedes Volk hat 7 eigene Karten – eine für jedes Zeitalter.</small></div></div>
-        <div class="modul ${c.rel ? 'an' : ''}" data-m="rel"><span class="haken">${c.rel ? ic('ui:haken') : ''}</span><div><b>Erweiterung 2: Götter & Glaube</b><small>Gründe eine von 8 Religionen, sende Missionare, gewinne durch Glaube (${c.vk ? D.glaube_sieg_vk : D.glaube_sieg}).</small></div></div>
-        <div class="modul ${c.civ ? 'an' : ''}" data-m="civ"><span class="haken">${c.civ ? ic('ui:haken') : ''}</span><div><b>Erweiterung 3: Zivilisation</b><small>${D.regierungen.length} Regierungen, ${D.personen.length} Große Persönlichkeiten und ${D.naturwunder.length} Naturwunder aus dem Vorbild Civilization.</small></div></div></div>
+      <div class="karte-panel"><h3>Das Spiel</h3>
+        <div class="modul fest an"><span class="haken">${ic('ui:haken')}</span><div><b>Volk – Das Kartenspiel</b><small>11 Zeitalter von der Antike bis zu den Sternen, mit Land, Gebäuden, Einheiten, Wundern, Stadtstaaten, Ereignissen und 11 eigenen Karten für jedes Volk. Sieg durch Eroberung, Kultur (${D.regeln.kultur_sieg}) oder Wissenschaft (Sternenzeitalter + ${D.regeln.wissen_sieg} Gold).</small></div></div></div>
       <div class="btns"><button class="gruen" id="s-los">${ic('x:los')}Spiel starten</button><button class="sek" id="s-zu">Zurück</button></div></div>`;
     app.querySelectorAll('[data-g]').forEach(e => e.onclick = () => { c.gegner = +e.dataset.g; zeichne(); });
-    app.querySelectorAll('[data-m]').forEach(e => e.onclick = () => { c[e.dataset.m] = !c[e.dataset.m]; zeichne(); });
     app.querySelectorAll('select').forEach(e => e.onchange = () => { const i = +e.dataset.i; if (e.dataset.k === 'volk') c.volk[i] = e.value; else c.stufe[i] = e.value; });
     app.querySelector('#s-name').oninput = (e) => c.name = e.target.value;
     document.getElementById('s-zu').onclick = menue;
@@ -89,7 +85,7 @@ function starteLokal(cfg, gespeichert) {
   if (!s) {
     const sp = [{ name: cfg.name, volk: cfg.volk[0] || undefined }];
     for (let i = 0; i < cfg.gegner; i++) sp.push({ name: 'Computer ' + (i + 1), volk: cfg.volk[i + 1] || undefined, ki: cfg.stufe[i] });
-    s = E.neuesSpiel(sp, { vk: cfg.vk, rel: cfg.rel, civ: cfg.civ });
+    s = E.neuesSpiel(sp, {});
     s.sp.forEach((p, i) => { if (i > 0) { const v = D.voelker.find(x => x.id === p.volk); p.name = v.herrscher.split(' ').slice(0, 2).join(' '); } });
   }
   ctrl = new LokalCtrl(s, cfg); tisch = new Spieltisch(app, overlay, ctrl); ctrl.view = tisch;

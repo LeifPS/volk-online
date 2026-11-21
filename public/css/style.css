@@ -244,7 +244,7 @@ button { transition: filter .1s; }
 #overlay.an { animation: fade .15s; } @keyframes fade { from { background: rgba(5,6,10,0); } }
 .sheet:not(.still) .ereignis-wrap .gross .kk { animation: flip .55s cubic-bezier(.2, .8, .3, 1); } @keyframes flip { from { transform: perspective(600px) rotateY(90deg) scale(.8); opacity: .2; } }
 .menue h1 { animation: schweb 2.6s ease-in-out infinite alternate; } @keyframes schweb { to { transform: translateY(-4px); } }
-.zeitreihe { display: flex; justify-content: center; gap: 6px; margin: 2px 0 6px; } .zeitreihe span { display: inline-flex; animation: popin .4s cubic-bezier(.2, .9, .3, 1.3) backwards; animation-delay: calc(var(--d) * 70ms + .1s); } .zeitreihe img.za { width: 30px; height: 30px; }
+.zeitreihe { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin: 2px 0 6px; } .zeitreihe span { display: inline-flex; animation: popin .4s cubic-bezier(.2, .9, .3, 1.3) backwards; animation-delay: calc(var(--d) * 70ms + .1s); } .zeitreihe img.za { width: 26px; height: 26px; }
 @keyframes popin { from { transform: scale(0); opacity: 0; } }
 .laden::after { content: ''; animation: punkte 1.2s steps(1) infinite; } @keyframes punkte { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
 body.keineanim *, body.keineanim *::before, body.keineanim *::after { animation: none !important; transition: none !important; }
@@ -266,3 +266,6 @@ body.keineanim *, body.keineanim *::before, body.keineanim *::after { animation:
 @media (hover: hover) { .hx[data-a]:hover .base { filter: brightness(1.18); } }
 @keyframes hxpop { 0% { transform: translateY(-14px); opacity: 0; } 60% { transform: translateY(2px); opacity: 1; } 100% { transform: none; opacity: 1; } }
 .hx.neu { animation: hxpop .5s steps(7) 1; }
+
+/* 11 Zeitalter: Leiste darf nicht überlaufen */
+.tleiste.zeit .zz { min-width: 0; overflow: hidden; } .zz .zn { font-size: 9px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

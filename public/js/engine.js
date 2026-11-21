@@ -1,8 +1,11 @@
-// Regel-Engine für "Volk – Das Kartenspiel" (Grundspiel + Erweiterung 1 Volkskarten + Erweiterung 2 Götter & Glaube).
+// Regel-Engine für "Volk – Das Kartenspiel" (Grundspiel mit 11 Zeitaltern und Volkskarten; die Erweiterungen sind vorerst abgeschaltet).
 // Reine Logik ohne DOM: läuft im Browser (gegen Computer) und im Cloudflare Worker (online, maßgeblich).
 // Der Zustand ist reines JSON. Alle Änderungen laufen über aktion(s, spielerIdx, a).
 
 let D = null, ID = {}, R = null;
+/** Stapel-Nummern (Stapel IV = Zeitalter VIII–XI) und Index des letzten Zeitalters (XI = 10). */
+export const STAPEL = [1, 2, 3, 4];
+const LETZTES = 10;
 export function setzeDaten(daten) {
   D = daten; R = D.regeln; ID = {};
   for (const l of [D.karten, D.volkskarten, D.relkarten, D.wunder, D.staaten, D.ereignisse, D.regierungen || [], D.personen || [], D.naturwunder || []]) for (const k of l) ID[k.id] = k;
@@ -26,15 +29,16 @@ function mische(s, a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.
 const neu = (s, id, extra) => Object.assign({ i: s.nid++, id }, extra || {});
 
 // ---------- Spiel erzeugen ----------
-// spieler: [{name, volk?, ki?}], opt: {vk:true/false, rel:true/false, seed}
+// spieler: [{name, volk?, ki?}], opt: {seed}. Volkskarten sind fest im Grundspiel; die Erweiterungen Götter & Glaube (rel) und Zivilisation (civ)
+// sind vorerst abgeschaltet (Code und Daten bleiben liegen, opt.rel/opt.civ werden ignoriert).
 export function neuesSpiel(spieler, opt = {}) {
-  const s = { v: 1, rng: (opt.seed ?? Math.floor(Math.random() * 2 ** 31)) >>> 0, nid: 1, seq: 0, ev: [], opt: { vk: !!opt.vk, rel: !!opt.rel, civ: !!opt.civ }, runde: 1, am: 0, phase: 'ziehen', sieger: null, grund: null, ereigZ: 0 };
+  const s = { v: 1, rng: (opt.seed ?? Math.floor(Math.random() * 2 ** 31)) >>> 0, nid: 1, seq: 0, ev: [], opt: { vk: true, rel: false, civ: false }, runde: 1, am: 0, phase: 'ziehen', sieger: null, grund: null, ereigZ: 0 };
   const volkIds = D.voelker.map(v => v.id); const frei = mische(s, volkIds.filter(v => !spieler.some(p => p.volk === v)));
   s.sp = spieler.map((p, i) => ({ name: p.name, ki: p.ki || null, volk: p.volk || frei.pop(), volkF: '', hand: [], land: [], geb: [], wunder: [], staaten: [], front: [], kaserne: [], gold: R.start_gold, hp: R.stadt_hp, alter: 0, landG: 0, ablN: 0, tot: false, religion: null, relStapel: [], relBenutzt: false, regierung: null, pers: [], natur: [], civN: 0 }));
   for (const p of s.sp) p.volkF = D.voelker.find(v => v.id === p.volk).farbe;
-  s.stapel = { 1: [], 2: [], 3: [] }; s.ablage = { 1: [], 2: [], 3: [] };
+  s.stapel = { 1: [], 2: [], 3: [], 4: [] }; s.ablage = { 1: [], 2: [], 3: [], 4: [] };
   for (const k of D.karten) for (let n = 0; n < k.kopien; n++) s.stapel[k.stapel].push(neu(s, k.id, k.typ === 'land' ? { st: k.stapel } : null));
-  for (const st of [1, 2, 3]) mische(s, s.stapel[st]);
+  for (const st of STAPEL) mische(s, s.stapel[st]);
   s.wunderStapel = D.wunder.map(w => neu(s, w.id)); s.wunderOffen = [];
   s.staatStapel = mische(s, D.staaten.map(x => neu(s, x.id))); s.auslage = [];
   s.ereig = D.ereignisse.map(e => neu(s, e.id)); if (s.opt.rel) for (const e of D.rel_ereignisse) s.ereig.push(neu(s, e.id));
@@ -131,11 +135,11 @@ export function kosten(p, c) {
   return k;
 }
 export const aufstiegErlaubt = (p) => !p.aufN;   // pro Runde nur ein Aufstieg
-// In der Atomzeit (letztes Zeitalter) kostet der "nächste Aufstieg" feste 20 Gold und gewinnt sofort: Wissenschaftssieg.
-export const wissenSiegKosten = () => R.wissen_sieg || 20;
-export const wissenSiegMoeglich = (p) => p.alter >= 6;
+// Im Sternenzeitalter (letztes Zeitalter, Index 10) kostet der "nächste Aufstieg" feste Gold (R.wissen_sieg) und gewinnt sofort: Wissenschaftssieg.
+export const wissenSiegKosten = () => R.wissen_sieg || 24;
+export const wissenSiegMoeglich = (p) => p.alter >= LETZTES;
 export function aufstiegKosten(p) {
-  if (p.alter >= 6) return wissenSiegKosten();
+  if (p.alter >= LETZTES) return wissenSiegKosten();
   return Math.max(1, R.aufstieg[p.alter] - effekte(p).W - (p.volk === 'sternendeuter' ? 1 : 0));
 }
 // Kosten für fehlende Rohstoffe; null = nicht spielbar
@@ -186,7 +190,7 @@ function zugStart(s) {
 }
 function ziehCheck(s) {
   const p = s.sp[s.am];
-  const quelle = [1, 2, 3].some(st => st <= maxStapel(p) && (s.stapel[st].length || s.ablage[st].length)) || (p.religion && p.relStapel.length && !p.relBenutzt);
+  const quelle = STAPEL.some(st => st <= maxStapel(p) && (s.stapel[st].length || s.ablage[st].length)) || (p.religion && p.relStapel.length && !p.relBenutzt);
   if (s.zieh <= 0 || !quelle) { s.zieh = 0; s.phase = 'aktion'; }
 }
 export const maxStapel = (p) => R.stapel_von_zeitalter[p.alter];
@@ -227,7 +231,7 @@ export function aktion(s, pi, a) {
       if (!p.religion || !p.relStapel.length || p.relBenutzt) return f('Kein Religionsstapel verfügbar.');
       p.hand.push(p.relStapel.pop()); p.relBenutzt = true;
     } else {
-      if (![1, 2, 3].includes(st) || st > maxStapel(p)) return f('Diesen Stapel darfst du noch nicht nutzen.');
+      if (!STAPEL.includes(st) || st > maxStapel(p)) return f('Diesen Stapel darfst du noch nicht nutzen.');
       if (!ziehe(s, p, st)) return f('Der Stapel ist leer.');
     }
     s.zieh--; ziehCheck(s);
@@ -259,7 +263,7 @@ export function aktion(s, pi, a) {
     }
     case 'aufstieg': {
       const kst = aufstiegKosten(p); if (kst === null) return f('Aufstieg nicht möglich.'); if (p.aufN) return f('Du bist in dieser Runde schon aufgestiegen.'); if (p.gold < kst) return f('Zu wenig Gold.');
-      if (p.alter >= 6) { p.gold -= kst; p.aufN = 1; s.sieger = pi; s.grund = 'Wissenschaft'; s.phase = 'ende'; log(s, 'sieg', p.name + ' gewinnt durch Wissenschaft!', pi); return { ok: true }; }
+      if (p.alter >= LETZTES) { p.gold -= kst; p.aufN = 1; s.sieger = pi; s.grund = 'Wissenschaft'; s.phase = 'ende'; log(s, 'sieg', p.name + ' gewinnt durch Wissenschaft!', pi); return { ok: true }; }
       p.gold -= kst; p.aufN = 1; p.alter++; volkskarte(s, p); log(s, 'aufstieg', p.name + ' steigt ins Zeitalter ' + D.zeitalter[p.alter].name + ' auf.', pi, { alter: p.alter }); return { ok: true };
     }
     case 'tribut': {
@@ -515,7 +519,7 @@ function ereignis(s) {
 // ---------- Sicht eines Spielers (für Online: verborgene Infos entfernen) ----------
 export function sicht(s, me) {
   const c = JSON.parse(JSON.stringify(s)); c.rng = 0;
-  for (const k of [1, 2, 3]) { c.stapel[k] = new Array(c.stapel[k].length).fill(0); c.ablage[k] = new Array(c.ablage[k].length).fill(0); }
+  for (const k of STAPEL) { c.stapel[k] = new Array(c.stapel[k].length).fill(0); c.ablage[k] = new Array(c.ablage[k].length).fill(0); }
   c.wunderStapel = new Array(c.wunderStapel.length).fill(0); c.staatStapel = new Array(c.staatStapel.length).fill(0);
   if (c.civ) { c.civ.pers.stapel = new Array(c.civ.pers.stapel.length).fill(0); c.civ.natur.stapel = new Array(c.civ.natur.stapel.length).fill(0); }
   c.ereig = new Array(c.ereig.length).fill(0); c.ereigAblage = c.ereigAblage.map(x => x);

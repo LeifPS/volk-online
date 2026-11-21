@@ -24,20 +24,8 @@ for vid, ks in d.items():
     add('info_' + vid, lambda c, vid=vid: volkblatt.info(c, vid))
     add('liste_' + vid, lambda c, vid=vid: volkblatt.liste(c, vid))
     add('rueck_v_' + vid, lambda c, vid=vid: volkblatt.ruecken(c, vid))
-for k in relblatt.RKARTEN: add(k['id'], lambda c, k=dict(k): karten.zeichne_vorn(c, k))
-for r in relblatt.REL:
-    rid = r['id']
-    add('reltafel_' + rid, lambda c, rid=rid: relblatt.tafelkarte(c, rid))
-    add('relliste_' + rid, lambda c, rid=rid: relblatt.uebersicht(c, rid))
-    add('rueck_r_' + rid, lambda c, rid=rid: relblatt.ruecken(c, rid))
-for e in SATZ.get('rel_ereignisse', []):
-    add(e['id'], lambda c, e=e: relblatt.ereigniskarte(c, e))
-add('rueck_rev', relblatt.ruecken_ereignis)
-import civblatt
-_R, _P, _N = civ.baue()
-for k in _R + _P + _N: add(k['id'], lambda c, k=dict(k): karten.zeichne_vorn(c, k))
-for t in ('regierung', 'person', 'natur'): add('rueck_c_' + t, lambda c, t=t: civblatt.ruecken(c, t))
-for st in (1, 2, 3, 0): add('rueck_%d' % st, lambda c, st=st: karten.zeichne_ruecken(c, st))
+# Götter & Glaube und Zivilisation sind vorerst nicht spielbar (Karten werden nicht gerendert, Code bleibt liegen)
+for st in (1, 2, 3, 4, 0): add('rueck_%d' % st, lambda c, st=st: karten.zeichne_ruecken(c, st))
 for v in SATZ['voelker']:
     add('tafel_' + v['id'], lambda c, v=v: tafel.tafel_vorn(c, v), (tafel.PW, tafel.PH))
 

@@ -99,6 +99,14 @@ function waehleMittel(s, pi, stufe = 'mittel') {
   if (memo.n > 70) return ende(s, p);
   // Wissenschaftssieg: in der Atomzeit sofort bezahlen, wenn möglich
   if (E.wissenSiegMoeglich(p) && E.aufstiegErlaubt(p) && p.gold >= E.aufstiegKosten(p)) return { t: 'aufstieg' };
+  // Wissenschaftssieg vorbereiten: im letzten Zeitalter Gold sparen, wenn der Sieg in Reichweite ist und keine Gefahr droht
+  if (E.wissenSiegMoeglich(p) && E.aufstiegErlaubt(p)) {
+    const fehl = E.aufstiegKosten(p) - p.gold;
+    if (fehl > 0 && fehl <= 2 * E.einkommen(s, p) && bedrohung(s, p) < p.hp - 2) {
+      if (!memo.kampf) { const a = kampf(s, pi, cfg); if (a) return a; memo.kampf = true; }
+      return ende(s, p);
+    }
+  }
   // Missionare ausweisen
   const bei = E.missionenBei(s, p);
   if (bei.length && s.opt.rel) {

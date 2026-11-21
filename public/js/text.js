@@ -12,9 +12,9 @@ export const SCHL_TXT = {
   luftabwehr: 'Kann Luft-Einheiten blocken, +3 gegen sie.', heilen: 'Stadt heilt +1 je Runde.', einmalig: 'Wird nach dem Einsatz verbraucht.', mission: 'Wird zu einem Gegner gesandt und bringt dir Glaube.',
 };
 export const TAG = { nahkampf: 'Nahkampf', reiter: 'Reiter', see: 'Schiffe', luft: 'Luft', stadt: 'die Stadt', bomber: 'Bomber', u_boot: 'U-Boote', rakete: 'Raketen', belagerung: 'Belagerung' };
-export const ROH = { marmor: 'Marmor', stein: 'Stein', holz: 'Holz', eisen: 'Eisen', kupfer: 'Kupfer', zinn: 'Zinn', pferde: 'Pferde', salpeter: 'Salpeter', kohle: 'Kohle', oel: 'Öl', aluminium: 'Aluminium', uran: 'Uran', elefanten: 'Elefanten', lehm: 'Lehm', salz: 'Salz', kueste: 'Küste', flug: 'Flugfeld', bibliothek: 'Bibliothek' };
+export const ROH = { marmor: 'Marmor', stein: 'Stein', holz: 'Holz', eisen: 'Eisen', kupfer: 'Kupfer', zinn: 'Zinn', pferde: 'Pferde', salpeter: 'Salpeter', kohle: 'Kohle', oel: 'Öl', aluminium: 'Aluminium', uran: 'Uran', elefanten: 'Elefanten', lehm: 'Lehm', salz: 'Salz', seltene_erden: 'Seltene Erden', deuterium: 'Deuterium', titan: 'Titan', helium3: 'Helium-3', kueste: 'Küste', flug: 'Flugfeld', bibliothek: 'Bibliothek' };
 export const KLASSE = { zivil: 'Zivil', haendler: 'Händler', see_zivil: 'Schiff (zivil)', nahkampf: 'Nahkampf', fernkampf: 'Fernkampf', reiter: 'Reiter', belagerung: 'Belagerung', see_nah: 'Schiff', see_fern: 'Schiff (Fern)', u_boot: 'U-Boot', jaeger: 'Jäger', bomber: 'Bomber', flak: 'Flugabwehr', traeger: 'Träger', rakete: 'Rakete', atom: 'Atomwaffe', spaeher: 'Späher', sanitaeter: 'Sanitäter', missionar: 'Missionar' };
-export const ZA = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+export const ZA = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 export const zaName = (i) => daten().zeitalter[i]?.name || '';
 export function effektZeilen(d) {
   const z = [];

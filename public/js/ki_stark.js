@@ -30,6 +30,7 @@ export function wert(s, i) {
   let g = 0; if (s.opt.rel && p.religion) { g = E.glaube(s, p); if (g >= s.glaubeZiel) return 1e6; }
   let v = PARAM.wK * k + PARAM.wK2 * k * k / R.kultur_sieg + (k >= R.kultur_sieg - 3 ? PARAM.wKnah * (k - (R.kultur_sieg - 4)) : 0);
   v += PARAM.wE * E.einkommen(s, p) * T + PARAM.wG * p.gold + PARAM.wA * p.alter;
+  if (E.wissenSiegMoeglich(p)) v += (PARAM.wWiss ?? 1.2) * Math.min(p.gold, E.wissenSiegKosten()) + (p.gold >= E.wissenSiegKosten() ? 40 : 0);   // Wissenschaftssieg in Reichweite
   v += PARAM.wLand * p.land.length + PARAM.wSym * Object.keys(E.symbole(p)).length;
   v += PARAM.wGeb * p.geb.length + PARAM.wStaat * p.staaten.length;
   v += (PARAM.wZ * e.Z + PARAM.wL * e.L + PARAM.wG2 * e.G + PARAM.wAus * e.A + PARAM.wW * e.W + PARAM.wHL * e.HL) * T * 0.5;

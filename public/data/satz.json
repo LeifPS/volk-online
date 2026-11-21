@@ -1,7 +1,7 @@
 {
  "regeln": {
   "stadt_hp": 25,
-  "kultur_sieg": 12,
+  "kultur_sieg": 28,
   "start_gold": 3,
   "start_hand": 5,
   "ziehen": 2,
@@ -13,9 +13,13 @@
    10,
    12,
    14,
-   16
+   16,
+   18,
+   20,
+   22,
+   24
   ],
-  "wissen_sieg": 20,
+  "wissen_sieg": 24,
   "stapel_von_zeitalter": [
    1,
    1,
@@ -23,7 +27,11 @@
    2,
    3,
    3,
-   3
+   3,
+   4,
+   4,
+   4,
+   4
   ],
   "ablegen_gold": 1,
   "ablegen_max": 2,
@@ -2755,7 +2763,7 @@
    "zeitalter": 6,
    "kosten": 16,
    "effekte": {
-    "E": 4
+    "W": 4
    },
    "prov": [],
    "braucht": [],
@@ -2775,8 +2783,8 @@
    "zeitalter": 6,
    "kosten": 18,
    "effekte": {
-    "E": 3,
-    "K": 3
+    "K": 3,
+    "W": 3
    },
    "prov": [],
    "braucht": [],
@@ -3506,6 +3514,1300 @@
    "kosten": 0,
    "stapel": 3,
    "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_seltene_erden_huegel",
+   "name": "Seltene Erden",
+   "gelaende": "huegel",
+   "gelaende_name": "Hügel",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "seltene_erden"
+   ],
+   "sprite": "rohstoff:seltene_erden",
+   "deko": "deko:huegel",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 3
+  },
+  {
+   "typ": "land",
+   "id": "land_deuterium_kueste",
+   "name": "Deuterium",
+   "gelaende": "kueste",
+   "gelaende_name": "Küste",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "deuterium",
+    "kueste"
+   ],
+   "sprite": "rohstoff:deuterium",
+   "deko": null,
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 3
+  },
+  {
+   "typ": "land",
+   "id": "land_titan_gebirge",
+   "name": "Titan",
+   "gelaende": "gebirge",
+   "gelaende_name": "Gebirge",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "titan"
+   ],
+   "sprite": "rohstoff:titan",
+   "deko": "deko:gebirge",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 3
+  },
+  {
+   "typ": "land",
+   "id": "land_helium3_kristallgebirge",
+   "name": "Helium-3",
+   "gelaende": "kristallgebirge",
+   "gelaende_name": "Kristallhöhlen-Gebirge",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "helium3"
+   ],
+   "sprite": "rohstoff:helium3",
+   "deko": "deko:kristallgebirge",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 2
+  },
+  {
+   "typ": "land",
+   "id": "land_aluminium_wueste",
+   "name": "Aluminium",
+   "gelaende": "wueste",
+   "gelaende_name": "Wüste",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "aluminium"
+   ],
+   "sprite": "rohstoff:aluminium",
+   "deko": "deko:wueste",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_oel_tundra",
+   "name": "Öl",
+   "gelaende": "tundra",
+   "gelaende_name": "Tundra",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "oel"
+   ],
+   "sprite": "rohstoff:oel",
+   "deko": "deko:tundra",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_eisen_tundra",
+   "name": "Eisen",
+   "gelaende": "tundra",
+   "gelaende_name": "Tundra",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "eisen"
+   ],
+   "sprite": "rohstoff:eisen",
+   "deko": "deko:tundra",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_uran_huegel",
+   "name": "Uran",
+   "gelaende": "huegel",
+   "gelaende_name": "Hügel",
+   "art": "strategisch",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "uran"
+   ],
+   "sprite": "rohstoff:uran",
+   "deko": "deko:huegel",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_edelsteine_huegel",
+   "name": "Edelsteine",
+   "gelaende": "huegel",
+   "gelaende_name": "Hügel",
+   "art": "luxus",
+   "zeitalter": 7,
+   "ertrag": 2,
+   "symbole": [],
+   "sprite": "rohstoff:edelsteine",
+   "deko": "deko:huegel",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_gold_erz_wueste",
+   "name": "Gold",
+   "gelaende": "wueste",
+   "gelaende_name": "Wüste",
+   "art": "luxus",
+   "zeitalter": 7,
+   "ertrag": 3,
+   "symbole": [],
+   "sprite": "rohstoff:gold_erz",
+   "deko": "deko:wueste",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_marmor_ebene",
+   "name": "Marmor",
+   "gelaende": "ebene",
+   "gelaende_name": "Ebene",
+   "art": "bau",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "marmor"
+   ],
+   "sprite": "rohstoff:marmor",
+   "deko": "deko:ebene",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "land",
+   "id": "land_stein_wueste",
+   "name": "Steinvorkommen",
+   "gelaende": "wueste",
+   "gelaende_name": "Wüste",
+   "art": "bau",
+   "zeitalter": 7,
+   "ertrag": 1,
+   "symbole": [
+    "stein"
+   ],
+   "sprite": "rohstoff:stein",
+   "deko": "deko:wueste",
+   "kosten": 0,
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "exoskelett_infanterie",
+   "name": "Exoskelett-Infanterie",
+   "zeitalter": 7,
+   "kosten": 12,
+   "staerke": 12,
+   "fern": 0,
+   "klasse": "nahkampf",
+   "tags": [
+    "nahkampf"
+   ],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:exoskelett_infanterie",
+   "beschreibung": "Soldaten in kraftverstärkten Anzügen. Schnell zu Fuß und schwer zu stoppen.",
+   "stapel": 4,
+   "kopien": 2
+  },
+  {
+   "typ": "einheit",
+   "id": "kampfroboter",
+   "name": "Kampfroboter",
+   "zeitalter": 7,
+   "kosten": 13,
+   "staerke": 13,
+   "fern": 0,
+   "klasse": "nahkampf",
+   "tags": [
+    "nahkampf"
+   ],
+   "schluessel": [],
+   "boni": {
+    "belagerung": 2
+   },
+   "braucht": [
+    "seltene_erden",
+    "eisen"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:kampfroboter",
+   "beschreibung": "Unermüdliche Maschinen, die keine Angst kennen. Besonders gefährlich für Geschütze.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "drohnenschwarm",
+   "name": "Drohnenschwarm",
+   "zeitalter": 7,
+   "kosten": 12,
+   "staerke": 8,
+   "fern": 12,
+   "klasse": "fernkampf",
+   "tags": [],
+   "schluessel": [
+    "fern"
+   ],
+   "boni": {},
+   "braucht": [
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:drohnenschwarm",
+   "beschreibung": "Hunderte kleine Drohnen, die gleichzeitig angreifen und sich nicht abschütteln lassen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "autonomer_panzer",
+   "name": "Autonomer Panzer",
+   "zeitalter": 7,
+   "kosten": 14,
+   "staerke": 14,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [
+    "oel",
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:autonomer_panzer",
+   "beschreibung": "Ein Panzer ohne Besatzung. Er rechnet schneller, als jeder Kommandant befehlen kann.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "drohnenjaeger",
+   "name": "Drohnenjäger",
+   "zeitalter": 7,
+   "kosten": 13,
+   "staerke": 11,
+   "fern": 11,
+   "klasse": "jaeger",
+   "tags": [
+    "luft"
+   ],
+   "schluessel": [
+    "fern",
+    "fliegend"
+   ],
+   "boni": {
+    "bomber": 2
+   },
+   "braucht": [
+    "seltene_erden",
+    "aluminium",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:drohnenjaeger",
+   "beschreibung": "Eine selbststeuernde Jagdmaschine, die Bomber schon beim Start erkennt.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "lieferdrohnen",
+   "name": "Lieferdrohnen",
+   "zeitalter": 7,
+   "kosten": 6,
+   "staerke": 1,
+   "fern": 0,
+   "klasse": "haendler",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 3,
+   "ziehen": 0,
+   "sprite": "einheit:lieferdrohnen",
+   "beschreibung": "Tausend Pakete pro Stunde – ganz ohne Fahrer, Straße und Pause.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "plasmagrenadier",
+   "name": "Plasmagrenadier",
+   "zeitalter": 8,
+   "kosten": 14,
+   "staerke": 14,
+   "fern": 0,
+   "klasse": "nahkampf",
+   "tags": [
+    "nahkampf"
+   ],
+   "schluessel": [],
+   "boni": {
+    "stadt": 1
+   },
+   "braucht": [
+    "deuterium",
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:plasmagrenadier",
+   "beschreibung": "Gepanzerte Grenadiere mit Plasmawerfern. Mauern schmelzen vor ihnen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "schwebepanzer",
+   "name": "Schwebepanzer",
+   "zeitalter": 8,
+   "kosten": 15,
+   "staerke": 15,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [
+    "seltene_erden",
+    "deuterium"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:schwebepanzer",
+   "beschreibung": "Ein Panzer auf Magnetfeldern. Kein Hügel, kein Fluss hält ihn auf.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "railgun_batterie",
+   "name": "Railgun-Batterie",
+   "zeitalter": 8,
+   "kosten": 15,
+   "staerke": 9,
+   "fern": 15,
+   "klasse": "belagerung",
+   "tags": [
+    "belagerung"
+   ],
+   "schluessel": [
+    "belagerung"
+   ],
+   "boni": {},
+   "braucht": [
+    "seltene_erden",
+    "deuterium"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:railgun_batterie",
+   "beschreibung": "Magnetische Schienen schleudern Geschosse mit mehrfacher Schallgeschwindigkeit.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "laserabwehr",
+   "name": "Laserabwehr",
+   "zeitalter": 8,
+   "kosten": 13,
+   "staerke": 11,
+   "fern": 0,
+   "klasse": "flak",
+   "tags": [],
+   "schluessel": [
+    "luftabwehr"
+   ],
+   "boni": {
+    "luft": 3,
+    "rakete": 3
+   },
+   "braucht": [
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:laserabwehr",
+   "beschreibung": "Lichtblitze finden jedes Ziel am Himmel, bevor es die Stadt erreicht.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "fusionszerstoerer",
+   "name": "Fusionszerstörer",
+   "zeitalter": 8,
+   "kosten": 15,
+   "staerke": 14,
+   "fern": 0,
+   "klasse": "see_nah",
+   "tags": [
+    "see"
+   ],
+   "schluessel": [],
+   "boni": {
+    "u_boot": 2
+   },
+   "braucht": [
+    "deuterium",
+    "kueste"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:fusionszerstoerer",
+   "beschreibung": "Ein Kriegsschiff mit Fusionsantrieb. Es fährt monatelang ohne Treibstoff.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "schildfregatte",
+   "name": "Schildfregatte",
+   "zeitalter": 8,
+   "kosten": 15,
+   "staerke": 10,
+   "fern": 14,
+   "klasse": "see_fern",
+   "tags": [
+    "see"
+   ],
+   "schluessel": [
+    "fern"
+   ],
+   "boni": {},
+   "braucht": [
+    "deuterium",
+    "kueste"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:schildfregatte",
+   "beschreibung": "Ein Energieschild schützt Rumpf und Besatzung vor fast allen Treffern.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "hyperloop_kurier",
+   "name": "Hyperloop-Kurier",
+   "zeitalter": 8,
+   "kosten": 7,
+   "staerke": 1,
+   "fern": 0,
+   "klasse": "haendler",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 3,
+   "ziehen": 0,
+   "sprite": "einheit:hyperloop_kurier",
+   "beschreibung": "Waren in Kapseln, die durch Vakuumröhren schießen. Von Küste zu Küste in Minuten.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "raumjaeger",
+   "name": "Raumjäger",
+   "zeitalter": 9,
+   "kosten": 16,
+   "staerke": 14,
+   "fern": 14,
+   "klasse": "jaeger",
+   "tags": [
+    "luft"
+   ],
+   "schluessel": [
+    "fern",
+    "fliegend"
+   ],
+   "boni": {
+    "bomber": 2
+   },
+   "braucht": [
+    "titan",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:raumjaeger",
+   "beschreibung": "Ein wendiger Jäger, der aus dem Orbit startet und in Sekunden überall ist.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "orbital_marine",
+   "name": "Orbital-Marine",
+   "zeitalter": 9,
+   "kosten": 16,
+   "staerke": 17,
+   "fern": 0,
+   "klasse": "nahkampf",
+   "tags": [
+    "nahkampf"
+   ],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [
+    "titan",
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:orbital_marine",
+   "beschreibung": "Elitesoldaten, die in Landekapseln aus dem Orbit abspringen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "kampfshuttle",
+   "name": "Kampfshuttle",
+   "zeitalter": 9,
+   "kosten": 17,
+   "staerke": 11,
+   "fern": 16,
+   "klasse": "bomber",
+   "tags": [
+    "luft",
+    "bomber"
+   ],
+   "schluessel": [
+    "belagerung",
+    "fliegend"
+   ],
+   "boni": {
+    "stadt": 1
+   },
+   "braucht": [
+    "titan",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:kampfshuttle",
+   "beschreibung": "Ein Raumgleiter mit Bombenschacht. Er wirft seine Last aus 100 Kilometern Höhe ab.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "hyperschallbomber",
+   "name": "Hyperschallbomber",
+   "zeitalter": 9,
+   "kosten": 17,
+   "staerke": 10,
+   "fern": 17,
+   "klasse": "bomber",
+   "tags": [
+    "luft",
+    "bomber"
+   ],
+   "schluessel": [
+    "belagerung",
+    "fliegend",
+    "tarnung"
+   ],
+   "boni": {
+    "stadt": 1
+   },
+   "braucht": [
+    "deuterium",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:hyperschallbomber",
+   "beschreibung": "Schneller als jede Abwehr. Wenn man ihn hört, ist er schon vorbei.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "marsrover_panzer",
+   "name": "Marsrover-Panzer",
+   "zeitalter": 9,
+   "kosten": 17,
+   "staerke": 17,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [
+    "titan",
+    "seltene_erden"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:marsrover_panzer",
+   "beschreibung": "Gebaut für Marsstaub und Eiswüsten. Auf der Erde ist er fast unaufhaltsam.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "asteroidenfrachter",
+   "name": "Asteroidenfrachter",
+   "zeitalter": 9,
+   "kosten": 14,
+   "staerke": 1,
+   "fern": 0,
+   "klasse": "haendler",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [
+    "titan"
+   ],
+   "einkommen": 4,
+   "ziehen": 0,
+   "sprite": "einheit:asteroidenfrachter",
+   "beschreibung": "Er bringt Eisen, Titan und Wasser von fernen Asteroiden. Das Geschäft des Jahrhunderts.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "terraformer",
+   "name": "Terraformer",
+   "zeitalter": 9,
+   "kosten": 11,
+   "staerke": 1,
+   "fern": 0,
+   "klasse": "zivil",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 3,
+   "ziehen": 0,
+   "sprite": "einheit:terraformer",
+   "beschreibung": "Eine Maschine, die tote Welten in Gärten verwandelt – und alte Böden in Paradiese.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "sternenkreuzer",
+   "name": "Sternenkreuzer",
+   "zeitalter": 10,
+   "kosten": 21,
+   "staerke": 18,
+   "fern": 18,
+   "klasse": "jaeger",
+   "tags": [
+    "luft"
+   ],
+   "schluessel": [
+    "fern",
+    "fliegend"
+   ],
+   "boni": {
+    "bomber": 2,
+    "rakete": 2
+   },
+   "braucht": [
+    "helium3",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:sternenkreuzer",
+   "beschreibung": "Ein Schlachtkreuzer, der zwischen den Sternen kreuzt. Sein Schatten allein erschreckt Flotten.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "sternenkrieger",
+   "name": "Sternenkrieger",
+   "zeitalter": 10,
+   "kosten": 20,
+   "staerke": 21,
+   "fern": 0,
+   "klasse": "nahkampf",
+   "tags": [
+    "nahkampf"
+   ],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [
+    "titan",
+    "helium3"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:sternenkrieger",
+   "beschreibung": "Eine Rüstung aus Titan, ein Reaktor auf dem Rücken, und der Mut von tausend Generationen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "nanoschwarm",
+   "name": "Nanoschwarm",
+   "zeitalter": 10,
+   "kosten": 19,
+   "staerke": 12,
+   "fern": 18,
+   "klasse": "fernkampf",
+   "tags": [],
+   "schluessel": [
+    "fern",
+    "tarnung"
+   ],
+   "boni": {},
+   "braucht": [
+    "seltene_erden",
+    "titan"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:nanoschwarm",
+   "beschreibung": "Eine Wolke aus winzigen Maschinen. Man sieht sie nicht, bis sie zugreifen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "orbitalkanone",
+   "name": "Orbitalkanone",
+   "zeitalter": 10,
+   "kosten": 22,
+   "staerke": 10,
+   "fern": 21,
+   "klasse": "belagerung",
+   "tags": [
+    "belagerung"
+   ],
+   "schluessel": [
+    "belagerung"
+   ],
+   "boni": {},
+   "braucht": [
+    "helium3",
+    "titan"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:orbitalkanone",
+   "beschreibung": "Ein Geschütz im All. Es braucht keine Reichweite, nur einen klaren Himmel.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "einheit",
+   "id": "antimaterie_rakete",
+   "name": "Antimaterie-Rakete",
+   "zeitalter": 10,
+   "kosten": 24,
+   "staerke": 0,
+   "fern": 22,
+   "klasse": "rakete",
+   "tags": [
+    "luft",
+    "rakete"
+   ],
+   "schluessel": [
+    "belagerung",
+    "fliegend",
+    "einmalig"
+   ],
+   "boni": {},
+   "braucht": [
+    "helium3",
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:antimaterie_rakete",
+   "beschreibung": "Sprengkopf mit gespeicherter Antimaterie. Ein Gramm reicht für eine ganze Metropole.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "ki_labor",
+   "name": "KI-Labor",
+   "zeitalter": 7,
+   "kosten": 18,
+   "effekte": {
+    "W": 4,
+    "E": 1
+   },
+   "prov": [],
+   "braucht": [
+    "seltene_erden"
+   ],
+   "benoetigt": [],
+   "kategorie": "wissen",
+   "sprite": "gebaeude:ki_labor",
+   "beschreibung": "Maschinen forschen rund um die Uhr und stellen sich ihre Fragen selbst.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "autonome_fabrik",
+   "name": "Autonome Fabrik",
+   "zeitalter": 7,
+   "kosten": 18,
+   "effekte": {
+    "E": 8
+   },
+   "prov": [],
+   "braucht": [
+    "seltene_erden"
+   ],
+   "benoetigt": [],
+   "kategorie": "produktion",
+   "sprite": "gebaeude:autonome_fabrik",
+   "beschreibung": "Kein Mensch im Gebäude. Das Licht ist aus, die Produktion läuft.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "intelligentes_stromnetz",
+   "name": "Intelligentes Stromnetz",
+   "zeitalter": 7,
+   "kosten": 15,
+   "effekte": {
+    "E": 5
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "produktion",
+   "sprite": "gebaeude:intelligentes_stromnetz",
+   "beschreibung": "Das Netz verteilt jede Kilowattstunde dorthin, wo sie gerade gebraucht wird.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "vertikalfarm",
+   "name": "Vertikalfarm",
+   "zeitalter": 7,
+   "kosten": 15,
+   "effekte": {
+    "E": 3,
+    "H": 3
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "nahrung",
+   "sprite": "gebaeude:vertikalfarm",
+   "beschreibung": "Salat im Hochhaus: zwanzig Etagen Ernte, ganz ohne Acker.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "virtuelles_forum",
+   "name": "Virtuelles Forum",
+   "zeitalter": 7,
+   "kosten": 19,
+   "effekte": {
+    "K": 6
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "kultur",
+   "sprite": "gebaeude:virtuelles_forum",
+   "beschreibung": "Der Marktplatz der Zukunft: Millionen Stimmen in einem gemeinsamen Raum.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "laserturm",
+   "name": "Laserturm",
+   "zeitalter": 7,
+   "kosten": 16,
+   "effekte": {
+    "S": 7
+   },
+   "prov": [],
+   "braucht": [
+    "seltene_erden"
+   ],
+   "benoetigt": [],
+   "kategorie": "verteidigung",
+   "sprite": "gebaeude:laserturm",
+   "beschreibung": "Ein Turm, der Angreifer schon am Horizont aus dem Himmel brennt.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "fusionsreaktor",
+   "name": "Fusionsreaktor",
+   "zeitalter": 8,
+   "kosten": 22,
+   "effekte": {
+    "E": 10
+   },
+   "prov": [],
+   "braucht": [
+    "deuterium"
+   ],
+   "benoetigt": [],
+   "kategorie": "produktion",
+   "sprite": "gebaeude:fusionsreaktor",
+   "beschreibung": "Eine kleine Sonne im Keller: viel Energie, kein Abfall und kaum Risiko.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "quantenrechner",
+   "name": "Quantenrechner",
+   "zeitalter": 8,
+   "kosten": 21,
+   "effekte": {
+    "W": 5,
+    "E": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [
+    "ki_labor"
+   ],
+   "kategorie": "wissen",
+   "sprite": "gebaeude:quantenrechner",
+   "beschreibung": "Er probiert alle Antworten gleichzeitig und weiß dann, welche stimmt.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "co2_waescher",
+   "name": "CO2-Wäscher",
+   "zeitalter": 8,
+   "kosten": 17,
+   "effekte": {
+    "K": 3,
+    "H": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "zufriedenheit",
+   "sprite": "gebaeude:co2_waescher",
+   "beschreibung": "Riesige Filter holen das Gas aus der Luft. Der Himmel wird wieder blau.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "energieschild",
+   "name": "Energieschild",
+   "zeitalter": 8,
+   "kosten": 20,
+   "effekte": {
+    "S": 8
+   },
+   "prov": [],
+   "braucht": [
+    "deuterium"
+   ],
+   "benoetigt": [],
+   "kategorie": "verteidigung",
+   "sprite": "gebaeude:energieschild",
+   "beschreibung": "Eine unsichtbare Kuppel aus Licht, an der selbst Raketen abprallen.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "hyperloop_station",
+   "name": "Hyperloop-Station",
+   "zeitalter": 8,
+   "kosten": 20,
+   "effekte": {
+    "E": 5,
+    "K": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "infrastruktur",
+   "sprite": "gebaeude:hyperloop_station",
+   "beschreibung": "Abfahrt alle zwei Minuten. Ankunft vor der Abfahrt – gefühlt jedenfalls.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "raumhafen",
+   "name": "Raumhafen",
+   "zeitalter": 9,
+   "kosten": 22,
+   "effekte": {
+    "E": 6
+   },
+   "prov": [
+    "flug"
+   ],
+   "braucht": [
+    "titan"
+   ],
+   "benoetigt": [],
+   "kategorie": "infrastruktur",
+   "sprite": "gebaeude:raumhafen",
+   "beschreibung": "Hier starten Raumschiffe. Er zählt als Flugfeld für deine Einheiten.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "orbitalstation",
+   "name": "Orbitalstation",
+   "zeitalter": 9,
+   "kosten": 24,
+   "effekte": {
+    "W": 5,
+    "K": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [
+    "raumhafen"
+   ],
+   "kategorie": "wissen",
+   "sprite": "gebaeude:orbitalstation",
+   "beschreibung": "Ein Labor im Orbit. Alle Forscher der Erde teilen sich die Aussicht.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "mondbasis",
+   "name": "Mondbasis",
+   "zeitalter": 9,
+   "kosten": 23,
+   "effekte": {
+    "E": 7,
+    "K": 1
+   },
+   "prov": [],
+   "braucht": [
+    "titan"
+   ],
+   "benoetigt": [],
+   "kategorie": "infrastruktur",
+   "sprite": "gebaeude:mondbasis",
+   "beschreibung": "Eine Siedlung unter der Mondoberfläche. Von hier aus ist alles nur noch ein Sprung.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "kolonie_kuppel",
+   "name": "Kolonie-Kuppel",
+   "zeitalter": 9,
+   "kosten": 22,
+   "effekte": {
+    "E": 3,
+    "H": 4,
+    "K": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "zufriedenheit",
+   "sprite": "gebaeude:kolonie_kuppel",
+   "beschreibung": "Unter dem Glas wachsen Bäume und Hoffnung auf fremden Welten.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "sternenwerft",
+   "name": "Sternenwerft",
+   "zeitalter": 9,
+   "kosten": 25,
+   "effekte": {
+    "A": 2,
+    "E": 4
+   },
+   "prov": [],
+   "braucht": [
+    "titan"
+   ],
+   "benoetigt": [],
+   "kategorie": "militaer",
+   "sprite": "gebaeude:sternenwerft",
+   "beschreibung": "Hier entstehen die Schiffe, die die Erde verlassen. Einheiten werden billiger.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "helium3_raffinerie",
+   "name": "Helium-3-Raffinerie",
+   "zeitalter": 9,
+   "kosten": 23,
+   "effekte": {
+    "E": 9
+   },
+   "prov": [],
+   "braucht": [
+    "helium3"
+   ],
+   "benoetigt": [],
+   "kategorie": "produktion",
+   "sprite": "gebaeude:helium3_raffinerie",
+   "beschreibung": "Der Mond liefert den Staub, die Raffinerie den Brennstoff für die Sterne.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "terraforming_station",
+   "name": "Terraforming-Station",
+   "zeitalter": 10,
+   "kosten": 28,
+   "effekte": {
+    "E": 7,
+    "H": 5,
+    "K": 3
+   },
+   "prov": [],
+   "braucht": [
+    "helium3"
+   ],
+   "benoetigt": [],
+   "kategorie": "nahrung",
+   "sprite": "gebaeude:terraforming_station",
+   "beschreibung": "Sie macht aus Wüstenplaneten fruchtbares Land.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "antimaterie_fabrik",
+   "name": "Antimaterie-Fabrik",
+   "zeitalter": 10,
+   "kosten": 30,
+   "effekte": {
+    "E": 12
+   },
+   "prov": [],
+   "braucht": [
+    "helium3"
+   ],
+   "benoetigt": [],
+   "kategorie": "produktion",
+   "sprite": "gebaeude:antimaterie_fabrik",
+   "beschreibung": "Ein Gramm pro Jahr, gespeichert in Magnetfallen. Mehr Energie gibt es nicht.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "gravitationsschild",
+   "name": "Gravitationsschild",
+   "zeitalter": 10,
+   "kosten": 26,
+   "effekte": {
+    "S": 10
+   },
+   "prov": [],
+   "braucht": [
+    "titan"
+   ],
+   "benoetigt": [],
+   "kategorie": "verteidigung",
+   "sprite": "gebaeude:gravitationsschild",
+   "beschreibung": "Die Schwerkraft selbst wird zur Mauer: Nichts kommt hindurch.",
+   "stapel": 4,
+   "kopien": 1
+  },
+  {
+   "typ": "gebaeude",
+   "id": "kristallturm",
+   "name": "Kristallturm",
+   "zeitalter": 10,
+   "kosten": 27,
+   "effekte": {
+    "K": 7
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "kultur",
+   "sprite": "gebaeude:kristallturm",
+   "beschreibung": "Ein Turm aus gewachsenem Kristall. Sein Leuchten ist im ganzen Land zu sehen.",
+   "stapel": 4,
+   "kopien": 1
   }
  ],
  "wunder": [
@@ -3665,8 +4967,8 @@
    "zeitalter": 6,
    "kosten": 42,
    "effekte": {
-    "E": 3,
     "K": 3,
+    "W": 3,
     "Z": 1
    },
    "braucht": [
@@ -3678,6 +4980,104 @@
    ],
    "sprite": "wunder:internationale_raumstation",
    "beschreibung": "Ein Labor im Weltall. Dein ganzes Reich forscht deutlich schneller, und deine Einheiten sehen weiter.",
+   "kopien": 1,
+   "stapel": 0
+  },
+  {
+   "typ": "wunder",
+   "id": "weltgehirn",
+   "name": "Weltgehirn",
+   "zeitalter": 7,
+   "kosten": 50,
+   "effekte": {
+    "E": 3,
+    "K": 3,
+    "W": 4
+   },
+   "braucht": [
+    "marmor",
+    "seltene_erden"
+   ],
+   "benoetigt": [
+    "ki_labor"
+   ],
+   "text": [],
+   "sprite": "wunder:weltgehirn",
+   "beschreibung": "Alle Rechner der Welt denken gemeinsam. Dein Reich lernt schneller, als es fragen kann.",
+   "kopien": 1,
+   "stapel": 0
+  },
+  {
+   "typ": "wunder",
+   "id": "kuenstliche_sonne",
+   "name": "Künstliche Sonne",
+   "zeitalter": 8,
+   "kosten": 58,
+   "effekte": {
+    "E": 8,
+    "K": 3,
+    "H": 2
+   },
+   "braucht": [
+    "marmor",
+    "deuterium"
+   ],
+   "benoetigt": [
+    "fusionsreaktor"
+   ],
+   "text": [],
+   "sprite": "wunder:kuenstliche_sonne",
+   "beschreibung": "Ein Fusionsstern am Himmel. Es wird nie wieder Nacht auf deinen Feldern.",
+   "kopien": 1,
+   "stapel": 0
+  },
+  {
+   "typ": "wunder",
+   "id": "weltraumaufzug",
+   "name": "Weltraumaufzug",
+   "zeitalter": 9,
+   "kosten": 66,
+   "effekte": {
+    "E": 4,
+    "K": 3,
+    "Z": 1
+   },
+   "braucht": [
+    "marmor",
+    "titan"
+   ],
+   "benoetigt": [
+    "raumhafen"
+   ],
+   "text": [
+    "Du ziehst jede Runde 1 Karte mehr."
+   ],
+   "sprite": "wunder:weltraumaufzug",
+   "beschreibung": "Ein Seil bis in den Orbit. Der Weg ins All kostet nur noch Strom.",
+   "kopien": 1,
+   "stapel": 0
+  },
+  {
+   "typ": "wunder",
+   "id": "sternenarche",
+   "name": "Sternenarche",
+   "zeitalter": 10,
+   "kosten": 74,
+   "effekte": {
+    "E": 5,
+    "K": 4,
+    "H": 4
+   },
+   "braucht": [
+    "marmor",
+    "helium3"
+   ],
+   "benoetigt": [
+    "sternenwerft"
+   ],
+   "text": [],
+   "sprite": "wunder:sternenarche",
+   "beschreibung": "Ein Schiff für ein ganzes Volk. Die Zukunft beginnt dort, wo die Karte endet.",
    "kopien": 1,
    "stapel": 0
   }
@@ -4186,6 +5586,34 @@
    "farbe": "#4a8c8c",
    "stil": "hochhaus",
    "beschreibung": "Hochhäuser, Kühltürme, Raketen und das Atom."
+  },
+  {
+   "id": "ki",
+   "name": "KI-Zeitalter",
+   "farbe": "#5b8cff",
+   "stil": "smart",
+   "beschreibung": "Glastürme mit Dachgärten, Roboter, Drohnen und lernende Maschinen."
+  },
+  {
+   "id": "fusion",
+   "name": "Fusionszeitalter",
+   "farbe": "#f2a33a",
+   "stil": "fusion",
+   "beschreibung": "Weiße Kuppeln mit Lichtbändern, Plasma und saubere Energie."
+  },
+  {
+   "id": "weltraum",
+   "name": "Weltraumzeitalter",
+   "farbe": "#8e7cc3",
+   "stil": "orbital",
+   "beschreibung": "Raumhäfen, Orbitalstationen, Mond und Mars."
+  },
+  {
+   "id": "sterne",
+   "name": "Sternenzeitalter",
+   "farbe": "#e6eef7",
+   "stil": "stern",
+   "beschreibung": "Antimaterie, Sternenschiffe und kristalline Türme."
   }
  ],
  "volkskarten": [
@@ -4935,7 +6363,7 @@
    "zeitalter": 6,
    "kosten": 16,
    "effekte": {
-    "E": 3,
+    "W": 3,
     "K": 3
    },
    "prov": [],
@@ -5157,6 +6585,575 @@
    "stapel": 0,
    "kopien": 1,
    "beschreibung": "Die Steppe bebt wieder, wenn der Khan ruft.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "nordleute",
+   "id": "nl_ki_hafen",
+   "name": "KI-Hafen",
+   "zeitalter": 7,
+   "kosten": 19,
+   "effekte": {
+    "E": 6,
+    "K": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:nl_ki_hafen",
+   "flavor": "Kräne ohne Fahrer, Schiffe ohne Wartezeit – und die Möwen sind die Einzigen, die noch schreien.",
+   "nr": "NL-VIII",
+   "rahmen": "#b32323",
+   "farbe_volk": "#d62828",
+   "volk_name": "Nordleute",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Kräne ohne Fahrer, Schiffe ohne Wartezeit – und die Möwen sind die Einzigen, die noch schreien.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "nordleute",
+   "id": "nl_fusionsschiff",
+   "name": "Fusionsschiff",
+   "zeitalter": 8,
+   "kosten": 16,
+   "staerke": 15,
+   "fern": 0,
+   "klasse": "see_nah",
+   "tags": [
+    "see"
+   ],
+   "schluessel": [],
+   "boni": {
+    "u_boot": 2
+   },
+   "braucht": [],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:nl_fusionsschiff",
+   "flavor": "Der Reaktor glüht wie eine Sonne im Rumpf. Das Meer kennt keinen Winter mehr.",
+   "nr": "NL-IX",
+   "rahmen": "#b32323",
+   "farbe_volk": "#d62828",
+   "volk_name": "Nordleute",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Der Reaktor glüht wie eine Sonne im Rumpf. Das Meer kennt keinen Winter mehr.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "nordleute",
+   "id": "nl_orbitalwerft",
+   "name": "Orbitalwerft",
+   "zeitalter": 9,
+   "kosten": 21,
+   "effekte": {
+    "A": 2,
+    "E": 4,
+    "K": 1
+   },
+   "prov": [
+    "flug"
+   ],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:nl_orbitalwerft",
+   "flavor": "Die Jarle bauen ihre Langschiffe jetzt im Orbit – und sie nennen sie immer noch Drachen.",
+   "nr": "NL-X",
+   "rahmen": "#b32323",
+   "farbe_volk": "#d62828",
+   "volk_name": "Nordleute",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Die Jarle bauen ihre Langschiffe jetzt im Orbit – und sie nennen sie immer noch Drachen.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "nordleute",
+   "id": "nl_sternensegler",
+   "name": "Sternensegler",
+   "zeitalter": 10,
+   "kosten": 22,
+   "staerke": 18,
+   "fern": 16,
+   "klasse": "jaeger",
+   "tags": [
+    "luft"
+   ],
+   "schluessel": [
+    "fern",
+    "fliegend"
+   ],
+   "boni": {
+    "rakete": 2
+   },
+   "braucht": [
+    "flug"
+   ],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:nl_sternensegler",
+   "flavor": "Segel aus Licht, Kiel aus Titan. Die Nordleute haben endlich einen Horizont, der nie endet.",
+   "nr": "NL-XI",
+   "rahmen": "#b32323",
+   "farbe_volk": "#d62828",
+   "volk_name": "Nordleute",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Segel aus Licht, Kiel aus Titan. Die Nordleute haben endlich einen Horizont, der nie endet.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sonnenvolk",
+   "id": "sv_gewaechshaus",
+   "name": "Gewächshaus-Turm",
+   "zeitalter": 7,
+   "kosten": 17,
+   "effekte": {
+    "E": 4,
+    "H": 3,
+    "K": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sv_gewaechshaus",
+   "flavor": "Zwanzig Etagen Sonne, Tomaten bis unters Dach und überall der Duft von Erde.",
+   "nr": "SV-VIII",
+   "rahmen": "#c99a00",
+   "farbe_volk": "#ffd60a",
+   "volk_name": "Sonnenvolk",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Zwanzig Etagen Sonne, Tomaten bis unters Dach und überall der Duft von Erde.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sonnenvolk",
+   "id": "sv_sonnenreaktor",
+   "name": "Sonnenreaktor",
+   "zeitalter": 8,
+   "kosten": 20,
+   "effekte": {
+    "E": 8,
+    "K": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sv_sonnenreaktor",
+   "flavor": "Das Volk der Sonne hat sich eine eigene gebaut – und teilt sie mit allen.",
+   "nr": "SV-IX",
+   "rahmen": "#c99a00",
+   "farbe_volk": "#ffd60a",
+   "volk_name": "Sonnenvolk",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Das Volk der Sonne hat sich eine eigene gebaut – und teilt sie mit allen.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "sonnenvolk",
+   "id": "sv_mondgaertner",
+   "name": "Mondgärtner",
+   "zeitalter": 9,
+   "kosten": 14,
+   "staerke": 4,
+   "fern": 0,
+   "klasse": "sanitaeter",
+   "tags": [],
+   "schluessel": [
+    "heilen"
+   ],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 2,
+   "ziehen": 0,
+   "sprite": "einheit:sv_mondgaertner",
+   "flavor": "Auf dem Mond blüht der erste Garten. Er heilt jeden, der ihn betritt.",
+   "nr": "SV-X",
+   "rahmen": "#c99a00",
+   "farbe_volk": "#ffd60a",
+   "volk_name": "Sonnenvolk",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Auf dem Mond blüht der erste Garten. Er heilt jeden, der ihn betritt.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sonnenvolk",
+   "id": "sv_gartenwelt",
+   "name": "Gartenwelt",
+   "zeitalter": 10,
+   "kosten": 27,
+   "effekte": {
+    "E": 9,
+    "H": 4,
+    "K": 3,
+    "L": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sv_gartenwelt",
+   "flavor": "Ein ganzer Planet als Garten. Es gibt keine Wüste mehr, nur noch Wege dazwischen.",
+   "nr": "SV-XI",
+   "rahmen": "#c99a00",
+   "farbe_volk": "#ffd60a",
+   "volk_name": "Sonnenvolk",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Ein ganzer Planet als Garten. Es gibt keine Wüste mehr, nur noch Wege dazwischen.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "goldener_bund",
+   "id": "gb_lieferflotte",
+   "name": "Lieferdrohnen-Flotte",
+   "zeitalter": 7,
+   "kosten": 11,
+   "staerke": 2,
+   "fern": 0,
+   "klasse": "haendler",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 3,
+   "ziehen": 0,
+   "sprite": "einheit:gb_lieferflotte",
+   "flavor": "Hunderte Drohnen, jede mit Siegel und Rechnung. Der Bund liefert schneller als ein Gedanke.",
+   "nr": "GB-VIII",
+   "rahmen": "#d96c00",
+   "farbe_volk": "#f77f00",
+   "volk_name": "Goldener Bund",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Hunderte Drohnen, jede mit Siegel und Rechnung. Der Bund liefert schneller als ein Gedanke.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "goldener_bund",
+   "id": "gb_quantenboerse",
+   "name": "Quantenbörse",
+   "zeitalter": 8,
+   "kosten": 22,
+   "effekte": {
+    "E": 7,
+    "K": 1,
+    "G": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:gb_quantenboerse",
+   "flavor": "Jeder Preis ist schon bekannt, ehe das Geschäft beginnt – und der Bund hat ihn nie zu hoch gesetzt.",
+   "nr": "GB-IX",
+   "rahmen": "#d96c00",
+   "farbe_volk": "#f77f00",
+   "volk_name": "Goldener Bund",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Jeder Preis ist schon bekannt, ehe das Geschäft beginnt – und der Bund hat ihn nie zu hoch gesetzt.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "goldener_bund",
+   "id": "gb_orbitalfrachter",
+   "name": "Orbitalfrachter",
+   "zeitalter": 9,
+   "kosten": 14,
+   "staerke": 3,
+   "fern": 0,
+   "klasse": "haendler",
+   "tags": [],
+   "schluessel": [],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 4,
+   "ziehen": 0,
+   "sprite": "einheit:gb_orbitalfrachter",
+   "flavor": "Ein Frachter zwischen Erde und Mond. Seine Ladung zahlt sich schon vor dem Landen aus.",
+   "nr": "GB-X",
+   "rahmen": "#d96c00",
+   "farbe_volk": "#f77f00",
+   "volk_name": "Goldener Bund",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Ein Frachter zwischen Erde und Mond. Seine Ladung zahlt sich schon vor dem Landen aus.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "goldener_bund",
+   "id": "gb_sternenmarkt",
+   "name": "Sternenmarkt",
+   "zeitalter": 10,
+   "kosten": 28,
+   "effekte": {
+    "E": 11,
+    "K": 2,
+    "HL": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:gb_sternenmarkt",
+   "flavor": "Ein Basar zwischen den Sternen: Händler aus tausend Welten, eine Währung – Gold.",
+   "nr": "GB-XI",
+   "rahmen": "#d96c00",
+   "farbe_volk": "#f77f00",
+   "volk_name": "Goldener Bund",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Ein Basar zwischen den Sternen: Händler aus tausend Welten, eine Währung – Gold.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sternendeuter",
+   "id": "sd_ki_observatorium",
+   "name": "KI-Observatorium",
+   "zeitalter": 7,
+   "kosten": 18,
+   "effekte": {
+    "W": 4,
+    "K": 1,
+    "E": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sd_ki_observatorium",
+   "flavor": "Die Maschine zählt Sterne und sagt dem Forscher, welche er noch nicht gefunden hat.",
+   "nr": "SD-VIII",
+   "rahmen": "#6a1fa3",
+   "farbe_volk": "#7209b7",
+   "volk_name": "Sternendeuter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Die Maschine zählt Sterne und sagt dem Forscher, welche er noch nicht gefunden hat.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sternendeuter",
+   "id": "sd_quantenwarte",
+   "name": "Quantenwarte",
+   "zeitalter": 8,
+   "kosten": 21,
+   "effekte": {
+    "W": 4,
+    "E": 2,
+    "K": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sd_quantenwarte",
+   "flavor": "Ein Teleskop, das nicht schaut, sondern fragt. Und der Himmel antwortet.",
+   "nr": "SD-IX",
+   "rahmen": "#6a1fa3",
+   "farbe_volk": "#7209b7",
+   "volk_name": "Sternendeuter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Ein Teleskop, das nicht schaut, sondern fragt. Und der Himmel antwortet.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sternendeuter",
+   "id": "sd_orbitalteleskop",
+   "name": "Orbitalteleskop",
+   "zeitalter": 9,
+   "kosten": 24,
+   "effekte": {
+    "W": 5,
+    "K": 2,
+    "Z": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sd_orbitalteleskop",
+   "flavor": "Über allen Wolken sieht man weiter, als je ein Mensch geträumt hat.",
+   "nr": "SD-X",
+   "rahmen": "#6a1fa3",
+   "farbe_volk": "#7209b7",
+   "volk_name": "Sternendeuter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Über allen Wolken sieht man weiter, als je ein Mensch geträumt hat.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "sternendeuter",
+   "id": "sd_sternenpforte",
+   "name": "Sternenpforte",
+   "zeitalter": 10,
+   "kosten": 30,
+   "effekte": {
+    "W": 6,
+    "K": 3,
+    "Z": 1
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sd_sternenpforte",
+   "flavor": "Ein Tor, durch das man nicht geht, sondern fällt – direkt zwischen die Sterne.",
+   "nr": "SD-XI",
+   "rahmen": "#6a1fa3",
+   "farbe_volk": "#7209b7",
+   "volk_name": "Sternendeuter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Ein Tor, durch das man nicht geht, sondern fällt – direkt zwischen die Sterne.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "steppenreiter",
+   "id": "sr_roboterreiter",
+   "name": "Roboterreiter",
+   "zeitalter": 7,
+   "kosten": 13,
+   "staerke": 13,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:sr_roboterreiter",
+   "flavor": "Das Pferd ist aus Stahl und trägt den Khan trotzdem so frei wie früher den Wind.",
+   "nr": "SR-VIII",
+   "rahmen": "#c21877",
+   "farbe_volk": "#e0218a",
+   "volk_name": "Steppenreiter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Das Pferd ist aus Stahl und trägt den Khan trotzdem so frei wie früher den Wind.",
+   "volkskarte": true
+  },
+  {
+   "typ": "gebaeude",
+   "volk": "steppenreiter",
+   "id": "sr_plasmaschmiede",
+   "name": "Plasmaschmiede",
+   "zeitalter": 8,
+   "kosten": 21,
+   "effekte": {
+    "A": 2,
+    "S": 2,
+    "K": 1,
+    "E": 2
+   },
+   "prov": [],
+   "braucht": [],
+   "benoetigt": [],
+   "kategorie": "volk",
+   "sprite": "gebaeude:sr_plasmaschmiede",
+   "flavor": "In der Plasmaschmiede glüht, was früher Stahl war. Jede Klinge ein Funke.",
+   "nr": "SR-IX",
+   "rahmen": "#c21877",
+   "farbe_volk": "#e0218a",
+   "volk_name": "Steppenreiter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "In der Plasmaschmiede glüht, was früher Stahl war. Jede Klinge ein Funke.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "steppenreiter",
+   "id": "sr_marsreiter",
+   "name": "Marsreiter",
+   "zeitalter": 9,
+   "kosten": 18,
+   "staerke": 17,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:sr_marsreiter",
+   "flavor": "Rotes Land, roter Staub, und der Khan reitet voran. Die Steppe hat jetzt einen neuen Namen.",
+   "nr": "SR-X",
+   "rahmen": "#c21877",
+   "farbe_volk": "#e0218a",
+   "volk_name": "Steppenreiter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Rotes Land, roter Staub, und der Khan reitet voran. Die Steppe hat jetzt einen neuen Namen.",
+   "volkskarte": true
+  },
+  {
+   "typ": "einheit",
+   "volk": "steppenreiter",
+   "id": "sr_sternenhorde",
+   "name": "Sternenhorde",
+   "zeitalter": 10,
+   "kosten": 22,
+   "staerke": 22,
+   "fern": 0,
+   "klasse": "reiter",
+   "tags": [
+    "reiter"
+   ],
+   "schluessel": [
+    "ansturm"
+   ],
+   "boni": {},
+   "braucht": [],
+   "einkommen": 0,
+   "ziehen": 0,
+   "sprite": "einheit:sr_sternenhorde",
+   "flavor": "Zehntausend Reiter zwischen den Sternen. Wer sie sieht, hat nichts mehr zu fürchten – außer dem Khan.",
+   "nr": "SR-XI",
+   "rahmen": "#c21877",
+   "farbe_volk": "#e0218a",
+   "volk_name": "Steppenreiter",
+   "stapel": 0,
+   "kopien": 1,
+   "beschreibung": "Zehntausend Reiter zwischen den Sternen. Wer sie sieht, hat nichts mehr zu fürchten – außer dem Khan.",
    "volkskarte": true
   }
  ],
