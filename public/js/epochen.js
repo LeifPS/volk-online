@@ -1,4 +1,4 @@
-// 16x16 Pixelart-Symbole I-VII (PNG als Data-URL). CSS: image-rendering: pixelated;
+// 16x16 Pixelart-Symbole I-XI (PNG als Data-URL). CSS: image-rendering: pixelated;
 export const EPOCHEN_ICONS = {
  "I": {
   "epoche": "Antike",
@@ -27,10 +27,26 @@ export const EPOCHEN_ICONS = {
  "VII": {
   "epoche": "Atomzeitalter",
   "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAeklEQVR4XmNkYGBg0AiR/w+iSQU31jxkZAFpVnKTZhBS4yNJ/7tbn0Dq/7PAdEEFSAZMyDq2xiwCYxAghg0CKAaQA6hrgPeSOLjzQQDGxweo6wJyAIYLYM4mxvmDIxYYYUmZHHBv11PKYwGcF15efEeOA8CAEURQkp0BpqUsu98YtgUAAAAASUVORK5CYII="
+ },
+ "VIII": {
+  "epoche": "KI-Zeitalter",
+  "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAw0lEQVR4XmNkYGBgkJFS+w+iSQVPnt1iZAFpFlRwIFUvDPxngbEqu2aSZEh7WTpYPROyrq0nGBjs1L6BaXxskBwMoBjQGfeNoXwRF1wSGxukBhnAvQACMA2HZnti9Y5d6nYUQ0EAxQBkYLhnOwr/vAt2QzG8gAw2yjCAMTJA9wKKAch+xgXQ1eD0Agj4P8FpDhygGIAcC7j8jB5TWGMBFNrEegElDEAAOZBwsZEBhgGEEhI6YKQkM71/cICBEWQiJdkZANnUTnrRcBoqAAAAAElFTkSuQmCC"
+ },
+ "IX": {
+  "epoche": "Fusionszeitalter",
+  "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAy0lEQVR4XmNkYGBgkJFS+w+iSQVPnt1iZAFpjjN4R6peMFjEoPafBaaztSONJEOqK2aB1cMNAIHPFw/ADfm2CdU8Lj/s5jNhE0bXDALYxDBcAFMovuooA8PlahSzXzYfABuC7hIUF8BtgWmW92AAYwYGBvFaB6wuweoFMIBqxGCjAdwGEAlwG/BwB8IIZDY+F8ACCBRgYADSCNUME0MPRJR0AAIgBaDAhBuCBLClBaxewKYQV0LCcAEM4NKADuAGwNI2qYARpIGS7AwAd1s52t0Fc8sAAAAASUVORK5CYII="
+ },
+ "X": {
+  "epoche": "Weltraumzeitalter",
+  "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA4ElEQVR4XmNkYGBgkJFS+w+iSQVPnt1iZAFpFuYzIlUvDPxngbG6mrtJMqSsthSsHm4ACLiFyDD01x4hySAmZNWkasZwATKIy0UNl0WTz2F1GYoLYACkWViMC6+BMIBhwIyl9WC5t6++YdgIk0MGjLBo/P7zFcPNjX8hmsW3YWgGAeGXXmBa3Z+ZgZNdjOHtp3MIF0zuWgiWAGGYQmQAEoPJZ0Q3wqVQohEm0b+KgSEuF9UR/ataGDKiMR2GYgAywBXqhc02KNGNNRbwAfS0QrIB6AAeC+QAUCwwgjRSkp0BqUdDYYPUPCwAAAAASUVORK5CYII="
+ },
+ "XI": {
+  "epoche": "Sternenzeitalter",
+  "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAuUlEQVR4XmNkYGBgkJFS+w+iSQVPnt1iZAFpljMLIlUvBJxa958FpvPo+nashtQ8YWBokcGUsg6sBAvCDQCB5+9/oKic+pUDqzgyYMJqLRLAZjtRBoBsh2mGuQQbIOgCQgDFAJBNICwpCLX9YTdYP8glIDGYPFFeAAP5UkIOQI2FbG5ILDx/z4ASBqCoBMllc2OaR3EYoKQDZACyseYJJB3AXEaTWMDpAkI2wwDcAFjaJhUwgjRQkp0B1/w2lK/aGUkAAAAASUVORK5CYII="
  }
 };
 
-// Zeitalter 0..6 -> Bild. Scharf vergrößert (image-rendering: pixelated, siehe CSS .za)
-const REIHE = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+// Zeitalter 0..10 -> Bild. Scharf vergrößert (image-rendering: pixelated, siehe CSS .za)
+const REIHE = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 export const zaName = (z) => EPOCHEN_ICONS[REIHE[z]].epoche;
 export const zaIcon = (z, px = 24, extra = '') => `<img class="za ${extra}" src="${EPOCHEN_ICONS[REIHE[z]].png}" width="${px}" height="${px}" alt="Zeitalter ${REIHE[z]} · ${zaName(z)}" title="${REIHE[z]} · ${zaName(z)}" draggable="false">`;
