@@ -599,7 +599,8 @@ def lade():
     for mod in (zk_einheiten, zk_gebaeude, zk_welt): REG.update(mod.NEU)
     for key, fn in REG.items():
         w, h = GROESSE(key); m = Bild(w, h); fn(m)
-        spr._S[key] = m.fertig(kontur=not key.startswith('za:'))
+        import rand
+        spr._S[key] = rand.repariere_sprite(key, m.fertig(kontur=not key.startswith('za:')))
     for r in ('seltene_erden', 'deuterium', 'titan', 'helium3'): spr._S['ui:' + r] = spr._S['rohstoff:' + r]
 
 def webexport(pfad, praefixe=None):

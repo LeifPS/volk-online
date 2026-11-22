@@ -1,6 +1,8 @@
 import json, os
 from PIL import Image
 _S = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'sprites.json')))
+import rand as _rand
+for _k in list(_S): _rand.repariere_sprite(_k, _S[_k])
 def _rgb(h):
     h=h.lstrip('#')
     if len(h)==3: h=''.join(c*2 for c in h)
